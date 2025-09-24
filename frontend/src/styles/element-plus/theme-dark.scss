@@ -1,0 +1,25 @@
+// only scss variables
+$--colors: (
+	"primary": (
+		"base": #20bda0
+	),
+	"success": (
+		"base": #35ba61
+	),
+	"warning": (
+		"base": #d3b32d
+	),
+	"danger": (
+		"base": #c14848
+	),
+	"error": (
+		"base": #d12626
+	),
+	"info": (
+		"base": #359fc4
+	)
+);
+
+@use "element-plus/theme-chalk/src/dark/var.scss" with (
+	$colors: $--colors
+);

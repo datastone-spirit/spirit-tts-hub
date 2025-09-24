@@ -1,0 +1,28 @@
+html,
+body,
+h2,
+p {
+	margin: 0;
+	padding: 0;
+}
+
+.zl-app-loader-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+	height: 100vh;
+	display: flex;
+	background-color:#f2f3f8;
+}
+
+.zl-app-loader-content {
+	margin: auto;
+	text-align: center;
+}
+
+.zl-app-loader-logo {
+  width: 130px;
+  height: 130px;
+
+}
