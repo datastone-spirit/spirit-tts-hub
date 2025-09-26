@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2024-09-29 17:00:46
- * @LastEditTime: 2025-09-24 10:44:00
+ * @LastEditTime: 2025-09-25 10:25:33
  * @LastEditors: mulingyuer
  * @Description: main
  * @FilePath: \frontend\src\layout\admin-layout\components\Main\index.vue
@@ -44,9 +44,8 @@ const footerBarClass = computed(() => {
 
 <style lang="scss" scoped>
 .admin-main {
-	padding: 0;
-	padding-left: $zl-aside-width;
-	padding-right: $zl-padding;
+	height: 1px;
+	padding: $zl-header-height $zl-padding 0 $zl-aside-width;
 	transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	&.is-mobile-collapse,
 	&.is-mobile {
@@ -57,12 +56,12 @@ const footerBarClass = computed(() => {
 	}
 }
 .admin-main-content {
-	padding: $zl-padding;
 	height: 100%;
 	background-color: var(--zl-main-bg);
 	border-top-left-radius: $zl-border-radius;
 	border-top-right-radius: $zl-border-radius;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	&.show-footer-bar {
 		padding-bottom: calc($zl-padding + $zl-footer-bar-height);
 	}

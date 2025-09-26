@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-24 09:32:10
- * @LastEditTime: 2025-09-24 09:53:46
+ * @LastEditTime: 2025-09-25 10:18:29
  * @LastEditors: mulingyuer
  * @Description: header
  * @FilePath: \frontend\src\layout\admin-layout\components\Header\index.vue
@@ -12,6 +12,12 @@
 		<div class="header-left"></div>
 		<div class="header-right">
 			<el-space class="header-right-space" :size="10">
+				<ZLSwitch
+					v-model="openComplexity"
+					off-text="新手"
+					on-text="专家"
+					@change="onComplexityChange"
+				/>
 				<LightDarkToggle />
 				<router-link class="help-btn" :to="{ name: 'Help' }">
 					<Icon name="ri-question-line" />
@@ -23,10 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "@/stores";
+import { useAppStore, useSettingsStore } from "@/stores";
 import LightDarkToggle from "./LightDarkToggle.vue";
+import { ComplexityEnum } from "@/enums/complexity.enum";
 
 const appStore = useAppStore();
+const settingsStore = useSettingsStore();
+
 const headerClass = computed(() => {
 	if (appStore.isMobile) {
 		// 移动端
@@ -35,21 +44,32 @@ const headerClass = computed(() => {
 		return appStore.isCollapse ? "is-collapse" : "";
 	}
 });
+
+/** 难度切换 */
+const openComplexity = ref(settingsStore.complexity === ComplexityEnum.EXPERT);
+function onComplexityChange(val: boolean) {
+	const value = val ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER;
+	settingsStore.setComplexity(value);
+}
 </script>
 
 <style lang="scss" scoped>
 .header {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: $zl-aside-width;
 	height: $zl-header-height;
+	background-color: var(--zl-bg);
 	display: flex;
 	padding: 0;
-	padding-left: $zl-aside-width;
 	transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	&.is-mobile-collapse,
 	&.is-mobile {
-		padding-left: $zl-aside-mobile-width;
+		left: $zl-aside-mobile-width;
 	}
 	&.is-collapse {
-		padding-left: $zl-aside-mini-width;
+		left: $zl-aside-mini-width;
 	}
 }
 .header-left {
@@ -63,6 +83,7 @@ const headerClass = computed(() => {
 }
 .header-right-space {
 	height: 100%;
+	@include no-select();
 }
 .help-btn {
 	display: flex;

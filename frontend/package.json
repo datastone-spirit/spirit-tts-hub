@@ -23,8 +23,8 @@
     "axios-retry": "^4.5.0",
     "bignumber.js": "^9.3.1",
     "dayjs": "^1.11.13",
-    "default-passive-events": "^2.0.0",
-    "element-plus": "^2.11.3",
+    "default-passive-events": "^4.0.0",
+    "element-plus": "^2.11.4",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.3",
@@ -32,8 +32,9 @@
     "sass": "^1.82.0",
     "type-fest": "^4.41.0",
     "uuid": "^11.1.0",
-    "vue": "^3.5.21",
-    "vue-router": "^4.5.1"
+    "vue": "^3.5.22",
+    "vue-router": "^4.5.1",
+    "wavesurfer.js": "^7.10.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

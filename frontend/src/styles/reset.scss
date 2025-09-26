@@ -44,7 +44,7 @@ ol {
 }
 
 body {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 /** 谷歌浏览器自动填充背景色处理 */
@@ -85,18 +85,18 @@ pre {
 }
 
 // 滚动条定制
-* {
-	&::-webkit-scrollbar {
-		width: 8px;
-	}
-	&::-webkit-scrollbar-thumb {
-		background: var(--zl-scrollbar);
-	}
-}
-// 针对不支持::-webkit-scrollbar-*的浏览器的样式调整
-@supports not (selector(::-webkit-scrollbar)) {
-	* {
-		scrollbar-width: thin;
-		scrollbar-color: var(--zl-scrollbar) transparent;
-	}
-}
+// * {
+// 	&::-webkit-scrollbar {
+// 		width: 8px;
+// 	}
+// 	&::-webkit-scrollbar-thumb {
+// 		background: var(--zl-scrollbar);
+// 	}
+// }
+// // 针对不支持::-webkit-scrollbar-*的浏览器的样式调整
+// @supports not (selector(::-webkit-scrollbar)) {
+// 	* {
+// 		scrollbar-width: thin;
+// 		scrollbar-color: var(--zl-scrollbar) transparent;
+// 	}
+// }

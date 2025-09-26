@@ -19,7 +19,7 @@
 					clear: both;
 					content: "";
 					background: var(--el-fill-color);
-					border-radius: 4px;
+					border-radius: 8px;
 				}
 			}
 		}
@@ -39,7 +39,7 @@
 				clear: both;
 				content: "";
 				background: rgba(255, 255, 255, 0.3);
-				border-radius: 4px;
+				border-radius: 8px;
 			}
 			&.is-active::before {
 				position: absolute;
@@ -47,7 +47,7 @@
 				clear: both;
 				content: "";
 				background: var(--el-bg-color);
-				border-radius: 4px;
+				border-radius: 8px;
 			}
 		}
 	}
@@ -77,7 +77,7 @@
 					clear: both;
 					content: "";
 					background: #8a8a8a49;
-					border-radius: 4px;
+					border-radius: 8px;
 				}
 			}
 		}
@@ -98,7 +98,7 @@
 				clear: both;
 				content: "";
 				background: var(--el-color-primary-light-8);
-				border-radius: 4px;
+				border-radius: 8px;
 			}
 			&.is-active::before {
 				position: absolute;
@@ -106,7 +106,7 @@
 				clear: both;
 				content: "";
 				background: var(--el-color-primary);
-				border-radius: 4px;
+				border-radius: 8px;
 			}
 		}
 	}
@@ -190,8 +190,7 @@
 }
 
 // 定制 Splitter 分隔面板
-.el-splitter {
-	.el-splitter-panel {
-		scrollbar-color: var(--zl-scrollbar) transparent;
-	}
+.el-splitter-bar__dragger-horizontal::before,
+.el-splitter-bar__dragger-horizontal::after {
+	width: 1px !important;
 }
