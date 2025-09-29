@@ -73,7 +73,7 @@ const activeName = ref("first");
 	flex-shrink: 0;
 	height: 100px;
 	border-top: 1px solid var(--el-border-color-light);
-	box-shadow: 0 0 8px var(--zl-index-tts2-box-shadow);
+	box-shadow: 0 0 8px var(--zl-box-shadow);
 }
 .tts-main-head {
 	padding: $zl-padding;

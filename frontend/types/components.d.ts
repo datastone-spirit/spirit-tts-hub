@@ -96,6 +96,7 @@ declare module 'vue' {
     Seed: typeof import('./../src/components/Form/Seed.vue')['default']
     SimpleCollapse: typeof import('./../src/components/Collapse/SimpleCollapse.vue')['default']
     SplitRightPanel: typeof import('./../src/components/Split/SplitRightPanel/index.vue')['default']
+    TableOperations: typeof import('./../src/components/TableOperations/index.vue')['default']
     TagAddGlobalPromptSwitch: typeof import('./../src/components/Form/DataSet-v2/TagAddGlobalPromptSwitch.vue')['default']
     TagAdvancedSwitch: typeof import('./../src/components/Form/DataSet-v2/TagAdvancedSwitch.vue')['default']
     TagAppendSwitch: typeof import('./../src/components/Form/DataSet-v2/TagAppendSwitch.vue')['default']
@@ -119,6 +120,7 @@ declare module 'vue' {
     VideoPreviewDialog: typeof import('./../src/components/Dialog/VideoPreviewDialog.vue')['default']
     ViewSamplingDrawer: typeof import('./../src/components/Drawer/ViewSamplingDrawer.vue')['default']
     WeightingSchemeSelect: typeof import('../src/views/lora/flux/components/AdvancedSettings/LRAndOptimizer/WeightingSchemeSelect.vue')['default']
+    ZLSpace: typeof import('./../src/components/ZLSpace/index.vue')['default']
     ZLSwitch: typeof import('./../src/components/Form/ZLSwitch.vue')['default']
   }
   export interface ComponentCustomProperties {

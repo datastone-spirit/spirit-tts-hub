@@ -1,4 +1,4 @@
-import "default-passive-events"; //去除touchstart谷歌警告
+// import "default-passive-events"; //去除touchstart谷歌警告
 import { createApp } from "vue";
 import { piniaStore } from "@/stores";
 import App from "./App.vue";

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2024-09-29 11:01:54
- * @LastEditTime: 2024-12-06 08:51:11
+ * @LastEditTime: 2025-09-28 11:54:44
  * @LastEditors: mulingyuer
  * @Description: icon
  * @FilePath: \frontend\src\components\Icon\Icon.vue
@@ -25,8 +25,8 @@ export default defineComponent({
 			required: true
 		},
 		size: {
-			type: [String, Number],
-			default: 16
+			type: [String, Number]
+			// default: 16
 		},
 		color: {
 			type: String,
@@ -39,7 +39,7 @@ export default defineComponent({
 		// el-icon
 		if (props.name.startsWith("el-icon-")) {
 			return () =>
-				h(ElIcon, { size: props.size || "16px", color: props.color }, () =>
+				h(ElIcon, { size: props.size, color: props.color }, () =>
 					h(resolveComponent(props.name.replace("el-icon-", "")))
 				);
 		}
@@ -47,7 +47,7 @@ export default defineComponent({
 		// remixicon
 		if (props.name.startsWith("ri-")) {
 			return () =>
-				h(ElIcon, { size: props.size || "16px", color: props.color }, () =>
+				h(ElIcon, { size: props.size, color: props.color }, () =>
 					h(
 						"svg",
 						{ class: "remix", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 1024 1024" },

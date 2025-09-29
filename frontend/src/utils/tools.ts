@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-08-29 11:41:43
+ * @LastEditTime: 2025-09-29 11:39:36
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -290,4 +290,16 @@ export class SerializeUndefined {
 
 		return obj;
 	}
+}
+
+/**
+ * 辅助函数：从 URL 或文件名中提取文件扩展名（后缀）
+ */
+export function getFileExtension(filename: string) {
+	const cleanFilename = filename.split("?")[0];
+	const parts = cleanFilename.split(".");
+	if (parts.length > 1) {
+		return parts.pop()?.toLowerCase();
+	}
+	return "";
 }
