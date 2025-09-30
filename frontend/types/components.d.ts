@@ -58,6 +58,7 @@ declare module 'vue' {
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSpace: typeof import('element-plus/es')['ElSpace']
+    ElSpacePro: typeof import('./../src/components/ElSpacePro.vue')['default']
     ElSplitter: typeof import('element-plus/es')['ElSplitter']
     ElSplitterPanel: typeof import('element-plus/es')['ElSplitterPanel']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
@@ -120,7 +121,7 @@ declare module 'vue' {
     VideoPreviewDialog: typeof import('./../src/components/Dialog/VideoPreviewDialog.vue')['default']
     ViewSamplingDrawer: typeof import('./../src/components/Drawer/ViewSamplingDrawer.vue')['default']
     WeightingSchemeSelect: typeof import('../src/views/lora/flux/components/AdvancedSettings/LRAndOptimizer/WeightingSchemeSelect.vue')['default']
-    ZLSpace: typeof import('./../src/components/ZLSpace/index.vue')['default']
+    ZLSpace: typeof import('../src/components/ElSpacePro.vue')['default']
     ZLSwitch: typeof import('./../src/components/Form/ZLSwitch.vue')['default']
   }
   export interface ComponentCustomProperties {

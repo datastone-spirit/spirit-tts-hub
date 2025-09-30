@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-09-29 17:45:15
+ * @LastEditTime: 2025-09-30 10:34:52
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -53,7 +53,7 @@
 					<el-button type="text" :icon="RiSpeedFill" circle text @click="onFastForward" />
 				</el-space>
 			</div>
-			<ZLSpace class="voice-other" :size="8">
+			<ElSpacePro class="voice-other" :size="8">
 				<el-button v-show="!audioData.isRegion" :icon="RiScissorsLine" @click="onVoiceRegion">
 					裁剪
 				</el-button>
@@ -75,7 +75,7 @@
 				>
 					取消
 				</el-button>
-			</ZLSpace>
+			</ElSpacePro>
 		</div>
 	</div>
 </template>
