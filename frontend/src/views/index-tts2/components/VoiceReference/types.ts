@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-29 10:32:52
- * @LastEditTime: 2025-09-29 16:07:36
+ * @LastEditTime: 2025-09-30 11:15:32
  * @LastEditors: mulingyuer
  * @Description: 公共类型
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\types.ts
@@ -17,13 +17,13 @@ export type VoiceType =
 /** 上传相关数据 */
 export interface UploadData {
 	/** 文件上传后的路径 */
-	uploadPath: string;
+	path: string;
 	/** 上传中 */
-	uploadLoading: boolean;
+	loading: boolean;
 	/** 上传进度 */
-	uploadPercentage: number;
+	percentage: number;
 	/** 上传结束 */
-	uploadEnd: boolean;
+	isEnd: boolean;
 }
 
 /** 音频数据 */

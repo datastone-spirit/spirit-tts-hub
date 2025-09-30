@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-29 10:24:10
- * @LastEditTime: 2025-09-29 14:47:15
+ * @LastEditTime: 2025-09-30 14:24:36
  * @LastEditors: mulingyuer
  * @Description: 音乐相关辅助功能类型
  * @FilePath: \frontend\src\utils\audio-helper\types.ts
@@ -23,4 +23,6 @@ export interface CutAudioOptions {
 	start: number;
 	/** 结束时间s */
 	end: number;
+	/** 采样率 */
+	sampleRate?: number;
 }

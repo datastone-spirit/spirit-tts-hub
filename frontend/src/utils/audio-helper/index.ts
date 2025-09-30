@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-29 10:23:54
- * @LastEditTime: 2025-09-29 15:26:02
+ * @LastEditTime: 2025-09-30 14:37:47
  * @LastEditors: mulingyuer
  * @Description: 音乐相关辅助功能
  * @FilePath: \frontend\src\utils\audio-helper\index.ts
@@ -21,28 +21,28 @@ export class AudioHelper {
 
 	/** 剪切音频 */
 	public static cutAudio(options: CutAudioOptions): Uint8Array {
-		const { audioBuffer, start, end } = options;
+		const { audioBuffer, start, end, sampleRate = 44100 } = options;
 
 		const audioContext = new AudioContext({
-			sampleRate: audioBuffer.sampleRate
+			sampleRate: sampleRate ?? audioBuffer.sampleRate
 		});
 
 		const numberOfChannels = audioBuffer.numberOfChannels;
-		const sampleRate = audioBuffer.sampleRate;
+		const effectiveSampleRate = sampleRate ?? audioBuffer.sampleRate;
 
 		let trimmedLength = audioBuffer.length;
 		let startOffset = 0;
 
 		if (typeof start === "number" && typeof end === "number") {
-			startOffset = Math.round(start * sampleRate);
-			const endOffset = Math.round(end * sampleRate);
+			startOffset = Math.round(start * effectiveSampleRate);
+			const endOffset = Math.round(end * effectiveSampleRate);
 			trimmedLength = endOffset - startOffset;
 		}
 
 		const trimmedAudioBuffer = audioContext.createBuffer(
 			numberOfChannels,
 			trimmedLength,
-			sampleRate
+			effectiveSampleRate
 		);
 
 		for (let channel = 0; channel < numberOfChannels; channel++) {

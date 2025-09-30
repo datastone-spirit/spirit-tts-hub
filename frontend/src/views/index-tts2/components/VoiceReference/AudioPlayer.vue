@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-29 15:39:39
- * @LastEditTime: 2025-09-29 17:45:39
+ * @LastEditTime: 2025-09-30 15:26:57
  * @LastEditors: mulingyuer
  * @Description: 音频播放
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\AudioPlayer.vue
@@ -96,10 +96,19 @@ const waveformData = reactive({
 });
 let audio: WaveSurfer | null = null;
 let regions: RegionsPlugin | null = null;
+let originPath: string | null = null; // 还原用的音频path
 
 // 清理
 function onAudioPlayerClear() {
-	audio?.empty();
+	if (audio) {
+		// 重置播放状态
+		audio.pause();
+		audio.seekTo(0);
+		// 清理选区
+		audioData.value.isRegion = false;
+		regions?.clearRegions();
+	}
+	audioData.value.loading = true;
 	emit("clear");
 }
 
@@ -137,13 +146,14 @@ const setupAudioEventListeners = () => {
 	});
 
 	audio.on("ready", () => {
+		audioData.value.loading = false;
 		const duration = audio!.getDuration();
 		waveformData.totalDuration = duration;
 	});
 
-	audio.on("loading", (percent) => {
-		if (percent >= 100) audioData.value.loading = false;
-	});
+	// audio.on("loading", (percent) => {
+	// 	if (percent >= 100) audioData.value.loading = false;
+	// });
 
 	audio.on("timeupdate", () => {
 		waveformData.currentDuration = audio!.getCurrentTime();
@@ -195,6 +205,8 @@ defineExpose({
 		const end = start + duration / 3;
 		waveformData.regionStart = start;
 		waveformData.regionEnd = end;
+		// 记录原始数据
+		if (!originPath) originPath = props.path;
 
 		regions!.addRegion({
 			start: start,
@@ -243,16 +255,19 @@ defineExpose({
 
 		// 加载新的音频
 		audio.load(audioUrl).then(() => {
+			audio?.stop(); // 停止播放并归位
 			URL.revokeObjectURL(audioUrl);
 		});
 	},
 
 	/** 还原 */
 	restore: () => {
-		if (!audio) return;
 		audioData.value.isRegion = false;
-		regions!.clearRegions();
-		audio.load(props.path);
+		regions?.clearRegions();
+		if (originPath) {
+			audio?.load(originPath);
+			originPath = null;
+		}
 	}
 });
 
@@ -266,6 +281,7 @@ watchEffect(() => {
 watchEffect(() => {
 	const isPath = typeof props.path === "string" && props.path.trim().length > 0;
 	if (isPath) {
+		audioData.value.loading = true;
 		audio?.load(props.path);
 	}
 });
@@ -306,9 +322,12 @@ onUnmounted(() => {
 	border-top: none;
 	border-right: none;
 	border-radius: 0 6px 0 6px;
+	z-index: 2;
 }
 .audio-player-waveform {
 	height: 100%;
+	position: relative;
+	z-index: 1;
 	:deep(::part(region-handle-left)) {
 		border-left-color: var(--el-color-warning);
 	}

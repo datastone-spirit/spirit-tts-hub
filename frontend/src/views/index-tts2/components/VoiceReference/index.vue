@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-09-30 10:34:52
+ * @LastEditTime: 2025-09-30 15:14:29
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -14,12 +14,12 @@
 			<span>参考音频</span>
 		</div>
 		<div class="voice-reference-content">
-			<VoiceUpload v-show="!uploadData.uploadEnd" ref="uploadRef" v-model="uploadData" />
+			<VoiceUpload v-show="!uploadData.isEnd" ref="uploadRef" v-model="uploadData" />
 			<AudioPlayer
-				v-show="uploadData.uploadEnd"
+				v-show="uploadData.isEnd"
 				ref="audioPlayerRef"
 				v-model:audio-data="audioData"
-				:path="uploadData.uploadPath"
+				:path="uploadData.path"
 				@clear="onAudioPlayerClear"
 			/>
 		</div>
@@ -41,7 +41,7 @@
 				</el-button>
 			</el-space>
 			<div class="voice-control">
-				<el-space :size="20">
+				<el-space v-show="!audioData.loading" :size="20">
 					<el-button type="text" :icon="RiRewindFill" circle text @click="onRewind" />
 					<el-button
 						:type="audioData.state === 'playing' ? 'danger' : 'primary'"
@@ -53,29 +53,31 @@
 					<el-button type="text" :icon="RiSpeedFill" circle text @click="onFastForward" />
 				</el-space>
 			</div>
-			<ElSpacePro class="voice-other" :size="8">
-				<el-button v-show="!audioData.isRegion" :icon="RiScissorsLine" @click="onVoiceRegion">
-					裁剪
-				</el-button>
-				<el-button
-					v-show="!audioData.isRegion"
-					:icon="RiArrowGoBackLine"
-					@click="onVoiceReginReset"
-				>
-					还原
-				</el-button>
-				<el-button v-show="audioData.isRegion" :icon="RiCheckLine" @click="onVoiceRegionConfirm">
-					确认
-				</el-button>
-				<el-button
-					class="cancel"
-					v-show="audioData.isRegion"
-					:icon="RiCloseFill"
-					@click="onVoiceReginCancel"
-				>
-					取消
-				</el-button>
-			</ElSpacePro>
+			<div v-show="uploadData.isEnd" class="voice-other">
+				<ElSpacePro :size="8">
+					<el-button v-show="!audioData.isRegion" :icon="RiScissorsLine" @click="onVoiceRegion">
+						裁剪
+					</el-button>
+					<el-button
+						v-show="!audioData.isRegion"
+						:icon="RiArrowGoBackLine"
+						@click="onVoiceReginReset"
+					>
+						还原
+					</el-button>
+					<el-button v-show="audioData.isRegion" :icon="RiCheckLine" @click="onVoiceRegionConfirm">
+						确认
+					</el-button>
+					<el-button
+						class="cancel"
+						v-show="audioData.isRegion"
+						:icon="RiCloseFill"
+						@click="onVoiceReginCancel"
+					>
+						取消
+					</el-button>
+				</ElSpacePro>
+			</div>
 		</div>
 	</div>
 </template>
@@ -85,7 +87,6 @@ import { useIcon } from "@/hooks/useIcon";
 import VoiceUpload from "./VoiceUpload.vue";
 import type { VoiceType, UploadData, AudioData } from "./types";
 import AudioPlayer from "./AudioPlayer.vue";
-import test from "@/assets/audio/4whyx2hr9td3kayp27wf5sdeqo905t6.mp3";
 
 // icon
 const RiRewindFill = useIcon({ name: "ri-rewind-fill", size: 20 });
@@ -106,10 +107,10 @@ function onVoiceType(type: VoiceType) {
 
 const uploadRef = useTemplateRef("uploadRef");
 const uploadData = ref<UploadData>({
-	uploadPath: test,
-	uploadLoading: false,
-	uploadPercentage: 20,
-	uploadEnd: true
+	path: "",
+	loading: false,
+	percentage: 0,
+	isEnd: false
 });
 const audioPlayerRef = useTemplateRef("audioPlayerRef");
 const audioData = ref<AudioData>({
@@ -142,7 +143,18 @@ function onVoiceRegionConfirm() {
 	audioPlayerRef.value?.cut();
 }
 function onAudioPlayerClear() {
-	uploadData.value.uploadPath = "";
+	switch (voiceType.value) {
+		case "upload":
+			uploadData.value = {
+				path: "",
+				loading: false,
+				percentage: 0,
+				isEnd: false
+			};
+			break;
+		case "record":
+			break;
+	}
 }
 </script>
 
@@ -202,6 +214,6 @@ function onAudioPlayerClear() {
 }
 .voice-other {
 	flex-shrink: 0;
-	justify-content: flex-end;
+	text-align: right;
 }
 </style>
