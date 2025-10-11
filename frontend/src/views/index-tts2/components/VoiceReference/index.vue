@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-10-11 17:05:15
+ * @LastEditTime: 2025-10-11 17:52:33
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -14,14 +14,15 @@
 			<span>参考音频</span>
 		</div>
 		<div class="voice-reference-content">
-			<VoiceUpload v-show="!uploadData.isEnd" ref="uploadRef" v-model="uploadData" />
+			<VoiceUpload v-show="showVoiceUpload" ref="uploadRef" v-model="uploadData" />
 			<AudioPlayer
-				v-show="uploadData.isEnd"
+				v-show="showAudioPlayer"
 				ref="audioPlayerRef"
 				v-model:audio-data="audioData"
 				:path="uploadData.path"
 				@clear="onAudioPlayerClear"
 			/>
+			<VoiceRecord v-show="showVoiceRecord" />
 		</div>
 		<div class="voice-reference-footer">
 			<el-space class="voice-type" :size="8">
@@ -81,6 +82,7 @@ import { useIcon } from "@/hooks/useIcon";
 import VoiceUpload from "./VoiceUpload.vue";
 import type { VoiceType, UploadData, AudioData } from "./types";
 import AudioPlayer from "./AudioPlayer.vue";
+import VoiceRecord from "./VoiceRecord.vue";
 
 // icon
 const RiScissorsLine = useIcon({ name: "ri-scissors-line", size: 14 });
@@ -90,13 +92,13 @@ const RiMicLine = useIcon({ name: "ri-mic-line", size: 14 });
 const RiCheckLine = useIcon({ name: "ri-check-line", size: 14 });
 const RiCloseFill = useIcon({ name: "ri-close-fill", size: 14 });
 
-const voiceType = ref<VoiceType>("upload");
+const voiceType = ref<VoiceType>("record");
 function onVoiceType(type: VoiceType) {
 	voiceType.value = type;
 }
 
 const uploadRef = useTemplateRef("uploadRef");
-const uploadData = ref<UploadData>({
+const uploadData = reactive<UploadData>({
 	path: "",
 	loading: false,
 	percentage: 0,
@@ -108,7 +110,26 @@ const audioData = reactive<AudioData>({
 	isRegion: false,
 	loading: true
 });
+const recordData = reactive({
+	isEnd: false
+});
 const isPlaying = computed(() => audioData.state === "playing");
+const showVoiceUpload = computed(() => {
+	return voiceType.value === "upload" && !uploadData.isEnd;
+});
+const showAudioPlayer = computed(() => {
+	switch (voiceType.value) {
+		case "upload":
+			return uploadData.isEnd;
+		case "record":
+			return recordData.isEnd;
+		default:
+			return false;
+	}
+});
+const showVoiceRecord = computed(() => {
+	return voiceType.value === "record" && !recordData.isEnd;
+});
 
 // 音频控制
 function onRewind() {
@@ -135,14 +156,17 @@ function onVoiceRegionConfirm() {
 function onAudioPlayerClear() {
 	switch (voiceType.value) {
 		case "upload":
-			uploadData.value = {
+			Object.assign(audioData, {
 				path: "",
 				loading: false,
 				percentage: 0,
 				isEnd: false
-			};
+			});
 			break;
 		case "record":
+			Object.assign(recordData, {
+				isEnd: false
+			});
 			break;
 	}
 }
