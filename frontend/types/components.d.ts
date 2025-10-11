@@ -30,8 +30,11 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Icon: typeof import('./../src/components/Icon/Icon.vue')['default']
+    PlayPauseButton: typeof import('./../src/components/Audio/PlayPauseButton.vue')['default']
+    RewindButton: typeof import('./../src/components/Audio/RewindButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SkipButton: typeof import('./../src/components/Audio/SkipButton.vue')['default']
     ZLSwitch: typeof import('./../src/components/Form/ZLSwitch.vue')['default']
   }
 }

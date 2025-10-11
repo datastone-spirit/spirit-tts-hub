@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-11 09:19:46
+ * @LastEditTime: 2025-10-11 17:13:12
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -31,27 +31,14 @@
 
 				<div class="audio-control">
 					<div class="audio-main-control">
-						<el-button
-							type="text"
-							:icon="RiRewindFill"
-							circle
-							text
-							@click="playerControls.rewind"
+						<RewindButton @click="onRewind" />
+						<PlayPauseButton
+							:isPlaying="isPlaying"
+							play-icon-name="ri-play-circle-fill"
+							pause-icon-name="ri-pause-circle-fill"
+							@click="onPlayPause"
 						/>
-						<el-button
-							:type="isPlaying ? 'danger' : 'primary'"
-							:icon="isPlaying ? RiPauseCircleFill : RiPlayCircleFill"
-							circle
-							text
-							@click="playerControls.playPause"
-						/>
-						<el-button
-							type="text"
-							:icon="RiSpeedFill"
-							circle
-							text
-							@click="playerControls.fastForward"
-						/>
+						<SkipButton @click="onFastForward" />
 					</div>
 					<div class="audio-other">
 						<el-button type="primary" :icon="RiDownloadLine" circle text @click="onDownloadAudio" />
@@ -69,16 +56,22 @@ import AudioProgress from "./AudioProgress.vue";
 import { useWaveSurferPlayer, AudioHelper } from "@/hooks/useWaveSurferPlayer";
 
 // 图标定义
-const RiRewindFill = useIcon({ name: "ri-rewind-fill", size: 20 });
-const RiPlayCircleFill = useIcon({ name: "ri-play-circle-fill", size: 32 });
-const RiPauseCircleFill = useIcon({ name: "ri-pause-circle-fill", size: 32 });
-const RiSpeedFill = useIcon({ name: "ri-speed-fill", size: 20 });
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });
 
-const audioRef = useTemplateRef("audioRef");
+const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
 const { initPlayer, destroyPlayer, playerControls, playerData, state } = useWaveSurferPlayer();
 const isPlaying = computed(() => state.value === "playing");
 
+// 音频控制
+function onRewind() {
+	playerControls.rewind();
+}
+function onPlayPause() {
+	playerControls.playPause();
+}
+function onFastForward() {
+	playerControls.fastForward();
+}
 /** 下载音频 */
 function onDownloadAudio() {
 	// TODO: 实现下载功能

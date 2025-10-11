@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-10-11 14:30:03
+ * @LastEditTime: 2025-10-11 17:05:15
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -42,15 +42,9 @@
 			</el-space>
 			<div class="voice-control">
 				<el-space v-show="!audioData.loading" :size="20">
-					<el-button type="text" :icon="RiRewindFill" circle text @click="onRewind" />
-					<el-button
-						:type="audioData.state === 'playing' ? 'danger' : 'primary'"
-						:icon="audioData.state === 'playing' ? RiPauseFill : RiPlayFill"
-						circle
-						text
-						@click="onPlayPause"
-					/>
-					<el-button type="text" :icon="RiSpeedFill" circle text @click="onFastForward" />
+					<RewindButton @click="onRewind" />
+					<PlayPauseButton :isPlaying="isPlaying" @click="onPlayPause" />
+					<SkipButton @click="onFastForward" />
 				</el-space>
 			</div>
 			<div v-show="uploadData.isEnd" class="voice-other">
@@ -89,10 +83,6 @@ import type { VoiceType, UploadData, AudioData } from "./types";
 import AudioPlayer from "./AudioPlayer.vue";
 
 // icon
-const RiRewindFill = useIcon({ name: "ri-rewind-fill", size: 20 });
-const RiPlayFill = useIcon({ name: "ri-play-fill", size: 32 });
-const RiPauseFill = useIcon({ name: "ri-pause-fill", size: 32 });
-const RiSpeedFill = useIcon({ name: "ri-speed-fill", size: 20 });
 const RiScissorsLine = useIcon({ name: "ri-scissors-line", size: 14 });
 const RiArrowGoBackLine = useIcon({ name: "ri-arrow-go-back-line", size: 14 });
 const RiUpload_2Line = useIcon({ name: "ri-upload-2-line", size: 14 });
@@ -118,7 +108,7 @@ const audioData = reactive<AudioData>({
 	isRegion: false,
 	loading: true
 });
-// const isPlaying = computed(() => voiceData.value.state === "playing");
+const isPlaying = computed(() => audioData.state === "playing");
 
 // 音频控制
 function onRewind() {
