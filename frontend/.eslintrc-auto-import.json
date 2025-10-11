@@ -5,9 +5,6 @@
     "ComputedRef": true,
     "DirectiveBinding": true,
     "EffectScope": true,
-    "ElMessage": true,
-    "ElMessageBox": true,
-    "ElNotification": true,
     "ExtractDefaultPropTypes": true,
     "ExtractPropTypes": true,
     "ExtractPublicPropTypes": true,
@@ -282,6 +279,7 @@
     "useThrottleFn": true,
     "useThrottledRefHistory": true,
     "useTimeAgo": true,
+    "useTimeAgoIntl": true,
     "useTimeout": true,
     "useTimeoutFn": true,
     "useTimeoutPoll": true,
@@ -320,7 +318,6 @@
     "watchThrottled": true,
     "watchTriggerable": true,
     "watchWithFilter": true,
-    "whenever": true,
-    "useTimeAgoIntl": true
+    "whenever": true
   }
 }

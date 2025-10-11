@@ -1,3 +1,12 @@
+<!--
+ * @Author: mulingyuer
+ * @Date: 2025-09-19 16:04:09
+ * @LastEditTime: 2025-10-11 14:11:15
+ * @LastEditors: mulingyuer
+ * @Description:
+ * @FilePath: src/App.vue
+ * 怎么可能会有bug！！！
+ -->
 <template>
 	<el-config-provider :locale="locale">
 		<router-view></router-view>

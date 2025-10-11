@@ -7,7 +7,7 @@
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\types.ts
  * 怎么可能会有bug！！！
  */
-import type { AudioState } from "@/utils/audio-helper";
+import type { AudioState } from "@/hooks/useWaveSurferPlayer";
 
 /** 音频类型 */
 export type VoiceType =

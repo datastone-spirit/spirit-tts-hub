@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-29 15:39:39
- * @LastEditTime: 2025-09-30 15:26:57
+ * @LastEditTime: 2025-10-11 14:54:19
  * @LastEditors: mulingyuer
  * @Description: 音频播放
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\AudioPlayer.vue
@@ -20,61 +20,33 @@
 		</div>
 		<div class="audio-player-duration-container">
 			<div class="audio-player-duration current">
-				{{ AudioHelper.formatDuration(waveformData.currentDuration) }}
+				{{ AudioHelper.formatDuration(playerData.currentDuration) }}
 			</div>
 			<div class="audio-player-duration total">
 				<span v-show="audioData.isRegion" class="region-total">
-					{{ AudioHelper.formatDuration(waveformData.regionEnd - waveformData.regionStart) }}
+					{{ AudioHelper.formatDuration(playerData.regionEnd - playerData.regionStart) }}
 				</span>
-				<span class="total">{{ AudioHelper.formatDuration(waveformData.totalDuration) }}</span>
+				<span class="total">{{ AudioHelper.formatDuration(playerData.totalDuration) }}</span>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { AudioHelper } from "@/utils/audio-helper";
-import WaveSurfer, { type WaveSurferOptions } from "wavesurfer.js";
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions";
+import {
+	AudioHelper,
+	useWaveSurferPlayer,
+	type WaveSurferInstance,
+	type WaveSurferThemeKey
+} from "@/hooks/useWaveSurferPlayer";
 import type { AudioData } from "./types";
 import { useAppStore } from "@/stores";
 import { useIcon } from "@/hooks/useIcon";
 
 export interface AudioPlayerProps {
-	path: string; // 音频文件路径
+	/** 音频文件路径 */
+	path: string;
 }
-/** 波形颜色配置 */
-export type WaveColorConfig = Required<
-	Pick<WaveSurferOptions, "waveColor" | "progressColor" | "cursorColor">
->;
-
-// 常量定义
-const SKIP_SECONDS = 5; // 快进/快退秒数
-const DEFAULT_WAVE_SURFER_OPTIONS: Partial<WaveSurferOptions> = {
-	height: "auto",
-	width: "auto",
-	barWidth: 3, // 稍宽的波形柱，更清晰
-	barGap: 2, // 柱子之间的间隙，提升节奏感
-	barRadius: 4, // 圆角柱形，更柔和美观
-	cursorWidth: 2, // 光标宽度
-	normalize: true, // 自动归一化音量，使波形更饱满
-	interact: true, // 允许点击波形跳转
-	dragToSeek: true, // 拖拽进度（WaveSurfer 7+ 支持）
-	hideScrollbar: false, // 显示滚动条（如波形很长）
-	sampleRate: 44100 // 采样率
-};
-const WAVE_SURFER_THEME: Record<"light" | "dark", WaveColorConfig> = {
-	light: {
-		waveColor: "rgb(144, 222, 208)", // 波形颜色
-		progressColor: "#20bda0", // 进度条颜色（更深的，增强对比）
-		cursorColor: "#ff4136" // 播放光标颜色
-	},
-	dark: {
-		waveColor: "rgb(28, 138, 118)", // 波形颜色
-		progressColor: "#20bda0", // 进度条颜色（更深的，增强对比）
-		cursorColor: "#ff4136" // 播放光标颜色
-	}
-};
 
 // icon
 const RiCloseFill = useIcon({ name: "ri-close-fill", size: 14 });
@@ -87,216 +59,78 @@ const emit = defineEmits<{
 const audioData = defineModel("audioData", { type: Object as PropType<AudioData>, required: true });
 const appStore = useAppStore();
 
-const waveformRef = useTemplateRef("waveformRef");
-const waveformData = reactive({
-	currentDuration: 0,
-	totalDuration: 0,
-	regionStart: 0, // 切片开始时间
-	regionEnd: 0 // 切片结束时间
-});
-let audio: WaveSurfer | null = null;
-let regions: RegionsPlugin | null = null;
-let originPath: string | null = null; // 还原用的音频path
-
-// 清理
-function onAudioPlayerClear() {
-	if (audio) {
-		// 重置播放状态
-		audio.pause();
-		audio.seekTo(0);
-		// 清理选区
-		audioData.value.isRegion = false;
-		regions?.clearRegions();
-	}
-	audioData.value.loading = true;
-	emit("clear");
-}
-
-/** 初始化音频播放器 */
-const initializeAudio = () => {
-	if (!waveformRef.value) return;
-
-	regions = RegionsPlugin.create();
-
-	const theme = appStore.isDark ? WAVE_SURFER_THEME.dark : WAVE_SURFER_THEME.light;
-	audio = WaveSurfer.create({
-		...DEFAULT_WAVE_SURFER_OPTIONS,
-		...theme,
-		container: waveformRef.value,
-		url: props.path,
-		plugins: [regions]
+const waveformRef = useTemplateRef<HTMLDivElement>("waveformRef");
+let playerInstance: WaveSurferInstance | undefined;
+const { initPlayer, destroyPlayer, toggleTheme, playerData, playerControls, regionControls } =
+	useWaveSurferPlayer({
+		loading: toRef(audioData.value, "loading"),
+		state: toRef(audioData.value, "state"),
+		isRegion: toRef(audioData.value, "isRegion"),
+		loop: false
 	});
 
-	setupAudioEventListeners();
-};
-
-/** 设置音频事件监听器 */
-const setupAudioEventListeners = () => {
-	if (!audio) return;
-
-	audio.on("play", () => {
-		if (audioData.value.isRegion) {
-			audio!.setTime(waveformData.regionStart);
-		}
-		audioData.value.state = "playing";
-	});
-
-	audio.on("pause", () => {
-		audioData.value.state = "paused";
-	});
-
-	audio.on("ready", () => {
-		audioData.value.loading = false;
-		const duration = audio!.getDuration();
-		waveformData.totalDuration = duration;
-	});
-
-	// audio.on("loading", (percent) => {
-	// 	if (percent >= 100) audioData.value.loading = false;
-	// });
-
-	audio.on("timeupdate", () => {
-		waveformData.currentDuration = audio!.getCurrentTime();
-	});
-
-	// 可选：监听区域点击或播放
-	regions!.on("region-clicked", (region, e) => {
-		e.stopPropagation(); // 防止冒泡
-		region.play(); // 点击区域时播放该片段
-	});
-
-	regions!.on("region-out", () => {
-		if (!audioData.value.isRegion) return;
-		audio!.setTime(waveformData.regionStart);
-	});
-
-	regions!.on("region-updated", (region) => {
-		waveformData.regionStart = region.start;
-		waveformData.regionEnd = region.end;
-	});
-};
-
-// 对外API
-defineExpose({
-	/** 快退 */
-	rewind: () => {
-		audio?.skip(-SKIP_SECONDS);
-	},
-
-	/** 播放/暂停切换 */
-	playPause: () => {
-		if (!audio) return;
-		audio.playPause();
-	},
-
-	/** 快进 */
-	fastForward: () => {
-		audio?.skip(SKIP_SECONDS);
-	},
-
-	/** 添加区域（region）
-	 * 默认截取三分一长度
-	 */
-	addRegion: () => {
-		if (!audio) return;
-		audioData.value.isRegion = true;
-		const duration = audio!.getDuration();
-		const start = duration * 0.25;
-		const end = start + duration / 3;
-		waveformData.regionStart = start;
-		waveformData.regionEnd = end;
-		// 记录原始数据
-		if (!originPath) originPath = props.path;
-
-		regions!.addRegion({
-			start: start,
-			end: end,
-			drag: true, // 拖动
-			resize: true, // 调整大小
-			id: "default-selection"
-		});
-	},
-
-	/** 删除区域 */
-	deleteRegion: () => {
-		audioData.value.isRegion = false;
-		regions!.clearRegions();
-	},
-
-	/** 裁剪 */
-	cut: () => {
-		if (!audio) return;
-		// 获取完整的音频数据
-		const audioBuffer = audio.getDecodedData();
-		if (!audioBuffer) {
-			ElMessage.warning("音频数据尚未解码完成，请稍后再试。");
-			return;
-		}
-
-		const trimmedBlob = AudioHelper.cutAudio({
-			audioBuffer: audioBuffer,
-			start: waveformData.regionStart,
-			end: waveformData.regionEnd
-		});
-
-		// 确保 trimmedUint8Array 是一个标准的 Uint8Array，如果它可能由 SharedArrayBuffer 支持，则进行复制
-		const compatibleUint8Array = new Uint8Array(trimmedBlob);
-
-		// 将兼容的 Uint8Array 转换为 Blob
-		const audioBlob = new Blob([compatibleUint8Array], { type: "audio/wav" });
-
-		// 为 Blob 创建一个 URL
-		const audioUrl = URL.createObjectURL(audioBlob);
-		// 清理裁剪
-		audioData.value.isRegion = false;
-		regions!.clearRegions();
-
-		// TODO: 应该调用文件上传，然后更新path，重新加载音频
-
-		// 加载新的音频
-		audio.load(audioUrl).then(() => {
-			audio?.stop(); // 停止播放并归位
-			URL.revokeObjectURL(audioUrl);
-		});
-	},
-
-	/** 还原 */
-	restore: () => {
-		audioData.value.isRegion = false;
-		regions?.clearRegions();
-		if (originPath) {
-			audio?.load(originPath);
-			originPath = null;
-		}
-	}
-});
-
+/** 监听主题 */
 watchEffect(() => {
-	if (appStore.isDark) {
-		audio?.setOptions(WAVE_SURFER_THEME.dark);
-	} else {
-		audio?.setOptions(WAVE_SURFER_THEME.light);
-	}
+	if (!playerInstance) return;
+	const theme: WaveSurferThemeKey = appStore.isDark ? "dark" : "light";
+	toggleTheme(theme);
 });
+
+/** 监听音频path变化 */
 watchEffect(() => {
 	const isPath = typeof props.path === "string" && props.path.trim().length > 0;
 	if (isPath) {
 		audioData.value.loading = true;
-		audio?.load(props.path);
+		playerInstance?.load(props.path);
 	}
 });
 
 onMounted(() => {
-	initializeAudio();
+	if (!waveformRef.value) return;
+	playerInstance = initPlayer({
+		container: waveformRef.value,
+		url: props.path,
+		theme: appStore.isDark ? "dark" : "light"
+	});
 });
 
 onUnmounted(() => {
-	if (audio) {
-		audio.destroy();
-		audio = null;
-	}
-	regions!.destroy();
-	regions = null;
+	destroyPlayer();
+});
+
+// 清理
+function onAudioPlayerClear() {
+	regionControls.deleteRegion();
+	playerControls.stop();
+
+	audioData.value.loading = true;
+	emit("clear");
+}
+
+// 对外API
+defineExpose({
+	/** 快退 */
+	rewind: () => playerControls.rewind(),
+
+	/** 播放/暂停切换 */
+	playPause: () => playerControls.playPause(),
+
+	/** 快进 */
+	fastForward: () => playerControls.fastForward(),
+
+	/** 添加区域（region）
+	 * 默认截取三分一长度
+	 */
+	addRegion: () => regionControls.addRegion(),
+
+	/** 删除区域 */
+	deleteRegion: () => regionControls.deleteRegion(),
+
+	/** 裁剪 */
+	cut: () => regionControls.cut(),
+
+	/** 还原 */
+	restore: () => regionControls.restore()
 });
 </script>
 

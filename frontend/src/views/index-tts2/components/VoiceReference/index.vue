@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-09-30 15:14:29
+ * @LastEditTime: 2025-10-11 14:30:03
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -112,8 +112,8 @@ const uploadData = ref<UploadData>({
 	percentage: 0,
 	isEnd: false
 });
-const audioPlayerRef = useTemplateRef("audioPlayerRef");
-const audioData = ref<AudioData>({
+const audioPlayerRef = useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayerRef");
+const audioData = reactive<AudioData>({
 	state: "idle",
 	isRegion: false,
 	loading: true

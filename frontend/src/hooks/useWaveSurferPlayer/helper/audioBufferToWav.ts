@@ -6,11 +6,7 @@ export function audioBufferToWav(audioBuffer: AudioBuffer): Uint8Array {
 	let offset = 0;
 
 	// Write WAV header
-	const writeString = function (
-		view: DataView,
-		offset: number,
-		string: string
-	): void {
+	const writeString = function (view: DataView, offset: number, string: string): void {
 		for (let i = 0; i < string.length; i++) {
 			view.setUint8(offset + i, string.charCodeAt(i));
 		}
@@ -46,10 +42,7 @@ export function audioBufferToWav(audioBuffer: AudioBuffer): Uint8Array {
 	// Write PCM audio data
 	for (let i = 0; i < audioBuffer.length; i++) {
 		for (let channel = 0; channel < numOfChan; channel++) {
-			const sample = Math.max(
-				-1,
-				Math.min(1, audioBuffer.getChannelData(channel)[i])
-			);
+			const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
 			view.setInt16(offset, sample * 0x7fff, true);
 			offset += 2;
 		}

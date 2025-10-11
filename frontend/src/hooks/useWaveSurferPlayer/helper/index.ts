@@ -1,15 +1,25 @@
 /*
  * @Author: mulingyuer
- * @Date: 2025-09-29 10:23:54
- * @LastEditTime: 2025-09-30 14:37:47
+ * @Date: 2025-10-10 15:33:02
+ * @LastEditTime: 2025-10-10 15:34:20
  * @LastEditors: mulingyuer
- * @Description: 音乐相关辅助功能
- * @FilePath: \frontend\src\utils\audio-helper\index.ts
+ * @Description: 帮助方法
+ * @FilePath: \frontend\src\hooks\useWaveSurferPlayer\helper\index.ts
  * 怎么可能会有bug！！！
  */
-export type * from "./types";
 import { audioBufferToWav } from "./audioBufferToWav";
-import type { CutAudioOptions } from "./types";
+
+/** 剪切音频参数 */
+export interface CutAudioOptions {
+	/** audioBuffer */
+	audioBuffer: AudioBuffer;
+	/** 开始时间s */
+	start: number;
+	/** 结束时间s */
+	end: number;
+	/** 采样率 */
+	sampleRate?: number;
+}
 
 export class AudioHelper {
 	/** 格式化时长显示 */
