@@ -1,13 +1,13 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-29 10:32:52
- * @LastEditTime: 2025-09-30 11:15:32
+ * @LastEditTime: 2025-10-14 14:58:12
  * @LastEditors: mulingyuer
  * @Description: 公共类型
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\types.ts
  * 怎么可能会有bug！！！
  */
-import type { AudioState } from "@/hooks/useWaveSurferPlayer";
+import type { AudioState } from "@/hooks/useWaveSurfer/player";
 
 /** 音频类型 */
 export type VoiceType =
@@ -28,10 +28,26 @@ export interface UploadData {
 
 /** 音频数据 */
 export interface AudioData {
+	/** 音频文件路径 */
+	path: string;
+	/** 原始数据 */
+	originPath: string | undefined;
 	/** 音频状态 */
 	state: AudioState;
 	/** 是否开启区域选择 */
 	isRegion: boolean;
 	/** 文件加载中 */
 	loading: boolean;
+}
+
+/** 录音上传数据 */
+export interface RecordUploadData {
+	/** 文件上传后的路径 */
+	path: string;
+	/** 上传中 */
+	loading: boolean;
+	/** 上传进度 */
+	percentage: number;
+	/** 上传是否完成 */
+	isEnd: boolean;
 }

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-29 15:39:39
- * @LastEditTime: 2025-10-11 14:54:19
+ * @LastEditTime: 2025-10-14 15:11:24
  * @LastEditors: mulingyuer
  * @Description: 音频播放
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\AudioPlayer.vue
@@ -38,7 +38,7 @@ import {
 	useWaveSurferPlayer,
 	type WaveSurferInstance,
 	type WaveSurferThemeKey
-} from "@/hooks/useWaveSurferPlayer";
+} from "@/hooks/useWaveSurfer";
 import type { AudioData } from "./types";
 import { useAppStore } from "@/stores";
 import { useIcon } from "@/hooks/useIcon";
@@ -55,19 +55,28 @@ const props = defineProps<AudioPlayerProps>();
 const emit = defineEmits<{
 	/** 清空数据 */
 	clear: [];
+	/** 裁剪并上传完成 */
+	"region-complete": [path: string];
 }>();
 const audioData = defineModel("audioData", { type: Object as PropType<AudioData>, required: true });
 const appStore = useAppStore();
 
 const waveformRef = useTemplateRef<HTMLDivElement>("waveformRef");
 let playerInstance: WaveSurferInstance | undefined;
-const { initPlayer, destroyPlayer, toggleTheme, playerData, playerControls, regionControls } =
-	useWaveSurferPlayer({
-		loading: toRef(audioData.value, "loading"),
-		state: toRef(audioData.value, "state"),
-		isRegion: toRef(audioData.value, "isRegion"),
-		loop: false
-	});
+const {
+	initPlayer,
+	destroyPlayer,
+	toggleTheme,
+	playerData,
+	playerControls,
+	regionControls,
+	playerEmitter
+} = useWaveSurferPlayer({
+	loading: toRef(audioData.value, "loading"),
+	state: toRef(audioData.value, "state"),
+	isRegion: toRef(audioData.value, "isRegion"),
+	loop: false
+});
 
 /** 监听主题 */
 watchEffect(() => {
@@ -83,6 +92,11 @@ watchEffect(() => {
 		audioData.value.loading = true;
 		playerInstance?.load(props.path);
 	}
+});
+
+/** 监听事件 */
+playerEmitter.on("region-complete", (url: string) => {
+	emit("region-complete", url);
 });
 
 onMounted(() => {
@@ -129,8 +143,11 @@ defineExpose({
 	/** 裁剪 */
 	cut: () => regionControls.cut(),
 
-	/** 还原 */
-	restore: () => regionControls.restore()
+	/** 清理裁剪 */
+	clear: () => regionControls.clear(),
+
+	/** 停止 */
+	stop: () => playerControls.stop()
 });
 </script>
 

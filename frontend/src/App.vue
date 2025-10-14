@@ -1,12 +1,12 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:04:09
- * @LastEditTime: 2025-10-11 14:11:15
+ * @LastEditTime: 2025-10-14 15:13:19
  * @LastEditors: mulingyuer
  * @Description:
- * @FilePath: src/App.vue
+ * @FilePath: \frontend\src\App.vue
  * 怎么可能会有bug！！！
- -->
+-->
 <template>
 	<el-config-provider :locale="locale">
 		<router-view></router-view>
@@ -36,7 +36,7 @@ isMobile();
 function deviceDetection() {
 	const target = document.documentElement;
 	useResizeObserver(target, (entries) => {
-		const { width } = entries[0].contentRect; // 获取宽度
+		const { width } = entries[0]!.contentRect; // 获取宽度
 		if (width <= 640) {
 			appStore.setIsMobile(true);
 			!appStore.isCollapse && !appStore.isUserCollapse && appStore.setIsCollapse(true);

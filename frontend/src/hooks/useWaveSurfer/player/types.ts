@@ -1,23 +1,15 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:31:35
- * @LastEditTime: 2025-10-11 14:51:23
+ * @LastEditTime: 2025-10-14 15:07:29
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer types
- * @FilePath: \frontend\src\hooks\useWaveSurferPlayer\types.ts
+ * @FilePath: \frontend\src\hooks\useWaveSurfer\player\types.ts
  * 怎么可能会有bug！！！
  */
 import type { WaveSurferOptions } from "wavesurfer.js";
-import WaveSurfer from "wavesurfer.js";
 import type { Ref } from "vue";
-export type WaveSurferInstance = WaveSurfer;
-
-/** 波形颜色配置 */
-export type WaveColorConfig = Required<
-	Pick<WaveSurferOptions, "waveColor" | "progressColor" | "cursorColor">
->;
-export type WaveSurferThemeKey = "light" | "dark";
-export type WaveSurferTheme = Record<WaveSurferThemeKey, WaveColorConfig>;
+import type { WaveSurferThemeKey } from "../types";
 
 /** 音频状态 */
 export type AudioState =
@@ -48,8 +40,14 @@ export interface InitWaveSurferPlayerOptions {
 	url: WaveSurferOptions["url"];
 	/** 可选：波形配置 */
 	options?: Partial<WaveSurferOptions>;
-	/** 可选：主题配置 (默认 light/dark) */
+	/** 可选：主题配置 (默认 light) */
 	theme?: WaveSurferThemeKey;
 	/** 可选：是否循环播放 */
 	loop?: boolean;
 }
+
+/** 事件类型 */
+export type EventMap = {
+	/** 裁剪并上传完成 */
+	"region-complete": string;
+};

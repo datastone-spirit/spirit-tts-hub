@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-28 11:45:20
- * @LastEditTime: 2025-09-30 14:20:01
+ * @LastEditTime: 2025-10-14 11:49:31
  * @LastEditors: mulingyuer
  * @Description: 上传音频文件
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\VoiceUpload.vue
@@ -56,9 +56,13 @@ import {
 	type UploadRawFile,
 	type UploadRequestOptions
 } from "element-plus";
-
 import type { UploadData } from "./types";
 import { sleep } from "@/utils/tools";
+
+const emit = defineEmits<{
+	/** 文件上传成功 */
+	"upload-success": [path: string];
+}>();
 
 // 上传文件
 const uploadData = defineModel({ type: Object as PropType<UploadData>, required: true });
@@ -117,9 +121,12 @@ function handleProgress(evt: UploadProgressEvent) {
 }
 function handleSuccess(response: any) {
 	console.log("🚀 ~ handleSuccess ~ response:", response);
-	uploadData.value.path = "/admin/src/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
+	const url = "/admin/src/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
+	uploadData.value.path = url;
 	uploadData.value.isEnd = true;
 	uploadRef.value?.clearFiles();
+
+	emit("upload-success", url);
 }
 function handleError(error: any) {
 	console.log("🚀 ~ handleError ~ error:", error);

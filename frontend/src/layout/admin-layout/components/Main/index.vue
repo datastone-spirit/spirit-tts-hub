@@ -1,15 +1,15 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2024-09-29 17:00:46
- * @LastEditTime: 2025-09-25 10:25:33
+ * @LastEditTime: 2025-10-13 14:28:38
  * @LastEditors: mulingyuer
  * @Description: main
  * @FilePath: \frontend\src\layout\admin-layout\components\Main\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-main class="admin-main" :class="[mainClass, footerBarClass]">
-		<div class="admin-main-content" :class="[footerBarClass]">
+	<el-main class="admin-main" :class="[mainClass]">
+		<div class="admin-main-content">
 			<router-view>
 				<template #default="{ Component, route }">
 					<el-backtop title="回到顶部" />
@@ -36,10 +36,6 @@ const mainClass = computed(() => {
 		return appStore.isCollapse ? "is-collapse" : "";
 	}
 });
-
-const footerBarClass = computed(() => {
-	return appStore.showFooter ? "show-footer-bar" : "hide-footer-bar";
-});
 </script>
 
 <style lang="scss" scoped>
@@ -62,8 +58,5 @@ const footerBarClass = computed(() => {
 	border-top-right-radius: $zl-border-radius;
 	overflow-x: hidden;
 	overflow-y: auto;
-	&.show-footer-bar {
-		padding-bottom: calc($zl-padding + $zl-footer-bar-height);
-	}
 }
 </style>

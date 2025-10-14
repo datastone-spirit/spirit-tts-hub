@@ -1,10 +1,10 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:33:02
- * @LastEditTime: 2025-10-10 15:34:20
+ * @LastEditTime: 2025-10-13 11:09:19
  * @LastEditors: mulingyuer
  * @Description: 帮助方法
- * @FilePath: \frontend\src\hooks\useWaveSurferPlayer\helper\index.ts
+ * @FilePath: \frontend\src\hooks\useWaveSurfer\helper\index.ts
  * 怎么可能会有bug！！！
  */
 import { audioBufferToWav } from "./audioBufferToWav";
@@ -59,7 +59,7 @@ export class AudioHelper {
 			const channelData = audioBuffer.getChannelData(channel);
 			const trimmedData = trimmedAudioBuffer.getChannelData(channel);
 			for (let i = 0; i < trimmedLength; i++) {
-				trimmedData[i] = channelData[startOffset + i];
+				trimmedData[i] = channelData[startOffset + i]!;
 			}
 		}
 

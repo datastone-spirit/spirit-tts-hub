@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-26 16:17:19
- * @LastEditTime: 2025-10-11 17:52:33
+ * @LastEditTime: 2025-10-14 15:12:51
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference\index.vue
@@ -14,15 +14,29 @@
 			<span>参考音频</span>
 		</div>
 		<div class="voice-reference-content">
-			<VoiceUpload v-show="showVoiceUpload" ref="uploadRef" v-model="uploadData" />
+			<VoiceUpload
+				v-show="showVoiceUpload"
+				key="upload"
+				ref="uploadRef"
+				v-model="uploadData"
+				@upload-success="onUploadSuccess"
+			/>
 			<AudioPlayer
 				v-show="showAudioPlayer"
+				key="player"
 				ref="audioPlayerRef"
 				v-model:audio-data="audioData"
-				:path="uploadData.path"
+				:path="audioData.path"
 				@clear="onAudioPlayerClear"
+				@region-complete="onAudioPlayerRegionComplete"
 			/>
-			<VoiceRecord v-show="showVoiceRecord" />
+			<VoiceRecord
+				v-show="showVoiceRecord"
+				key="record"
+				ref="recordRef"
+				v-model="recordUploadData"
+				@voice-upload-complete="onVoiceUploadComplete"
+			/>
 		</div>
 		<div class="voice-reference-footer">
 			<el-space class="voice-type" :size="8">
@@ -48,7 +62,7 @@
 					<SkipButton @click="onFastForward" />
 				</el-space>
 			</div>
-			<div v-show="uploadData.isEnd" class="voice-other">
+			<div v-show="showAudioPlayer" class="voice-other">
 				<ElSpacePro :size="8">
 					<el-button v-show="!audioData.isRegion" :icon="RiScissorsLine" @click="onVoiceRegion">
 						裁剪
@@ -80,7 +94,7 @@
 <script setup lang="ts">
 import { useIcon } from "@/hooks/useIcon";
 import VoiceUpload from "./VoiceUpload.vue";
-import type { VoiceType, UploadData, AudioData } from "./types";
+import type { VoiceType, UploadData, AudioData, RecordUploadData } from "./types";
 import AudioPlayer from "./AudioPlayer.vue";
 import VoiceRecord from "./VoiceRecord.vue";
 
@@ -94,6 +108,8 @@ const RiCloseFill = useIcon({ name: "ri-close-fill", size: 14 });
 
 const voiceType = ref<VoiceType>("record");
 function onVoiceType(type: VoiceType) {
+	if (type === voiceType.value) return;
+	onAudioPlayerClear();
 	voiceType.value = type;
 }
 
@@ -106,11 +122,17 @@ const uploadData = reactive<UploadData>({
 });
 const audioPlayerRef = useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayerRef");
 const audioData = reactive<AudioData>({
+	path: "",
+	originPath: void 0,
 	state: "idle",
 	isRegion: false,
-	loading: true
+	loading: false
 });
-const recordData = reactive({
+const recordRef = useTemplateRef("recordRef");
+const recordUploadData = reactive<RecordUploadData>({
+	path: "",
+	loading: false,
+	percentage: 0,
 	isEnd: false
 });
 const isPlaying = computed(() => audioData.state === "playing");
@@ -122,13 +144,13 @@ const showAudioPlayer = computed(() => {
 		case "upload":
 			return uploadData.isEnd;
 		case "record":
-			return recordData.isEnd;
+			return recordUploadData.isEnd;
 		default:
 			return false;
 	}
 });
 const showVoiceRecord = computed(() => {
-	return voiceType.value === "record" && !recordData.isEnd;
+	return voiceType.value === "record" && !recordUploadData.isEnd;
 });
 
 // 音频控制
@@ -145,18 +167,34 @@ function onVoiceRegion() {
 	audioPlayerRef.value?.addRegion();
 }
 function onVoiceReginReset() {
-	audioPlayerRef.value?.restore();
+	audioPlayerRef.value?.clear();
+	if (audioData.originPath) {
+		audioData.path = audioData.originPath;
+		audioData.originPath = void 0;
+	}
 }
 function onVoiceReginCancel() {
 	audioPlayerRef.value?.deleteRegion();
 }
 function onVoiceRegionConfirm() {
+	// 裁剪前记录原始数据
+	if (!audioData.originPath) {
+		audioData.originPath = audioData.path;
+	}
 	audioPlayerRef.value?.cut();
 }
 function onAudioPlayerClear() {
+	audioPlayerRef.value?.stop();
+	Object.assign(audioData, {
+		path: "",
+		state: "idle",
+		isRegion: false,
+		loading: true
+	});
+
 	switch (voiceType.value) {
 		case "upload":
-			Object.assign(audioData, {
+			Object.assign(uploadData, {
 				path: "",
 				loading: false,
 				percentage: 0,
@@ -164,11 +202,26 @@ function onAudioPlayerClear() {
 			});
 			break;
 		case "record":
-			Object.assign(recordData, {
+			Object.assign(recordUploadData, {
+				path: "",
+				loading: false,
+				percentage: 0,
 				isEnd: false
 			});
 			break;
 	}
+}
+function onAudioPlayerRegionComplete(url: string) {
+	audioData.path = url;
+}
+
+/** 文件上传成功 */
+function onUploadSuccess(url: string) {
+	audioData.path = url;
+}
+/** 录音上传完成 */
+function onVoiceUploadComplete(url: string) {
+	audioData.path = url;
 }
 </script>
 

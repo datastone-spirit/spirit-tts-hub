@@ -1,10 +1,10 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-09-27 17:26:54
- * @LastEditTime: 2024-12-13 09:34:30
+ * @LastEditTime: 2025-10-13 14:26:18
  * @LastEditors: mulingyuer
  * @Description: 路由守卫
- * @FilePath: \spirit-lora-trainer\frontend\src\router\guard\index.ts
+ * @FilePath: \frontend\src\router\guard.ts
  * 怎么可能会有bug！！！
  */
 import type { Router } from "vue-router";
@@ -29,10 +29,6 @@ export async function createRouterGuard(router: Router) {
 
 		/** 不存在的页面 */
 		if (to.name === "NotFound") return next({ name: "NotFound404" });
-
-		/** 记录是否显示footer-bar */
-		const showFooter = to.meta.showFooter ?? false;
-		appStore.setShowFooter(showFooter);
 
 		/** 鉴权策略 */
 		const authType = to.meta.auth ?? "required";

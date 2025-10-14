@@ -1,54 +1,31 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:29:57
- * @LastEditTime: 2025-10-11 16:18:15
+ * @LastEditTime: 2025-10-14 15:07:39
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer hooks
- * @FilePath: \frontend\src\hooks\useWaveSurferPlayer\index.ts
+ * @FilePath: \frontend\src\hooks\useWaveSurfer\player\index.ts
  * 怎么可能会有bug！！！
  */
 import { ElMessage } from "element-plus";
-import WaveSurfer, { type WaveSurferOptions } from "wavesurfer.js";
+import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions";
-import { AudioHelper } from "./helper";
+import { DEFAULT_OPTIONS, WAVE_SURFER_THEME } from "../constant";
+import { AudioHelper } from "../helper";
+import type { WaveSurferThemeKey } from "../types";
 import type {
 	AudioState,
+	EventMap,
 	InitWaveSurferPlayerOptions,
-	UseWaveSurferOptions,
-	WaveSurferTheme,
-	WaveSurferThemeKey
+	UseWaveSurferOptions
 } from "./types";
+export * from "../helper";
 export type * from "./types";
-export * from "./helper";
+import mitt from "mitt";
 
 // 常量
 const DEFAULT_SKIP_SECONDS = 5;
 const RESET_DELAY = 500; // 播放结束后重置延迟时间（毫秒）
-const DEFAULT_OPTIONS: Partial<WaveSurferOptions> = {
-	height: "auto",
-	width: "auto",
-	barWidth: 3,
-	barGap: 2,
-	barRadius: 4,
-	cursorWidth: 2,
-	normalize: true,
-	interact: true,
-	dragToSeek: true,
-	hideScrollbar: false,
-	sampleRate: 44100
-};
-const WAVE_SURFER_THEME: WaveSurferTheme = {
-	light: {
-		waveColor: "rgb(144, 222, 208)",
-		progressColor: "#20bda0",
-		cursorColor: "#ff4136"
-	},
-	dark: {
-		waveColor: "rgb(28, 138, 118)",
-		progressColor: "#20bda0",
-		cursorColor: "#ff4136"
-	}
-};
 
 export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 	const useDefaultOptions = config?.options;
@@ -56,8 +33,9 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 
 	let waveSurfer: WaveSurfer | undefined = void 0;
 	let regions: RegionsPlugin | undefined = void 0;
-	let originUrl: string | undefined = void 0;
+	// let originUrl: string | undefined = void 0;
 	let resetTimer: number | undefined = void 0;
+	const playerEmitter = mitt<EventMap>();
 
 	// 状态
 	const loading = config?.loading ?? ref(true);
@@ -85,6 +63,8 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 	// 方法
 	/** 获取音频实例 */
 	const getPlayer = () => waveSurfer;
+	/** 获取插件实例 */
+	const getRegions = () => regions;
 
 	/** 初始化音频播放器 */
 	const initPlayer = (config: InitWaveSurferPlayerOptions) => {
@@ -106,6 +86,10 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		// 创建实例
 		waveSurfer = WaveSurfer.create({
 			...DEFAULT_OPTIONS,
+			normalize: true,
+			interact: true,
+			dragToSeek: true,
+			hideScrollbar: false,
 			...(useDefaultOptions ?? {}),
 			...(config.options ?? {}),
 			...theme,
@@ -116,9 +100,6 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 
 		// 监听事件
 		setupAudioEventListeners();
-
-		// 记录原始数据
-		originUrl = config.url;
 
 		return waveSurfer;
 	};
@@ -215,9 +196,6 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		regionControls.deleteRegion();
 		loading.value = true;
 		waveSurfer.load(newPath);
-
-		// 记录原始数据
-		originUrl = newPath;
 	};
 
 	/** 音频控制 */
@@ -304,19 +282,18 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 			// TODO: 应该调用文件上传，然后更新path，重新加载音频
 
 			// 加载新的音频
-			waveSurfer.load(audioUrl).then(() => {
-				waveSurfer?.stop(); // 停止播放并归位
-				URL.revokeObjectURL(audioUrl);
-			});
+			// waveSurfer.load(audioUrl).then(() => {
+			// 	waveSurfer?.stop(); // 停止播放并归位
+			// 	URL.revokeObjectURL(audioUrl);
+			// });
+
+			playerEmitter.emit("region-complete", audioUrl);
 		},
 
-		/** 还原 */
-		restore: () => {
+		/** 清理裁剪 */
+		clear: () => {
 			isRegion.value = false;
 			regions?.clearRegions();
-			if (originUrl) {
-				waveSurfer?.load(originUrl);
-			}
 		}
 	};
 
@@ -353,8 +330,10 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		playerData,
 		playerControls,
 		regionControls,
+		playerEmitter,
 		toggleTheme,
 		getPlayer,
+		getRegions,
 		initPlayer,
 		loadAudio,
 		destroyPlayer

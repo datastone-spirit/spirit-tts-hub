@@ -8,7 +8,7 @@
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-aside :class="['admin-layout-aside', asideClass, footerBarClass]">
+	<el-aside :class="['admin-layout-aside', asideClass]">
 		<Logo />
 		<Menu />
 		<Footer />
@@ -36,10 +36,6 @@ const showAppMask = computed(() => appStore.isMobile && !appStore.isCollapse);
 function onCloseAppMask() {
 	appStore.setIsCollapse(true);
 }
-
-const footerBarClass = computed(() => {
-	return appStore.showFooter ? "show-footer-bar" : "hide-footer-bar";
-});
 </script>
 
 <style lang="scss" scoped>
@@ -64,9 +60,6 @@ const footerBarClass = computed(() => {
 	}
 	&.is-mobile-collapse {
 		width: $zl-aside-mobile-width;
-	}
-	&.show-footer-bar {
-		bottom: calc($zl-padding + $zl-footer-bar-height);
 	}
 }
 .el-aside-mask {

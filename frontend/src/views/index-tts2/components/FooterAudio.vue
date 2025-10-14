@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-11 17:13:12
+ * @LastEditTime: 2025-10-13 11:11:57
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -53,7 +53,7 @@
 import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 import { useIcon } from "@/hooks/useIcon";
 import AudioProgress from "./AudioProgress.vue";
-import { useWaveSurferPlayer, AudioHelper } from "@/hooks/useWaveSurferPlayer";
+import { useWaveSurferPlayer, AudioHelper } from "@/hooks/useWaveSurfer";
 
 // 图标定义
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });

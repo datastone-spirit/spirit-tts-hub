@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-09-26 11:22:25
- * @LastEditTime: 2025-08-25 10:05:51
+ * @LastEditTime: 2025-10-13 14:25:56
  * @LastEditors: mulingyuer
  * @Description: 应用配置
  * @FilePath: \frontend\src\stores\modules\app\index.ts
@@ -87,12 +87,6 @@ export const useAppStore = defineStore(
 			valueLight: "light"
 		});
 
-		/** 是否显示footer-bar */
-		const showFooter = ref(false);
-		function setShowFooter(show: boolean) {
-			showFooter.value = show;
-		}
-
 		/** 已经打开过的路由path
 		 * 用于判断是否显示new badge
 		 */
@@ -124,8 +118,6 @@ export const useAppStore = defineStore(
 			routeAnimate,
 			setRouteAnimate,
 			isDark,
-			showFooter,
-			setShowFooter,
 			openedPaths,
 			addOpenedPath
 		};
