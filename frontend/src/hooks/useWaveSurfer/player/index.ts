@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:29:57
- * @LastEditTime: 2025-10-14 15:07:39
+ * @LastEditTime: 2025-10-15 14:59:23
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer hooks
  * @FilePath: \frontend\src\hooks\useWaveSurfer\player\index.ts
@@ -33,7 +33,6 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 
 	let waveSurfer: WaveSurfer | undefined = void 0;
 	let regions: RegionsPlugin | undefined = void 0;
-	// let originUrl: string | undefined = void 0;
 	let resetTimer: number | undefined = void 0;
 	const playerEmitter = mitt<EventMap>();
 
@@ -188,16 +187,6 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 
 	// 控制方法
 
-	/** 加载音频文件 */
-	const loadAudio = (newPath: string) => {
-		if (!waveSurfer) return;
-
-		// 确保清除旧状态
-		regionControls.deleteRegion();
-		loading.value = true;
-		waveSurfer.load(newPath);
-	};
-
 	/** 音频控制 */
 	const playerControls = {
 		/** 播放或暂停 */
@@ -208,7 +197,7 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 			waveSurfer?.skip(-skipSeconds);
 		},
 		/** 快进 */
-		fastForward: (skipSeconds?: number) => {
+		skip: (skipSeconds?: number) => {
 			skipSeconds = skipSeconds ?? SKIP_SECONDS;
 			waveSurfer?.skip(skipSeconds);
 		},
@@ -219,6 +208,15 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 			if (!waveSurfer) return;
 			const seekPosition = Math.min(value / 100, 1);
 			waveSurfer.seekTo(seekPosition);
+		},
+		/** 加载新的音频 */
+		loadAudio: (newPath: string) => {
+			if (!waveSurfer) return;
+
+			// 确保清除旧状态
+			regionControls.deleteRegion();
+			loading.value = true;
+			waveSurfer.load(newPath);
 		}
 	};
 
@@ -273,21 +271,12 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 			// 将兼容的 Uint8Array 转换为 Blob
 			const audioBlob = new Blob([compatibleUint8Array], { type: "audio/wav" });
 
-			// 为 Blob 创建一个 URL
-			const audioUrl = URL.createObjectURL(audioBlob);
 			// 清理裁剪
 			isRegion.value = false;
 			regions!.clearRegions();
+			waveSurfer.stop();
 
-			// TODO: 应该调用文件上传，然后更新path，重新加载音频
-
-			// 加载新的音频
-			// waveSurfer.load(audioUrl).then(() => {
-			// 	waveSurfer?.stop(); // 停止播放并归位
-			// 	URL.revokeObjectURL(audioUrl);
-			// });
-
-			playerEmitter.emit("region-complete", audioUrl);
+			return audioBlob;
 		},
 
 		/** 清理裁剪 */
@@ -335,7 +324,6 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		getPlayer,
 		getRegions,
 		initPlayer,
-		loadAudio,
 		destroyPlayer
 	};
 }

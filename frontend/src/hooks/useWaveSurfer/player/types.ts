@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:31:35
- * @LastEditTime: 2025-10-14 15:07:29
+ * @LastEditTime: 2025-10-15 15:01:26
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer types
  * @FilePath: \frontend\src\hooks\useWaveSurfer\player\types.ts
@@ -49,5 +49,5 @@ export interface InitWaveSurferPlayerOptions {
 /** 事件类型 */
 export type EventMap = {
 	/** 裁剪并上传完成 */
-	"region-complete": string;
+	"region-complete": Blob;
 };

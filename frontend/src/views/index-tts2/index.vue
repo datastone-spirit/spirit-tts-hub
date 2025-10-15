@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-11 09:39:42
+ * @LastEditTime: 2025-10-15 15:36:35
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { SPLITTER_KEY } from "@/constants/config-keys";
 import FooterAudio from "./components/FooterAudio.vue";
-import VoiceReference from "./components/VoiceReference/index.vue";
+import VoiceReference from "./components/VoiceReference.vue";
 import { useIcon } from "@/hooks/useIcon";
 
 // icon

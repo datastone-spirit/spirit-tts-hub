@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-13 11:12:11
- * @LastEditTime: 2025-10-14 14:50:39
+ * @LastEditTime: 2025-10-15 11:56:58
  * @LastEditors: mulingyuer
  * @Description: 录音
  * @FilePath: \frontend\src\hooks\useWaveSurfer\record\index.ts
@@ -34,7 +34,9 @@ export function useWaveSurferRecord(config?: UseWaveSurferRecordConfig) {
 		/** 当前主题 */
 		theme: "light" as WaveSurferThemeKey,
 		/** 录制的时间（s） */
-		duration: 0
+		duration: 0,
+		/** 是否取消录制 */
+		isCancel: false
 	});
 
 	// 方法
@@ -93,6 +95,12 @@ export function useWaveSurferRecord(config?: UseWaveSurferRecordConfig) {
 		});
 
 		recordPlugin.on("record-end", (blob) => {
+			// 如果是取消录音就忽略
+			if (recordData.isCancel) {
+				recordData.isCancel = false;
+				waveSurfer?.empty();
+				return;
+			}
 			recordEmitter.emit("record-end", blob);
 		});
 
@@ -179,8 +187,20 @@ export function useWaveSurferRecord(config?: UseWaveSurferRecordConfig) {
 	/** 重置录音 */
 	const resetRecord = () => {
 		state.value = "idle";
+		recordData.duration = 0;
 
 		waveSurfer?.empty();
+	};
+
+	/** 取消录音 */
+	const cancelRecord = () => {
+		if (["idle", "stopped"].includes(state.value)) return;
+
+		recordData.isCancel = true;
+		state.value = "idle";
+		recordData.duration = 0;
+
+		recordPlugin?.stopRecording();
 	};
 
 	return {
@@ -197,6 +217,7 @@ export function useWaveSurferRecord(config?: UseWaveSurferRecordConfig) {
 		resumeRecord,
 		resetRecord,
 		getPlayer,
-		getRecord
+		getRecord,
+		cancelRecord
 	};
 }
