@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-14 16:26:13
- * @LastEditTime: 2025-10-15 15:34:27
+ * @LastEditTime: 2025-10-16 15:25:26
  * @LastEditors: mulingyuer
  * @Description: 音频播放组件
  * @FilePath: \frontend\src\components\Audio\AudioPlayer.vue
@@ -47,16 +47,23 @@
 					<el-progress :percentage="uploadState.progress" />
 				</div>
 				<ElSpacePro v-else :size="8">
-					<el-button v-show="!isRegion" :icon="RiScissorsLine" @click="onAddRegion">
+					<el-button v-show="!isRegion" :icon="RiScissorsLine" size="default" @click="onAddRegion">
 						裁剪
 					</el-button>
-					<el-button v-show="!isRegion" :icon="RiArrowGoBackLine" @click="onResetRegion">
+					<el-button
+						v-show="!isRegion"
+						:icon="RiArrowGoBackLine"
+						size="default"
+						@click="onResetRegion"
+					>
 						还原
 					</el-button>
-					<el-button v-show="isRegion" :icon="RiCheckLine" @click="onConfirmRegion">
+					<el-button v-show="isRegion" :icon="RiCheckLine" size="default" @click="onConfirmRegion">
 						确认
 					</el-button>
-					<el-button v-show="isRegion" class="cancel" :icon="RiCloseFill"> 取消 </el-button>
+					<el-button v-show="isRegion" class="cancel" size="default" :icon="RiCloseFill">
+						取消
+					</el-button>
 				</ElSpacePro>
 			</div>
 		</div>

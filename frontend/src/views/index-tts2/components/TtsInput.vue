@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 16:04:18
- * @LastEditTime: 2025-10-15 17:35:35
+ * @LastEditTime: 2025-10-16 11:43:05
  * @LastEditors: mulingyuer
  * @Description: tts输入框
  * @FilePath: \frontend\src\views\index-tts2\components\TTSInput.vue
@@ -9,33 +9,27 @@
 -->
 <template>
 	<div class="tts-input">
-		<div class="tts-input-title">
-			<Icon class="tts-input-icon" name="ri-text" :size="22" />
-			<span>文本转语音</span>
-		</div>
-		<div class="tts-input-content">
-			<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
-				<el-form-item prop="text">
-					<el-input
-						v-model="ruleForm.text"
-						type="textarea"
-						placeholder="请输入要合成的文本"
-						:rows="10"
-					/>
-				</el-form-item>
-				<el-form-item>
-					<el-button
-						class="tts-input-submit"
-						type="primary"
-						:icon="RiMusicAiFill"
-						:loading="loading"
-						@click="onSubmit"
-					>
-						生成语音
-					</el-button>
-				</el-form-item>
-			</el-form>
-		</div>
+		<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
+			<el-form-item prop="text">
+				<el-input
+					v-model="ruleForm.text"
+					type="textarea"
+					placeholder="请输入要合成的文本"
+					:rows="10"
+				/>
+			</el-form-item>
+			<el-form-item>
+				<el-button
+					class="tts-input-submit"
+					type="primary"
+					:icon="RiMusicAiFill"
+					:loading="loading"
+					@click="onSubmit"
+				>
+					生成语音
+				</el-button>
+			</el-form-item>
+		</el-form>
 	</div>
 </template>
 
@@ -56,7 +50,7 @@ interface RuleForm {
 defineProps<AudioRecorderProps>();
 const emit = defineEmits<{
 	/** 确认生成 */
-	confirm: [];
+	confirm: [text: string];
 }>();
 
 // icon
@@ -90,26 +84,13 @@ async function onSubmit() {
 	if (!validResult) return;
 
 	// 事件
-	emit("confirm");
+	emit("confirm", ruleForm.text);
 }
 </script>
 
 <style lang="scss" scoped>
 .tts-input {
-	padding: $zl-padding * 2;
-	padding-bottom: 0;
-}
-.tts-input-title {
-	margin-bottom: $zl-padding;
-	font-size: 20px;
-	font-weight: bold;
-	color: var(--el-text-color-primary);
-	display: flex;
-	align-items: center;
-}
-.tts-input-icon {
-	margin-right: 10px;
-	color: var(--el-color-primary);
+	width: 100%;
 }
 .tts-input-submit {
 	width: 100%;

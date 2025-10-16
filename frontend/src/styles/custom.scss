@@ -90,3 +90,10 @@
 		}
 	}
 }
+
+/** 自定义表单样式 */
+.zl-el-form-label-top {
+	.el-form-item__label {
+		color: var(--el-text-color-primary);
+	}
+}

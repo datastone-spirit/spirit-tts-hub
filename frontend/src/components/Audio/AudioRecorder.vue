@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 10:56:07
- * @LastEditTime: 2025-10-15 14:41:54
+ * @LastEditTime: 2025-10-16 15:28:17
  * @LastEditors: mulingyuer
  * @Description: 录音组件
  * @FilePath: \frontend\src\components\Audio\AudioRecorder.vue
@@ -30,6 +30,7 @@
 						class="start"
 						:icon="RiRecordCircleFill"
 						type="danger"
+						size="default"
 						@click="handleStartRecord"
 					>
 						{{ startText || "开始录制" }}
@@ -41,6 +42,7 @@
 						:icon="RiStopCircleFill"
 						type="danger"
 						plain
+						size="default"
 						@click="handleStopRecord"
 					>
 						{{ stopText || "停止录制" }}
@@ -50,6 +52,7 @@
 						v-if="state === 'recording'"
 						class="pause"
 						:icon="RiPauseCircleFill"
+						size="default"
 						@click="handlePauseRecord"
 					>
 						{{ pauseText || "暂停" }}
@@ -59,6 +62,7 @@
 						v-if="state === 'paused'"
 						class="resume"
 						:icon="RiPlayCircleFill"
+						size="default"
 						@click="handleResumeRecord"
 					>
 						{{ resumeText || "继续" }}
@@ -74,6 +78,7 @@
 						v-model="selectedDevice"
 						class="device-selector"
 						placeholder="选择录音设备"
+						size="default"
 					>
 						<el-option
 							v-for="option in recordOptions"
@@ -303,7 +308,9 @@ defineExpose({
 .recorder-controls {
 	margin-top: 5px;
 	display: flex;
+	flex-wrap: wrap;
 	font-size: 14px;
+	line-height: normal;
 }
 .recorder-controls-left {
 	flex-grow: 1;

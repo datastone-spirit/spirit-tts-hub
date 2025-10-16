@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-16 10:03:37
+ * @LastEditTime: 2025-10-16 16:42:13
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -20,21 +20,41 @@
 							</el-space>
 						</div>
 						<div class="tts-main-body">
-							<VoiceReference v-model:audio-path="ruleForm.audioPath" />
+							<BodyCard title="参考音频" icon-name="ri-music-2-fill">
+								<VoiceReference v-model:audio-path="ruleForm.referenceAudioPath" />
+							</BodyCard>
 							<el-divider class="tts-divider" />
-							<TtsInput :loading="generateLoading" @confirm="onConfirm" />
+							<BodyCard title="文本转语音" icon-name="ri-text">
+								<TtsInput :loading="generateLoading" @confirm="onConfirm" />
+							</BodyCard>
 							<el-divider class="tts-divider" />
-							<TextSegSettings v-model="ruleForm.lineTokenCount" />
+							<BodyCard title="文本分段设置" icon-name="ri-scissors-cut-fill">
+								<TextSegSettings v-model="ruleForm.maxTokensPerSegment" />
+							</BodyCard>
 						</div>
 					</div>
 				</el-splitter-panel>
-				<el-splitter-panel v-model:size="rightSize" :min="300">
+				<el-splitter-panel v-model:size="rightSize" :min="430">
 					<div class="tts-control">
-						<el-tabs v-model="activeName" class="demo-tabs">
-							<el-tab-pane label="User" name="first">User</el-tab-pane>
-							<el-tab-pane label="Config" name="second">Config</el-tab-pane>
-							<el-tab-pane label="Role" name="third">Role</el-tab-pane>
-							<el-tab-pane label="Task" name="fourth">Task</el-tab-pane>
+						<el-tabs v-model="activeName" class="tts-control-tabs">
+							<el-tab-pane name="settings" class="tts-control-tabs-panel">
+								<template #label>
+									<div class="tts-control-label">
+										<Icon name="ri-equalizer-fill" />
+										<span>调试台</span>
+									</div>
+								</template>
+								<Settings v-model:rule-form="ruleForm" />
+							</el-tab-pane>
+							<el-tab-pane label="高级设置" name="advanced">
+								<template #label>
+									<div class="tts-control-label">
+										<Icon name="ri-settings-3-fill" />
+										<span>高级设置</span>
+									</div>
+								</template>
+								<Advanced v-model:rule-form="ruleForm" />
+							</el-tab-pane>
 						</el-tabs>
 					</div>
 				</el-splitter-panel>
@@ -55,29 +75,56 @@ import TtsInput from "./components/TtsInput.vue";
 import TextSegSettings from "./components/TextSegSettings.vue";
 import { sleep } from "@/utils/tools";
 import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
+import Advanced from "./components/Advanced/index.vue";
+import Settings from "./components/Settings/index.vue";
+import type { RuleForm } from "./types";
+import BodyCard from "./components/BodyCard.vue";
+
+export type TabsName = "settings" | "advanced";
 
 // icon
 const RiLightbulbLine = useIcon({ name: "ri-lightbulb-line" });
 const RiHistoryLine = useIcon({ name: "ri-history-line" });
 
 const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
-const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 300);
-const ruleForm = reactive({
-	audioPath: "",
-	lineTokenCount: 120
+const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
+const ruleForm = reactive<RuleForm>({
+	referenceAudioPath: "",
+	text: "",
+	maxTokensPerSegment: 120,
+	emotionControlStrategy: "use_emotion_vectors",
+	emotionReferenceAudioPath: "",
+	externalEmotionStrength: 0.8,
+	enableRandomEmotion: false,
+	emotionStrengths: {
+		happy: 0,
+		angry: 0,
+		sad: 0,
+		afraid: 0,
+		disgusted: 0,
+		melancholic: 0,
+		surprised: 0,
+		calm: 0
+	}
 });
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
-const activeName = ref("first");
+const activeName = ref<TabsName>("settings");
 
 /** 生成音频 */
-async function onConfirm() {
+async function onConfirm(text: string) {
 	// 检测有没有输入音频文件
-	if (typeof ruleForm.audioPath !== "string" || ruleForm.audioPath.trim() === "") {
+	if (
+		typeof ruleForm.referenceAudioPath !== "string" ||
+		ruleForm.referenceAudioPath.trim() === ""
+	) {
 		ElMessage.error("请配置参考音频");
 		return;
 	}
 
+	ruleForm.text = text;
+
+	// 生成中
 	generateLoading.value = true;
 	await sleep(2000);
 	ElMessage.success("合成成功");
@@ -110,6 +157,7 @@ async function onConfirm() {
 	box-shadow: 0 0 8px var(--zl-box-shadow);
 }
 .tts-main-head {
+	height: 57px;
 	padding: $zl-padding;
 	text-align: right;
 	border-bottom: 1px solid var(--el-border-color-light);
@@ -119,5 +167,20 @@ async function onConfirm() {
 }
 .tts-main-body {
 	padding-bottom: $zl-padding * 3;
+}
+.tts-control-tabs {
+	--el-tabs-header-height: 57px;
+	> :deep(.el-tabs__header) {
+		margin-bottom: 0;
+	}
+	> :deep(.el-tabs__header .el-tabs__item) {
+		padding: 0 10px;
+	}
+}
+.tts-control-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 20px;
 }
 </style>

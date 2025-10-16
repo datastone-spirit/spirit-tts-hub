@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:10:30
- * @LastEditTime: 2025-10-15 14:36:59
+ * @LastEditTime: 2025-10-16 15:21:06
  * @LastEditors: mulingyuer
  * @Description: 音频上传
  * @FilePath: \frontend\src\components\Audio\AudioUpload.vue
@@ -103,8 +103,9 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-// .audio-upload {
-// }
+.audio-upload {
+	width: 100%;
+}
 .audio-uploader-input {
 	.el-icon--upload {
 		font-size: 36px;
@@ -117,6 +118,7 @@ defineExpose({
 	display: flex;
 	.audio-uploader-content {
 		margin: auto;
+		line-height: normal;
 	}
 }
 .upload-divider {

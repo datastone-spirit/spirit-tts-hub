@@ -36,6 +36,7 @@ declare module 'vue' {
     ElSplitter: typeof import('element-plus/es')['ElSplitter']
     ElSplitterPanel: typeof import('element-plus/es')['ElSplitterPanel']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElText: typeof import('element-plus/es')['ElText']
@@ -46,6 +47,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SkipButton: typeof import('./../src/components/Audio/SkipButton.vue')['default']
+    ValueSlider: typeof import('./../src/components/Form/ValueSlider.vue')['default']
     ZLSwitch: typeof import('./../src/components/Form/ZLSwitch.vue')['default']
   }
   export interface GlobalDirectives {
