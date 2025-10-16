@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-13 11:11:57
+ * @LastEditTime: 2025-10-15 16:52:40
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -15,7 +15,10 @@
 		</div>
 
 		<div class="footer-audio-right">
-			<div class="footer-audio-right-content">
+			<div v-show="!isAudioPath" class="footer-audio-empty">
+				<el-text>暂未生成音频</el-text>
+			</div>
+			<div v-show="isAudioPath" class="footer-audio-right-content">
 				<div class="audio-progress">
 					<div class="audio-played-time">
 						{{ AudioHelper.formatDuration(playerData.currentDuration) }}
@@ -50,17 +53,27 @@
 </template>
 
 <script setup lang="ts">
-import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 import { useIcon } from "@/hooks/useIcon";
 import AudioProgress from "./AudioProgress.vue";
-import { useWaveSurferPlayer, AudioHelper } from "@/hooks/useWaveSurfer";
+import { useWaveSurferPlayer, AudioHelper, type WaveSurferInstance } from "@/hooks/useWaveSurfer";
+
+export interface FooterAudioProps {
+	/** 音频路径 */
+	audioPath: string;
+}
+
+const props = defineProps<FooterAudioProps>();
 
 // 图标定义
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });
 
 const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
+let playerInstance: WaveSurferInstance | undefined;
 const { initPlayer, destroyPlayer, playerControls, playerData, state } = useWaveSurferPlayer();
 const isPlaying = computed(() => state.value === "playing");
+const isAudioPath = computed(() => {
+	return typeof props.audioPath === "string" && props.audioPath.trim() !== "";
+});
 
 // 音频控制
 function onRewind() {
@@ -70,19 +83,26 @@ function onPlayPause() {
 	playerControls.playPause();
 }
 function onFastForward() {
-	playerControls.fastForward();
+	playerControls.skip();
 }
 /** 下载音频 */
 function onDownloadAudio() {
-	// TODO: 实现下载功能
+	// TODO: 需要实现下载功能
 	console.log("下载音频");
 }
 
+/** 监听音频路径变化 */
+watchEffect(() => {
+	if (props.audioPath && playerInstance) {
+		playerControls.loadAudio(props.audioPath);
+	}
+});
+
 onMounted(() => {
 	if (!audioRef.value) return;
-	initPlayer({
+	playerInstance = initPlayer({
 		container: audioRef.value,
-		url: templateAudio
+		url: props.audioPath
 	});
 });
 

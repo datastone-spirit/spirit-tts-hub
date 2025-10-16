@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-15 15:56:17
+ * @LastEditTime: 2025-10-15 16:29:08
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -56,7 +56,7 @@ export type VoiceType =
 	| "record"; // 录音
 
 const voiceType = ref<VoiceType>("upload");
-const audioPath = ref("");
+const audioPath = defineModel("audio-path", { type: String, required: true });
 const audioRecorderRef = useTemplateRef("audioRecorderRef");
 
 const showAudioUpload = computed(() => {

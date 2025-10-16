@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-15 15:36:35
+ * @LastEditTime: 2025-10-16 10:03:37
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -20,8 +20,11 @@
 							</el-space>
 						</div>
 						<div class="tts-main-body">
-							<VoiceReference />
-							<el-divider />
+							<VoiceReference v-model:audio-path="ruleForm.audioPath" />
+							<el-divider class="tts-divider" />
+							<TtsInput :loading="generateLoading" @confirm="onConfirm" />
+							<el-divider class="tts-divider" />
+							<TextSegSettings v-model="ruleForm.lineTokenCount" />
 						</div>
 					</div>
 				</el-splitter-panel>
@@ -38,7 +41,7 @@
 			</el-splitter>
 		</div>
 		<div class="tts-card-footer">
-			<FooterAudio />
+			<FooterAudio :audio-path="generateAudioPath" />
 		</div>
 	</div>
 </template>
@@ -48,6 +51,10 @@ import { SPLITTER_KEY } from "@/constants/config-keys";
 import FooterAudio from "./components/FooterAudio.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { useIcon } from "@/hooks/useIcon";
+import TtsInput from "./components/TtsInput.vue";
+import TextSegSettings from "./components/TextSegSettings.vue";
+import { sleep } from "@/utils/tools";
+import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 
 // icon
 const RiLightbulbLine = useIcon({ name: "ri-lightbulb-line" });
@@ -55,7 +62,34 @@ const RiHistoryLine = useIcon({ name: "ri-history-line" });
 
 const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
 const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 300);
+const ruleForm = reactive({
+	audioPath: "",
+	lineTokenCount: 120
+});
+const generateLoading = ref(false);
+const generateAudioPath = ref("");
 const activeName = ref("first");
+
+/** 生成音频 */
+async function onConfirm() {
+	// 检测有没有输入音频文件
+	if (typeof ruleForm.audioPath !== "string" || ruleForm.audioPath.trim() === "") {
+		ElMessage.error("请配置参考音频");
+		return;
+	}
+
+	generateLoading.value = true;
+	await sleep(2000);
+	ElMessage.success("合成成功");
+	generateLoading.value = false;
+
+	generateAudioPath.value = templateAudio;
+}
+
+// /** 音频生成成功 */
+// function onGenerateComplete(path: string) {
+// 	generateAudioPath.value = path;
+// }
 </script>
 
 <style lang="scss" scoped>
@@ -80,7 +114,10 @@ const activeName = ref("first");
 	text-align: right;
 	border-bottom: 1px solid var(--el-border-color-light);
 }
-// .tts-main-body {
-// 	padding: $zl-padding * 2;
-// }
+.tts-divider {
+	margin-bottom: 0;
+}
+.tts-main-body {
+	padding-bottom: $zl-padding * 3;
+}
 </style>
