@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 09:13:42
- * @LastEditTime: 2025-10-17 16:08:19
+ * @LastEditTime: 2025-10-17 17:10:48
  * @LastEditors: mulingyuer
  * @Description: 情绪雷达图
- * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar2\index.vue
+ * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -20,12 +20,23 @@
 <script setup lang="ts">
 import Chart, { type ChartConfiguration } from "chart.js/auto";
 import { useAppStore } from "@/stores";
-import type { Emotion } from "./types";
 import { THEME } from "./theme";
+import type { Emotion, EmotionChangeType } from "../types";
+
+export interface EmotionRadarProps {
+	/** 情绪权重变化来源 */
+	changeType: EmotionChangeType;
+}
 
 const emotion = defineModel({ type: Object as PropType<Emotion>, required: true });
 
+const props = defineProps<EmotionRadarProps>();
+const emit = defineEmits<{
+	/** 数值变动 */
+	change: [key: keyof Emotion, value: number];
+}>();
 const appStore = useAppStore();
+
 const canvasRef = useTemplateRef("canvasRef");
 let chartInstance: Chart | undefined = void 0;
 // 情绪指标名称
@@ -202,6 +213,9 @@ const handleMouseMove = (e: MouseEvent) => {
 
 	emotion.value[activeLabel.value] = value;
 	updateChart();
+
+	// 事件
+	emit("change", activeLabel.value, value);
 };
 
 /** 鼠标松开事件处理 */
@@ -209,6 +223,17 @@ const handleMouseUp = () => {
 	isDragging.value = false;
 	dragIndex.value = -1;
 };
+
+/** 监听数据 */
+watch(
+	() => emotion.value,
+	() => {
+		if (props.changeType === "EmotionRadar") return;
+
+		updateChart();
+	},
+	{ deep: true }
+);
 
 /** 监听主题 */
 watch(

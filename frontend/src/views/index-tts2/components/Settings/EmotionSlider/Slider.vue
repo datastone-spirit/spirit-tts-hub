@@ -1,17 +1,17 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 16:25:54
- * @LastEditTime: 2025-10-16 17:28:36
+ * @LastEditTime: 2025-10-17 16:51:51
  * @LastEditors: mulingyuer
  * @Description: 情绪权重滑块
- * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionSlider.vue
+ * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionSlider\Slider.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<div class="emotion-slider">
-		<div class="emotion-slider-left">
+	<div class="slider-wrapper">
+		<div class="slider-left">
 			<el-slider
-				class="value-slider"
+				class="slider"
 				v-model="modelValue"
 				:min="min"
 				:max="max"
@@ -21,17 +21,30 @@
 				@change="onSliderChange"
 			/>
 		</div>
-		<div class="emotion-slider-right">
-			<el-button
-				class="emotion-slider-reset-button"
-				:disabled="disabled"
-				:size="size"
-				:icon="RiResetLeftLine"
-				circle
-				title="重置"
-				@click="onResetTokenCount"
-			>
-			</el-button>
+		<div class="slider-right">
+			<ElSpacePro :size="4">
+				<el-input-number
+					class="slider-input-number"
+					v-model="modelValue"
+					:min="min"
+					:max="max"
+					controls-position="right"
+					:disabled="disabled"
+					:size="size"
+					:step="step"
+					:step-strictly="stepStrictly"
+					@change="onInputNumberChange"
+				/>
+				<el-button
+					class="slider-reset-button"
+					:disabled="disabled"
+					:size="size"
+					:icon="RiResetLeftLine"
+					title="重置"
+					@click="onResetTokenCount"
+				>
+				</el-button>
+			</ElSpacePro>
 		</div>
 	</div>
 </template>
@@ -69,8 +82,12 @@ const props = withDefaults(defineProps<EmotionSliderProps>(), {
 const emit = defineEmits<{
 	/** 滑块值改变 */
 	"slider-change": [value: number];
+	/** 数字值改变 */
+	"input-number-change": [value: number];
 	/** 重置令牌数 */
 	"reset-token-count": [];
+	/** 数值变动 */
+	change: [value: number];
 }>();
 
 // icon
@@ -82,29 +99,42 @@ const initialTokenCount = props.resetDefault ?? modelValue.value;
 /** 滑块值改变 */
 function onSliderChange(value: number | number[]) {
 	emit("slider-change", value as number);
+	emit("change", value as number);
+}
+/** 数字值改变 */
+function onInputNumberChange(value: number | undefined) {
+	emit("input-number-change", value as number);
+	emit("change", value as number);
 }
 /** 重置令牌数 */
 function onResetTokenCount() {
 	modelValue.value = initialTokenCount;
 	emit("reset-token-count");
+	emit("change", initialTokenCount);
 }
 </script>
 
 <style lang="scss" scoped>
-.emotion-slider {
+.slider-wrapper {
 	width: 100%;
 	display: flex;
 	align-items: center;
 	gap: $zl-padding;
+	line-height: 1;
 }
-.emotion-slider-left {
+.slider-left {
 	flex-grow: 1;
 	min-width: 0;
-	display: flex;
-	align-items: center;
 }
-.value-slider {
+.slider {
 	--el-slider-height: 4px;
 	--el-slider-button-size: 14px;
+}
+.slider-input-number {
+	width: 75px;
+}
+.slider-reset-button {
+	padding: 5px;
+	background-color: var(--el-fill-color-light);
 }
 </style>

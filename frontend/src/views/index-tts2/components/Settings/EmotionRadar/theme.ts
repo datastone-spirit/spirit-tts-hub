@@ -1,13 +1,13 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-17 10:52:52
- * @LastEditTime: 2025-10-17 15:38:00
+ * @LastEditTime: 2025-10-17 17:00:48
  * @LastEditors: mulingyuer
  * @Description: 雷达图主题
- * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar2\theme.ts
+ * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar\theme.ts
  * 怎么可能会有bug！！！
  */
-import type { ThemeColor } from "./types";
+import type { ThemeColor } from "../types";
 
 /** 主题颜色 */
 export const THEME: Record<"dark" | "light", ThemeColor> = {

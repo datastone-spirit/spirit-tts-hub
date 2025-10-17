@@ -1,18 +1,18 @@
 /*
  * @Author: mulingyuer
- * @Date: 2025-10-17 10:52:02
- * @LastEditTime: 2025-10-17 15:31:59
+ * @Date: 2025-10-17 16:59:49
+ * @LastEditTime: 2025-10-17 17:00:58
  * @LastEditors: mulingyuer
- * @Description: 情绪雷达图类型
- * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar2\types.ts
+ * @Description: 调试器类型
+ * @FilePath: \frontend\src\views\index-tts2\components\Settings\types.ts
  * 怎么可能会有bug！！！
  */
-import type { RuleForm } from "../../../types";
+import type { RuleForm } from "../../types";
 
 /** 情绪数据 */
 export type Emotion = RuleForm["emotionStrengths"];
 
-/** 主题颜色 */
+/** 雷达主题颜色 */
 export interface ThemeColor {
 	/** 雷达区域背景色 */
 	backgroundColor: string;
@@ -35,3 +35,6 @@ export interface ThemeColor {
 	/** 线框颜色 */
 	lineColor: string;
 }
+
+/** 情绪权重变化来源 */
+export type EmotionChangeType = "EmotionSlider" | "EmotionRadar" | "none";

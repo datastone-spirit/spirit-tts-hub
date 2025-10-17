@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-17 11:57:31
+ * @LastEditTime: 2025-10-17 17:10:05
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -45,71 +45,12 @@
 					<el-switch v-model="ruleForm.enableRandomEmotion" />
 				</el-form-item>
 				<el-form-item class="emotion-strengths" label="情绪权重">
-					<EmotionRadar v-model="ruleForm.emotionStrengths" />
-					<el-form-item
-						class="emotion-strengths-item"
-						label="快乐"
-						prop="emotionStrengths.happy"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.happy" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="生气"
-						prop="emotionStrengths.angry"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.angry" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="难过"
-						prop="emotionStrengths.sad"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.sad" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="害怕"
-						prop="emotionStrengths.afraid"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.afraid" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="厌恶"
-						prop="emotionStrengths.disgusted"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.disgusted" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="忧郁"
-						prop="emotionStrengths.melancholic"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.melancholic" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="惊讶"
-						prop="emotionStrengths.surprised"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.surprised" :reset-default="0" />
-					</el-form-item>
-					<el-form-item
-						class="emotion-strengths-item"
-						label="平静"
-						prop="emotionStrengths.calm"
-						label-position="left"
-					>
-						<EmotionSlider v-model="ruleForm.emotionStrengths.calm" :reset-default="0" />
-					</el-form-item>
+					<EmotionRadar
+						v-model="ruleForm.emotionStrengths"
+						:change-type="emotionChangeType"
+						@change="onEmotionRadarChange"
+					/>
+					<EmotionSlider v-model="ruleForm.emotionStrengths" @change="onEmotionSliderChange" />
 				</el-form-item>
 			</template>
 		</el-form>
@@ -121,14 +62,25 @@ import type { FormInstance, FormRules } from "element-plus";
 import type { RuleForm } from "../../types";
 import { useSettingsStore } from "@/stores";
 import VoiceReference from "../VoiceReference.vue";
-import EmotionSlider from "./EmotionSlider.vue";
+import EmotionSlider from "./EmotionSlider/index.vue";
 import EmotionRadar from "./EmotionRadar/index.vue";
+import type { EmotionChangeType } from "./types";
+
+const settingsStore = useSettingsStore();
 
 const ruleForm = defineModel("ruleForm", { type: Object as PropType<RuleForm>, required: true });
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const rules = reactive<FormRules<RuleForm>>({});
+const emotionChangeType = ref<EmotionChangeType>("none");
 
-const settingsStore = useSettingsStore();
+/** 情绪权重雷达图change */
+function onEmotionRadarChange(_key: keyof RuleForm["emotionStrengths"], _value: number) {
+	emotionChangeType.value = "EmotionRadar";
+}
+/** 情绪权重滑块change */
+function onEmotionSliderChange(_key: keyof RuleForm["emotionStrengths"], _value: number) {
+	emotionChangeType.value = "EmotionSlider";
+}
 
 /** 监听专家模式切换 */
 watch(
@@ -148,12 +100,5 @@ watch(
 }
 .emotion-strengths > :deep(.el-form-item__content) {
 	padding: $zl-padding;
-}
-.emotion-strengths-item {
-	width: 100%;
-	:deep(.el-form-item__label) {
-		margin-bottom: 0;
-		line-height: 40px;
-	}
 }
 </style>
