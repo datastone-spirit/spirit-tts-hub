@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-16 16:42:13
+ * @LastEditTime: 2025-10-17 10:33:14
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -97,14 +97,14 @@ const ruleForm = reactive<RuleForm>({
 	externalEmotionStrength: 0.8,
 	enableRandomEmotion: false,
 	emotionStrengths: {
-		happy: 0,
-		angry: 0,
-		sad: 0,
-		afraid: 0,
-		disgusted: 0,
-		melancholic: 0,
-		surprised: 0,
-		calm: 0
+		happy: 0.5,
+		angry: 0.5,
+		sad: 0.5,
+		afraid: 0.5,
+		disgusted: 0.5,
+		melancholic: 0.5,
+		surprised: 0.5,
+		calm: 0.5
 	}
 });
 const generateLoading = ref(false);

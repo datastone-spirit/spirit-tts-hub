@@ -22,6 +22,7 @@
     "axios": "^1.11.0",
     "axios-retry": "^4.5.0",
     "bignumber.js": "^9.3.1",
+    "chart.js": "^4.5.1",
     "dayjs": "^1.11.13",
     "default-passive-events": "^4.0.0",
     "element-plus": "^2.11.4",

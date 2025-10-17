@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 16:25:54
- * @LastEditTime: 2025-10-16 17:18:05
+ * @LastEditTime: 2025-10-16 17:28:36
  * @LastEditors: mulingyuer
  * @Description: 情绪权重滑块
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionSlider.vue
@@ -28,6 +28,7 @@
 				:size="size"
 				:icon="RiResetLeftLine"
 				circle
+				title="重置"
 				@click="onResetTokenCount"
 			>
 			</el-button>

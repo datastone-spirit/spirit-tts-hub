@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-16 17:11:24
+ * @LastEditTime: 2025-10-17 11:57:31
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -45,6 +45,7 @@
 					<el-switch v-model="ruleForm.enableRandomEmotion" />
 				</el-form-item>
 				<el-form-item class="emotion-strengths" label="情绪权重">
+					<EmotionRadar v-model="ruleForm.emotionStrengths" />
 					<el-form-item
 						class="emotion-strengths-item"
 						label="快乐"
@@ -121,6 +122,7 @@ import type { RuleForm } from "../../types";
 import { useSettingsStore } from "@/stores";
 import VoiceReference from "../VoiceReference.vue";
 import EmotionSlider from "./EmotionSlider.vue";
+import EmotionRadar from "./EmotionRadar/index.vue";
 
 const ruleForm = defineModel("ruleForm", { type: Object as PropType<RuleForm>, required: true });
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
