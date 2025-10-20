@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 09:13:42
- * @LastEditTime: 2025-10-17 17:10:48
+ * @LastEditTime: 2025-10-17 17:19:19
  * @LastEditors: mulingyuer
  * @Description: 情绪雷达图
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar\index.vue
@@ -226,7 +226,7 @@ const handleMouseUp = () => {
 
 /** 监听数据 */
 watch(
-	() => emotion.value,
+	[() => emotion.value, () => props.changeType],
 	() => {
 		if (props.changeType === "EmotionRadar") return;
 

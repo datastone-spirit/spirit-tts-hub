@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 16:25:54
- * @LastEditTime: 2025-10-17 16:51:51
+ * @LastEditTime: 2025-10-17 17:20:16
  * @LastEditors: mulingyuer
  * @Description: 情绪权重滑块
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionSlider\Slider.vue
@@ -18,7 +18,7 @@
 				:disabled="disabled"
 				:size="size"
 				:step="step"
-				@change="onSliderChange"
+				@input="onSliderChange"
 			/>
 		</div>
 		<div class="slider-right">
