@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-17 10:33:14
+ * @LastEditTime: 2025-10-20 10:47:30
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -92,7 +92,7 @@ const ruleForm = reactive<RuleForm>({
 	referenceAudioPath: "",
 	text: "",
 	maxTokensPerSegment: 120,
-	emotionControlStrategy: "use_emotion_vectors",
+	emotionControlStrategy: "use_text_description",
 	emotionReferenceAudioPath: "",
 	externalEmotionStrength: 0.8,
 	enableRandomEmotion: false,
@@ -105,7 +105,8 @@ const ruleForm = reactive<RuleForm>({
 		melancholic: 0.5,
 		surprised: 0.5,
 		calm: 0.5
-	}
+	},
+	emotionDescription: ""
 });
 const generateLoading = ref(false);
 const generateAudioPath = ref("");

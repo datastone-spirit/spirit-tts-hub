@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-16 16:42:07
+ * @LastEditTime: 2025-10-20 10:20:34
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -47,4 +47,6 @@ export interface RuleForm {
 		/** 平静 0-1，默认0 */
 		calm: number;
 	};
+	/** 情感描述，仅在 emotionControlStrategy 为 "use_text_description" 时生效 */
+	emotionDescription: string;
 }

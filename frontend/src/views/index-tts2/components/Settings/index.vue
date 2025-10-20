@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-17 17:10:05
+ * @LastEditTime: 2025-10-20 10:48:03
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -31,28 +31,47 @@
 				</el-select>
 			</el-form-item>
 
-			<template v-if="ruleForm.emotionControlStrategy === 'use_emotion_audio'">
-				<el-form-item label="情感参考音频" prop="useEmotionAudioPath">
-					<VoiceReference v-model:audio-path="ruleForm.emotionReferenceAudioPath" />
-				</el-form-item>
-				<el-form-item label="情感控制权重" prop="useEmotionAudioPath">
-					<ValueSlider v-model="ruleForm.externalEmotionStrength" :min="0" :max="1" :step="0.1" />
-				</el-form-item>
-			</template>
+			<el-form-item
+				v-show="ruleForm.emotionControlStrategy === 'use_emotion_audio'"
+				label="情感参考音频"
+				prop="useEmotionAudioPath"
+			>
+				<VoiceReference v-model:audio-path="ruleForm.emotionReferenceAudioPath" />
+			</el-form-item>
 
-			<template v-if="ruleForm.emotionControlStrategy === 'use_emotion_vectors'">
-				<el-form-item label="随机情绪采样" prop="randomEmotion">
-					<el-switch v-model="ruleForm.enableRandomEmotion" />
-				</el-form-item>
-				<el-form-item class="emotion-strengths" label="情绪权重">
-					<EmotionRadar
-						v-model="ruleForm.emotionStrengths"
-						:change-type="emotionChangeType"
-						@change="onEmotionRadarChange"
-					/>
-					<EmotionSlider v-model="ruleForm.emotionStrengths" @change="onEmotionSliderChange" />
-				</el-form-item>
-			</template>
+			<el-form-item v-show="showRandomEmotion" label="随机情绪采样" prop="randomEmotion">
+				<el-switch v-model="ruleForm.enableRandomEmotion" />
+			</el-form-item>
+
+			<el-form-item
+				v-show="ruleForm.emotionControlStrategy === 'use_emotion_vectors'"
+				class="emotion-strengths"
+				label="情绪权重"
+			>
+				<EmotionRadar
+					v-model="ruleForm.emotionStrengths"
+					:change-type="emotionChangeType"
+					@change="onEmotionRadarChange"
+				/>
+				<EmotionSlider v-model="ruleForm.emotionStrengths" @change="onEmotionSliderChange" />
+			</el-form-item>
+
+			<el-form-item label="情感描述" prop="">
+				<el-input
+					v-model="ruleForm.emotionDescription"
+					:autosize="{ minRows: 3, maxRows: 8 }"
+					type="textarea"
+					placeholder="请输入情绪描述（或留空自动使用主文本提示）"
+				/>
+			</el-form-item>
+
+			<el-form-item
+				v-show="showExternalEmotionStrength"
+				label="情感控制权重"
+				prop="useEmotionAudioPath"
+			>
+				<ValueSlider v-model="ruleForm.externalEmotionStrength" :min="0" :max="1" :step="0.1" />
+			</el-form-item>
 		</el-form>
 	</div>
 </template>
@@ -72,6 +91,18 @@ const ruleForm = defineModel("ruleForm", { type: Object as PropType<RuleForm>, r
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const rules = reactive<FormRules<RuleForm>>({});
 const emotionChangeType = ref<EmotionChangeType>("none");
+/** 显示随机情绪采样 */
+const showRandomEmotion = computed(() => {
+	return ["use_emotion_vectors", "use_text_description"].includes(
+		ruleForm.value.emotionControlStrategy
+	);
+});
+/** 显示情感控制权重 */
+const showExternalEmotionStrength = computed(() => {
+	return ["use_emotion_audio", "use_text_description"].includes(
+		ruleForm.value.emotionControlStrategy
+	);
+});
 
 /** 情绪权重雷达图change */
 function onEmotionRadarChange(_key: keyof RuleForm["emotionStrengths"], _value: number) {
