@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-20 10:47:30
+ * @LastEditTime: 2025-10-20 11:04:17
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -106,11 +106,19 @@ const ruleForm = reactive<RuleForm>({
 		surprised: 0.5,
 		calm: 0.5
 	},
-	emotionDescription: ""
+	emotionDescription: "",
+	do_sample: true,
+	temperature: 0.8,
+	top_p: 0.8,
+	top_k: 30,
+	num_beams: 3,
+	repetition_penalty: 10,
+	length_penalty: 0,
+	max_mel_tokens: 1500
 });
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
-const activeName = ref<TabsName>("settings");
+const activeName = ref<TabsName>("advanced");
 
 /** 生成音频 */
 async function onConfirm(text: string) {

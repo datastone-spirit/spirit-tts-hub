@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 16:24:14
- * @LastEditTime: 2025-10-17 17:02:55
+ * @LastEditTime: 2025-10-20 14:34:15
  * @LastEditors: mulingyuer
  * @Description: 情绪权重滑块组件
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionSlider\index.vue
@@ -15,8 +15,13 @@
 			prop="emotionStrengths.happy"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.happy"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'happy', $event)"
 			/>
@@ -27,8 +32,13 @@
 			prop="emotionStrengths.angry"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.angry"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'angry', $event)"
 			/>
@@ -39,7 +49,16 @@
 			prop="emotionStrengths.sad"
 			label-position="left"
 		>
-			<Slider v-model="emotion.sad" :reset-default="0" @change="$emit('change', 'sad', $event)" />
+			<NumericRangeControl
+				v-model="emotion.sad"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
+				:reset-default="0"
+				@change="$emit('change', 'sad', $event)"
+			/>
 		</el-form-item>
 		<el-form-item
 			class="emotion-strengths-item"
@@ -47,8 +66,13 @@
 			prop="emotionStrengths.afraid"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.afraid"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'afraid', $event)"
 			/>
@@ -59,8 +83,13 @@
 			prop="emotionStrengths.disgusted"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.disgusted"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'disgusted', $event)"
 			/>
@@ -71,8 +100,13 @@
 			prop="emotionStrengths.melancholic"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.melancholic"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'melancholic', $event)"
 			/>
@@ -83,8 +117,13 @@
 			prop="emotionStrengths.surprised"
 			label-position="left"
 		>
-			<Slider
+			<NumericRangeControl
 				v-model="emotion.surprised"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
 				:reset-default="0"
 				@change="$emit('change', 'surprised', $event)"
 			/>
@@ -95,14 +134,22 @@
 			prop="emotionStrengths.calm"
 			label-position="left"
 		>
-			<Slider v-model="emotion.calm" :reset-default="0" @change="$emit('change', 'calm', $event)" />
+			<NumericRangeControl
+				v-model="emotion.calm"
+				:min="0"
+				:max="1"
+				:step="0.01"
+				size="small"
+				:show-reset-text="false"
+				:reset-default="0"
+				@change="$emit('change', 'calm', $event)"
+			/>
 		</el-form-item>
 	</div>
 </template>
 
 <script setup lang="ts">
-import type { Emotion } from "../types";
-import Slider from "./Slider.vue";
+import type { Emotion } from "./types";
 
 const emotion = defineModel({ type: Object as PropType<Emotion>, required: true });
 const _emit = defineEmits<{

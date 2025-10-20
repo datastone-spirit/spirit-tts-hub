@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-20 10:20:34
+ * @LastEditTime: 2025-10-20 11:03:22
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -49,4 +49,20 @@ export interface RuleForm {
 	};
 	/** 情感描述，仅在 emotionControlStrategy 为 "use_text_description" 时生效 */
 	emotionDescription: string;
+	/** 启用 GPT-2 样本抽取，默认：true */
+	do_sample: boolean;
+	/** GPT-2 采样温度 0.1-2，默认：0.8 */
+	temperature: number;
+	/** GPT-2 采样TopP 0-1，默认：0.8 */
+	top_p: number;
+	/** GPT-2 采样TopK 0-100，默认：30 */
+	top_k: number;
+	/** GPT-2 采样数 1-10，默认：3 */
+	num_beams: number;
+	/** 重复惩罚，默认：10 */
+	repetition_penalty: number;
+	/** 长度惩罚，默认：0 */
+	length_penalty: number;
+	/** 最大生成令牌数 50-1810，默认：1500 */
+	max_mel_tokens: number;
 }

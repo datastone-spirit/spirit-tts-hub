@@ -194,3 +194,12 @@
 .el-splitter-bar__dragger-horizontal::after {
 	width: 1px !important;
 }
+
+// 定制alert
+.el-alert--info {
+	--el-alert-bg-color: var(--zl-el-alert-info-bg-color) !important;
+	color: var(--zl-el-alert-info-color) !important;
+}
+.el-alert--info.is-light .el-alert__description {
+	color: var(--zl-el-alert-info-color) !important;
+}

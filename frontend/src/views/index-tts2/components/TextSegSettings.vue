@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-16 16:50:52
+ * @LastEditTime: 2025-10-20 11:58:15
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -12,13 +12,14 @@
 		<div class="seg-settings">
 			<div class="seg-settings-label">最大Token</div>
 			<div class="seg-settings-content">
-				<ValueSlider
+				<NumericRangeControl
 					v-model="tokenCount"
 					:min="minTokenCount"
 					:max="maxTokenCount"
 					:disabled="loading"
 					step-strictly
 					:reset-default="120"
+					:show-reset-icon="false"
 					@slider-change="onSliderChange"
 					@input-number-change="onInputNumberChange"
 					@reset-token-count="onResetTokenCount"

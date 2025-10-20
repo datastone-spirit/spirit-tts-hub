@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 09:13:42
- * @LastEditTime: 2025-10-17 17:19:19
+ * @LastEditTime: 2025-10-20 14:38:08
  * @LastEditors: mulingyuer
  * @Description: 情绪雷达图
- * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar\index.vue
+ * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -20,13 +20,43 @@
 <script setup lang="ts">
 import Chart, { type ChartConfiguration } from "chart.js/auto";
 import { useAppStore } from "@/stores";
-import { THEME } from "./theme";
-import type { Emotion, EmotionChangeType } from "../types";
+import type { Emotion, EmotionChangeType } from "./types";
+import type { ThemeColor } from "./types";
 
 export interface EmotionRadarProps {
 	/** 情绪权重变化来源 */
 	changeType: EmotionChangeType;
 }
+
+/** 主题颜色 */
+const THEME: Record<"dark" | "light", ThemeColor> = {
+	/** 浅色 */
+	light: {
+		backgroundColor: "rgba(32, 189, 160, 0.30)",
+		borderColor: "#20bda0",
+		pointBackgroundColor: "#20bda0",
+		pointBorderColor: "#fff",
+		pointHoverBackgroundColor: "#20bda0",
+		pointHoverBorderColor: "#fff",
+		nameColor: "#303133",
+		tooltipBgColor: "#303133",
+		tooltipTextColor: "#ffffff",
+		lineColor: "#e4e7ed"
+	},
+	/** 深色 */
+	dark: {
+		backgroundColor: "rgba(32, 189, 160, 0.30)",
+		borderColor: "#20bda0",
+		pointBackgroundColor: "#20bda0",
+		pointBorderColor: "#fff",
+		pointHoverBackgroundColor: "#20bda0",
+		pointHoverBorderColor: "#fff",
+		nameColor: "#E5EAF3",
+		tooltipBgColor: "#E5EAF3",
+		tooltipTextColor: "#141414",
+		lineColor: "#414243"
+	}
+};
 
 const emotion = defineModel({ type: Object as PropType<Emotion>, required: true });
 

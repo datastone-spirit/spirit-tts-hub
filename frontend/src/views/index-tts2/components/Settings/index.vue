@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-20 10:48:03
+ * @LastEditTime: 2025-10-20 14:36:13
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -56,13 +56,20 @@
 				<EmotionSlider v-model="ruleForm.emotionStrengths" @change="onEmotionSliderChange" />
 			</el-form-item>
 
-			<el-form-item label="情感描述" prop="">
-				<el-input
-					v-model="ruleForm.emotionDescription"
-					:autosize="{ minRows: 3, maxRows: 8 }"
-					type="textarea"
-					placeholder="请输入情绪描述（或留空自动使用主文本提示）"
-				/>
+			<el-form-item
+				v-show="ruleForm.emotionControlStrategy === 'use_text_description'"
+				label="情感描述"
+				prop="emotionDescription"
+			>
+				<el-space fill style="width: 100%">
+					<el-input
+						v-model="ruleForm.emotionDescription"
+						:autosize="{ minRows: 3, maxRows: 8 }"
+						type="textarea"
+						placeholder="请输入情绪描述（或留空自动使用主文本提示）"
+					/>
+					<el-alert type="info" :closable="false"> 例如：非常悲伤，危险正在悄悄逼近 </el-alert>
+				</el-space>
 			</el-form-item>
 
 			<el-form-item
@@ -70,7 +77,13 @@
 				label="情感控制权重"
 				prop="useEmotionAudioPath"
 			>
-				<ValueSlider v-model="ruleForm.externalEmotionStrength" :min="0" :max="1" :step="0.1" />
+				<NumericRangeControl
+					v-model="ruleForm.externalEmotionStrength"
+					:min="0"
+					:max="1"
+					:step="0.1"
+					:reset-default="0.8"
+				/>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -81,8 +94,8 @@ import type { FormInstance, FormRules } from "element-plus";
 import type { RuleForm } from "../../types";
 import { useSettingsStore } from "@/stores";
 import VoiceReference from "../VoiceReference.vue";
-import EmotionSlider from "./EmotionSlider/index.vue";
-import EmotionRadar from "./EmotionRadar/index.vue";
+import EmotionSlider from "./EmotionSlider.vue";
+import EmotionRadar from "./EmotionRadar.vue";
 import type { EmotionChangeType } from "./types";
 
 const settingsStore = useSettingsStore();
