@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-21 15:15:22
+ * @LastEditTime: 2025-10-21 16:56:59
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -90,7 +90,7 @@ import FooterAudio from "./components/FooterAudio.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { useIcon } from "@/hooks/useIcon";
 import TextSegSettings from "./components/TextSegSettings.vue";
-import { sleep, validateForm } from "@/utils/tools";
+import { sleep } from "@/utils/tools";
 import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 import Advanced from "./components/Advanced/index.vue";
 import Settings from "./components/Settings/index.vue";
@@ -108,14 +108,21 @@ const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
 const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
 const activeName = ref<TabsName>("settings");
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
-const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
-	useFormValidator();
+const {
+	ruleForm,
+	rules,
+	registerValidator,
+	registerResetter,
+	validateAll,
+	resetAll,
+	validateForm
+} = useFormValidator();
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
 
 /** 注册校验器 */
 registerValidator(async () => {
-	if (!ruleFormRef.value) return true;
+	if (!ruleFormRef.value) return { isValid: true };
 	const validResult = await validateForm(ruleFormRef.value);
 	return validResult;
 });
@@ -132,17 +139,8 @@ function onResetForm() {
 }
 /** 提交表单 */
 async function onSubmitForm() {
-	const valid = await validateAll();
-	if (!valid) return;
-
-	// // 检测有没有输入音频文件
-	// if (
-	// 	typeof ruleForm.value.referenceAudioPath !== "string" ||
-	// 	ruleForm.value.referenceAudioPath.trim() === ""
-	// ) {
-	// 	ElMessage.error("请配置参考音频");
-	// 	return;
-	// }
+	const { isValid } = await validateAll();
+	if (!isValid) return;
 
 	// 生成中
 	generateLoading.value = true;

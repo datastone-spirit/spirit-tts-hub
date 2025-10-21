@@ -168,6 +168,7 @@
 // el-message
 .el-message.break-line-message {
 	align-items: flex-start;
+	max-width: 650px;
 	.el-icon {
 		padding-top: 6px;
 	}

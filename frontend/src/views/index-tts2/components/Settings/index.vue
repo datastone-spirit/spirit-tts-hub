@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-21 15:23:29
+ * @LastEditTime: 2025-10-21 16:37:58
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -95,7 +95,6 @@
 
 <script setup lang="ts">
 import { useSettingsStore } from "@/stores";
-import { validateForm } from "@/utils/tools";
 import type { FormInstance } from "element-plus";
 import { useFormValidator } from "../../composables/useFormValidator";
 import type { RuleForm } from "../../types";
@@ -106,7 +105,7 @@ import type { EmotionChangeType } from "./types";
 
 const settingsStore = useSettingsStore();
 
-const { ruleForm, rules, registerValidator, registerResetter } = useFormValidator();
+const { ruleForm, rules, registerValidator, registerResetter, validateForm } = useFormValidator();
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const emotionChangeType = ref<EmotionChangeType>("none");
 /** 显示随机情绪采样 */
@@ -144,9 +143,8 @@ watch(
 
 // 注册表单验证器
 registerValidator(async () => {
-	if (!ruleFormRef.value) return true;
+	if (!ruleFormRef.value) return { isValid: true };
 	const validResult = await validateForm(ruleFormRef.value);
-
 	return validResult;
 });
 
