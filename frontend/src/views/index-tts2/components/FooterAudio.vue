@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-15 16:52:40
+ * @LastEditTime: 2025-10-20 17:04:35
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -15,9 +15,6 @@
 		</div>
 
 		<div class="footer-audio-right">
-			<div v-show="!isAudioPath" class="footer-audio-empty">
-				<el-text>暂未生成音频</el-text>
-			</div>
 			<div v-show="isAudioPath" class="footer-audio-right-content">
 				<div class="audio-progress">
 					<div class="audio-played-time">
@@ -48,6 +45,20 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="footer-buttons">
+				<el-button :icon="RiResetLeftLine" :disabled="loading" @click="$emit('reset-form')">
+					重置表单
+				</el-button>
+				<el-button
+					type="primary"
+					:loading="loading"
+					:icon="RiMusicAiFill"
+					@click="$emit('submit-form')"
+				>
+					生成语音
+				</el-button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -60,12 +71,22 @@ import { useWaveSurferPlayer, AudioHelper, type WaveSurferInstance } from "@/hoo
 export interface FooterAudioProps {
 	/** 音频路径 */
 	audioPath: string;
+	/** loading */
+	loading: boolean;
 }
 
 const props = defineProps<FooterAudioProps>();
+const _emit = defineEmits<{
+	/** 重置表单 */
+	"reset-form": [];
+	/** 提交表单 */
+	"submit-form": [];
+}>();
 
 // 图标定义
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });
+const RiMusicAiFill = useIcon({ name: "ri-music-ai-fill", size: 16 });
+const RiResetLeftLine = useIcon({ name: "ri-reset-left-line", size: 16 });
 
 const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
 let playerInstance: WaveSurferInstance | undefined;

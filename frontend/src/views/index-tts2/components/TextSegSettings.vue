@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-20 11:58:15
+ * @LastEditTime: 2025-10-21 15:16:32
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -121,6 +121,7 @@ async function onResetTokenCount() {
 
 .text-seg-settings {
 	width: 100%;
+	line-height: normal;
 }
 .seg-settings {
 	margin-bottom: $zl-padding * 2;
@@ -129,23 +130,6 @@ async function onResetTokenCount() {
 	font-size: 16px;
 	color: var(--el-text-color-primary);
 	margin-bottom: 8px;
-}
-.seg-settings-content {
-	// display: flex;
-	// align-items: center;
-}
-.seg-settings-slider {
-	flex-grow: 1;
-	min-width: 0;
-}
-.seg-settings-controls {
-	flex-shrink: 0;
-	margin-left: $zl-padding;
-	display: flex;
-	align-items: center;
-}
-.seg-settings-reset-button {
-	background-color: var(--el-fill-color-light);
 }
 .seg-settings-info {
 	margin-top: $zl-padding;

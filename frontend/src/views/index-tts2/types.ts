@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-20 11:03:22
+ * @LastEditTime: 2025-10-21 10:02:55
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -66,3 +66,8 @@ export interface RuleForm {
 	/** 最大生成令牌数 50-1810，默认：1500 */
 	max_mel_tokens: number;
 }
+
+/** 需要持久化的数据 */
+// export type LocalRuleForm = Omit<RuleForm, "referenceAudioPath" | "emotionReferenceAudioPath">;
+/** 不需要持久化的数据 */
+// export type NoLocalRuleForm = Pick<RuleForm, "referenceAudioPath" | "emotionReferenceAudioPath">;

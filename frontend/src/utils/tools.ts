@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-13 14:26:56
+ * @LastEditTime: 2025-10-21 15:03:12
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -269,6 +269,31 @@ export class SerializeUndefined {
 			return Object.fromEntries(
 				Object.entries(obj).map(([key, value]) => [key, SerializeUndefined.serialize(value)])
 			);
+		}
+
+		return obj;
+	}
+
+	/** 支持原地修改 */
+	public static serializePro(obj: any, inPlace = false): any {
+		if (typeof obj === "undefined") return SerializeUndefined.UNDEFINED_PLACEHOLDER;
+
+		if (Array.isArray(obj)) {
+			if (inPlace) {
+				obj.forEach((value, index) => {
+					obj[index] = SerializeUndefined.serializePro(value, true);
+				});
+				return obj;
+			}
+			return obj.map((value) => SerializeUndefined.serializePro(value, false));
+		}
+
+		if (getPreciseType(obj) === "object") {
+			const target = inPlace ? obj : {};
+			for (const [key, value] of Object.entries(obj)) {
+				target[key] = SerializeUndefined.serializePro(value, inPlace);
+			}
+			return target;
 		}
 
 		return obj;

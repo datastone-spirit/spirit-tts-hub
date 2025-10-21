@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-16 15:17:15
+ * @LastEditTime: 2025-10-21 15:05:47
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue

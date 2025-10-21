@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-20 14:36:13
+ * @LastEditTime: 2025-10-21 15:23:29
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -34,12 +34,16 @@
 			<el-form-item
 				v-show="ruleForm.emotionControlStrategy === 'use_emotion_audio'"
 				label="情感参考音频"
-				prop="useEmotionAudioPath"
+				prop="emotionReferenceAudioPath"
 			>
 				<VoiceReference v-model:audio-path="ruleForm.emotionReferenceAudioPath" />
 			</el-form-item>
 
-			<el-form-item v-show="showRandomEmotion" label="随机情绪采样" prop="randomEmotion">
+			<el-form-item
+				v-show="showEnableRandomEmotion"
+				label="随机情绪采样"
+				prop="enableRandomEmotion"
+			>
 				<el-switch v-model="ruleForm.enableRandomEmotion" />
 			</el-form-item>
 
@@ -75,7 +79,7 @@
 			<el-form-item
 				v-show="showExternalEmotionStrength"
 				label="情感控制权重"
-				prop="useEmotionAudioPath"
+				prop="externalEmotionStrength"
 			>
 				<NumericRangeControl
 					v-model="ruleForm.externalEmotionStrength"
@@ -90,22 +94,23 @@
 </template>
 
 <script setup lang="ts">
-import type { FormInstance, FormRules } from "element-plus";
-import type { RuleForm } from "../../types";
 import { useSettingsStore } from "@/stores";
+import { validateForm } from "@/utils/tools";
+import type { FormInstance } from "element-plus";
+import { useFormValidator } from "../../composables/useFormValidator";
+import type { RuleForm } from "../../types";
 import VoiceReference from "../VoiceReference.vue";
-import EmotionSlider from "./EmotionSlider.vue";
 import EmotionRadar from "./EmotionRadar.vue";
+import EmotionSlider from "./EmotionSlider.vue";
 import type { EmotionChangeType } from "./types";
 
 const settingsStore = useSettingsStore();
 
-const ruleForm = defineModel("ruleForm", { type: Object as PropType<RuleForm>, required: true });
+const { ruleForm, rules, registerValidator, registerResetter } = useFormValidator();
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
-const rules = reactive<FormRules<RuleForm>>({});
 const emotionChangeType = ref<EmotionChangeType>("none");
 /** 显示随机情绪采样 */
-const showRandomEmotion = computed(() => {
+const showEnableRandomEmotion = computed(() => {
 	return ["use_emotion_vectors", "use_text_description"].includes(
 		ruleForm.value.emotionControlStrategy
 	);
@@ -136,6 +141,20 @@ watch(
 		}
 	}
 );
+
+// 注册表单验证器
+registerValidator(async () => {
+	if (!ruleFormRef.value) return true;
+	const validResult = await validateForm(ruleFormRef.value);
+
+	return validResult;
+});
+
+/** 注册重置 */
+registerResetter(() => {
+	if (!ruleFormRef.value) return;
+	ruleFormRef.value.resetFields();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:31
- * @LastEditTime: 2025-10-20 15:15:07
+ * @LastEditTime: 2025-10-21 15:24:21
  * @LastEditors: mulingyuer
  * @Description: 高级设置
  * @FilePath: \frontend\src\views\index-tts2\components\Advanced\index.vue
@@ -98,12 +98,26 @@
 </template>
 
 <script setup lang="ts">
-import type { FormInstance, FormRules } from "element-plus";
-import type { RuleForm } from "../../types";
+import type { FormInstance } from "element-plus";
+import { useFormValidator } from "../../composables/useFormValidator";
+import { validateForm } from "@/utils/tools";
 
-const ruleForm = defineModel("ruleForm", { type: Object as PropType<RuleForm>, required: true });
+const { ruleForm, rules, registerValidator, registerResetter } = useFormValidator();
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
-const rules = reactive<FormRules<RuleForm>>({});
+
+// 注册表单验证器
+registerValidator(async () => {
+	if (!ruleFormRef.value) return true;
+	const validResult = await validateForm(ruleFormRef.value);
+
+	return validResult;
+});
+
+/** 注册重置 */
+registerResetter(() => {
+	if (!ruleFormRef.value) return;
+	ruleFormRef.value.resetFields();
+});
 </script>
 
 <style lang="scss" scoped>

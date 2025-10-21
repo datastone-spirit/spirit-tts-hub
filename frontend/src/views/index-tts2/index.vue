@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-20 11:04:17
+ * @LastEditTime: 2025-10-21 15:15:22
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -20,17 +20,30 @@
 							</el-space>
 						</div>
 						<div class="tts-main-body">
-							<BodyCard title="参考音频" icon-name="ri-music-2-fill">
-								<VoiceReference v-model:audio-path="ruleForm.referenceAudioPath" />
-							</BodyCard>
-							<el-divider class="tts-divider" />
-							<BodyCard title="文本转语音" icon-name="ri-text">
-								<TtsInput :loading="generateLoading" @confirm="onConfirm" />
-							</BodyCard>
-							<el-divider class="tts-divider" />
-							<BodyCard title="文本分段设置" icon-name="ri-scissors-cut-fill">
-								<TextSegSettings v-model="ruleForm.maxTokensPerSegment" />
-							</BodyCard>
+							<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
+								<BodyCard title="参考音频" icon-name="ri-music-2-fill">
+									<el-form-item prop="referenceAudioPath">
+										<VoiceReference v-model:audio-path="ruleForm.referenceAudioPath" />
+									</el-form-item>
+								</BodyCard>
+								<el-divider class="tts-divider" />
+								<BodyCard title="文本转语音" icon-name="ri-text">
+									<el-form-item prop="text">
+										<el-input
+											v-model="ruleForm.text"
+											type="textarea"
+											placeholder="请输入要合成的文本"
+											:rows="10"
+										/>
+									</el-form-item>
+								</BodyCard>
+								<el-divider class="tts-divider" />
+								<BodyCard title="文本分段设置" icon-name="ri-scissors-cut-fill">
+									<el-form-item prop="maxTokensPerSegment">
+										<TextSegSettings v-model="ruleForm.maxTokensPerSegment" />
+									</el-form-item>
+								</BodyCard>
+							</el-form>
 						</div>
 					</div>
 				</el-splitter-panel>
@@ -61,7 +74,12 @@
 			</el-splitter>
 		</div>
 		<div class="tts-card-footer">
-			<FooterAudio :audio-path="generateAudioPath" />
+			<FooterAudio
+				:audio-path="generateAudioPath"
+				:loading="generateLoading"
+				@reset-form="onResetForm"
+				@submit-form="onSubmitForm"
+			/>
 		</div>
 	</div>
 </template>
@@ -71,14 +89,14 @@ import { SPLITTER_KEY } from "@/constants/config-keys";
 import FooterAudio from "./components/FooterAudio.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { useIcon } from "@/hooks/useIcon";
-import TtsInput from "./components/TtsInput.vue";
 import TextSegSettings from "./components/TextSegSettings.vue";
-import { sleep } from "@/utils/tools";
+import { sleep, validateForm } from "@/utils/tools";
 import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 import Advanced from "./components/Advanced/index.vue";
 import Settings from "./components/Settings/index.vue";
-import type { RuleForm } from "./types";
 import BodyCard from "./components/BodyCard.vue";
+import { useFormValidator } from "./composables/useFormValidator";
+import type { FormInstance } from "element-plus";
 
 export type TabsName = "settings" | "advanced";
 
@@ -88,50 +106,43 @@ const RiHistoryLine = useIcon({ name: "ri-history-line" });
 
 const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
 const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
-const ruleForm = reactive<RuleForm>({
-	referenceAudioPath: "",
-	text: "",
-	maxTokensPerSegment: 120,
-	emotionControlStrategy: "use_text_description",
-	emotionReferenceAudioPath: "",
-	externalEmotionStrength: 0.8,
-	enableRandomEmotion: false,
-	emotionStrengths: {
-		happy: 0.5,
-		angry: 0.5,
-		sad: 0.5,
-		afraid: 0.5,
-		disgusted: 0.5,
-		melancholic: 0.5,
-		surprised: 0.5,
-		calm: 0.5
-	},
-	emotionDescription: "",
-	do_sample: true,
-	temperature: 0.8,
-	top_p: 0.8,
-	top_k: 30,
-	num_beams: 3,
-	repetition_penalty: 10,
-	length_penalty: 0,
-	max_mel_tokens: 1500
-});
+const activeName = ref<TabsName>("settings");
+const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
+const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
+	useFormValidator();
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
-const activeName = ref<TabsName>("advanced");
 
-/** 生成音频 */
-async function onConfirm(text: string) {
-	// 检测有没有输入音频文件
-	if (
-		typeof ruleForm.referenceAudioPath !== "string" ||
-		ruleForm.referenceAudioPath.trim() === ""
-	) {
-		ElMessage.error("请配置参考音频");
-		return;
-	}
+/** 注册校验器 */
+registerValidator(async () => {
+	if (!ruleFormRef.value) return true;
+	const validResult = await validateForm(ruleFormRef.value);
+	return validResult;
+});
 
-	ruleForm.text = text;
+/** 注册重置 */
+registerResetter(() => {
+	if (!ruleFormRef.value) return;
+	ruleFormRef.value.resetFields();
+});
+
+/** 重置表单 */
+function onResetForm() {
+	resetAll();
+}
+/** 提交表单 */
+async function onSubmitForm() {
+	const valid = await validateAll();
+	if (!valid) return;
+
+	// // 检测有没有输入音频文件
+	// if (
+	// 	typeof ruleForm.value.referenceAudioPath !== "string" ||
+	// 	ruleForm.value.referenceAudioPath.trim() === ""
+	// ) {
+	// 	ElMessage.error("请配置参考音频");
+	// 	return;
+	// }
 
 	// 生成中
 	generateLoading.value = true;
