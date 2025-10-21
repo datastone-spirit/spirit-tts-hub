@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-13 11:12:35
- * @LastEditTime: 2025-10-13 17:40:24
+ * @LastEditTime: 2025-10-21 17:02:31
  * @LastEditors: mulingyuer
  * @Description: 录音类型
  * @FilePath: \frontend\src\hooks\useWaveSurfer\record\types.ts
@@ -42,7 +42,7 @@ export interface InitRecordConfig {
 export type StartRecordConfig = SetRequired<RecordPluginDeviceOptions, "deviceId">;
 
 /** 事件类型 */
-export type EventMap = {
+export type RecordEventMap = {
 	/** 录音开始 */
 	"record-start": void;
 	/** 录音暂停 */

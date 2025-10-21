@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:29:57
- * @LastEditTime: 2025-10-15 14:59:23
+ * @LastEditTime: 2025-10-21 17:02:17
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer hooks
  * @FilePath: \frontend\src\hooks\useWaveSurfer\player\index.ts
@@ -15,7 +15,7 @@ import { AudioHelper } from "../helper";
 import type { WaveSurferThemeKey } from "../types";
 import type {
 	AudioState,
-	EventMap,
+	PlayerEventMap,
 	InitWaveSurferPlayerOptions,
 	UseWaveSurferOptions
 } from "./types";
@@ -34,7 +34,7 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 	let waveSurfer: WaveSurfer | undefined = void 0;
 	let regions: RegionsPlugin | undefined = void 0;
 	let resetTimer: number | undefined = void 0;
-	const playerEmitter = mitt<EventMap>();
+	const playerEmitter = mitt<PlayerEventMap>();
 
 	// 状态
 	const loading = config?.loading ?? ref(true);

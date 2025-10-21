@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-13 11:12:11
- * @LastEditTime: 2025-10-15 11:56:58
+ * @LastEditTime: 2025-10-21 17:02:38
  * @LastEditors: mulingyuer
  * @Description: 录音
  * @FilePath: \frontend\src\hooks\useWaveSurfer\record\index.ts
@@ -12,7 +12,7 @@ import RecordPlugin from "wavesurfer.js/dist/plugins/record";
 import { DEFAULT_OPTIONS, WAVE_SURFER_THEME } from "../constant";
 import type { WaveSurferThemeKey } from "../types";
 import type {
-	EventMap,
+	RecordEventMap,
 	InitRecordConfig,
 	RecordState,
 	StartRecordConfig,
@@ -26,7 +26,7 @@ export function useWaveSurferRecord(config?: UseWaveSurferRecordConfig) {
 
 	let waveSurfer: WaveSurfer | undefined = void 0;
 	let recordPlugin: RecordPlugin | undefined = void 0;
-	const recordEmitter = mitt<EventMap>();
+	const recordEmitter = mitt<RecordEventMap>();
 
 	// 状态
 	const state = config?.state ?? ref<RecordState>("idle");
