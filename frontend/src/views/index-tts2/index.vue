@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-22 15:26:17
+ * @LastEditTime: 2025-10-22 15:56:02
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -40,7 +40,7 @@
 								<el-divider class="tts-divider" />
 								<BodyCard title="文本分段设置" icon-name="ri-scissors-cut-fill">
 									<el-form-item prop="maxTokensPerSegment">
-										<TextSegSettings v-model="ruleForm.maxTokensPerSegment" />
+										<TextSegSettings />
 									</el-form-item>
 								</BodyCard>
 							</el-form>
@@ -119,7 +119,7 @@ const { ruleForm, rules, registerValidator, registerResetter, validateAll, reset
 	usePageForm();
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
-const showExampleDrawer = ref(true);
+const showExampleDrawer = ref(false);
 
 /** 查看示例 */
 function onViewExample() {

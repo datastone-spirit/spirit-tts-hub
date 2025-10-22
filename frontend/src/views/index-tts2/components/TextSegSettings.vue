@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-22 11:30:31
+ * @LastEditTime: 2025-10-22 15:55:12
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -13,7 +13,7 @@
 			<div class="seg-settings-label">最大Token</div>
 			<div class="seg-settings-content">
 				<NumericRangeControl
-					v-model="tokenCount"
+					v-model="ruleForm.maxTokensPerSegment"
 					:min="minTokenCount"
 					:max="maxTokenCount"
 					:disabled="loading"
@@ -78,6 +78,7 @@
 
 <script setup lang="ts">
 import { sleep } from "@/utils/tools";
+import { usePageForm } from "../composables/usePageForm";
 
 export interface TextSegSettingsProps {
 	/** 每生成段最小令牌数 */
@@ -86,13 +87,20 @@ export interface TextSegSettingsProps {
 	maxTokenCount?: number;
 }
 
-const tokenCount = defineModel({ type: Number, required: true });
 const _props = withDefaults(defineProps<TextSegSettingsProps>(), {
 	minTokenCount: 20,
 	maxTokenCount: 600
 });
 
+const { ruleForm } = usePageForm();
 const loading = ref(false);
+
+/** api */
+async function getTextSeg() {
+	loading.value = true;
+	await sleep(2000);
+	loading.value = false;
+}
 
 /** 滑块值改变 */
 const onSliderChange = useDebounceFn(async (_value: number | number[]) => {
@@ -114,6 +122,9 @@ async function onResetTokenCount() {
 	await sleep(2000);
 	loading.value = false;
 }
+
+/** 监听用户输入的文本 */
+watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000));
 </script>
 
 <style lang="scss" scoped>
