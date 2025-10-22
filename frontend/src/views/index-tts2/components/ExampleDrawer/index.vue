@@ -1,14 +1,14 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 10:35:54
- * @LastEditTime: 2025-10-22 16:46:43
+ * @LastEditTime: 2025-10-22 16:53:17
  * @LastEditors: mulingyuer
  * @Description: 示例抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-drawer class="example-drawer" v-model="show" direction="ltr" :size="1200">
+	<el-drawer class="example-drawer" v-model="show" direction="ltr" size="65%">
 		<template #header>
 			<div class="example-drawer-header">
 				<Icon class="example-drawer-header-icon" name="ri-lightbulb-line" size="20" />

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-22 16:47:52
+ * @LastEditTime: 2025-10-22 16:55:06
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -136,6 +136,8 @@ function onApplyExample(item: ExampleItem) {
 	const { isExpert, ...data } = item;
 	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
 	ruleForm.value = data;
+
+	ElMessage.success("应用示例配置成功");
 }
 
 /** 查看历史记录 */
@@ -147,6 +149,8 @@ function onApplyHistory(item: HistoryItem) {
 	const { isExpert, createTime, id, ...data } = item;
 	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
 	ruleForm.value = data;
+
+	ElMessage.success("应用历史记录配置成功");
 }
 
 /** 注册校验器 */

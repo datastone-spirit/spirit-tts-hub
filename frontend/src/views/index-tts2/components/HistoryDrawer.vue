@@ -1,14 +1,14 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-10-22 16:46:53
+ * @LastEditTime: 2025-10-22 16:55:50
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-drawer class="history-drawer" v-model="show" direction="ltr" :size="1400">
+	<el-drawer class="history-drawer" v-model="show" direction="ltr" size="75%">
 		<template #header>
 			<div class="history-drawer-header">
 				<Icon class="history-drawer-header-icon" name="ri-history-line" size="20" />
@@ -167,10 +167,14 @@ function onApply(item: HistoryItem) {
 /** 删除 */
 function onDelete(item: HistoryItem) {
 	deleteHistory(item.id);
+
+	ElMessage.success("删除成功");
 }
 /** 清空 */
 function onClear() {
 	clearHistory();
+
+	ElMessage.success("历史记录已清空");
 }
 </script>
 
