@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-22 09:48:42
+ * @LastEditTime: 2025-10-22 15:26:17
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -14,8 +14,8 @@
 				<el-splitter-panel v-model:size="leftSize" :min="500">
 					<div class="tts-main">
 						<div class="tts-main-head">
-							<el-space :size="24">
-								<el-button :icon="RiLightbulbLine">查看示例</el-button>
+							<el-space :size="12">
+								<el-button :icon="RiLightbulbLine" @click="onViewExample">查看示例</el-button>
 								<el-button :icon="RiHistoryLine">历史记录</el-button>
 							</el-space>
 						</div>
@@ -81,6 +81,7 @@
 				@submit-form="onSubmitForm"
 			/>
 		</div>
+		<ExampleDrawer v-model="showExampleDrawer" @apply-example="onApplyExample" />
 	</div>
 </template>
 
@@ -97,8 +98,14 @@ import Settings from "./components/Settings/index.vue";
 import BodyCard from "./components/BodyCard.vue";
 import { usePageForm } from "./composables/usePageForm";
 import type { FormInstance } from "element-plus";
+import ExampleDrawer from "./components/ExampleDrawer/index.vue";
+import type { ExampleItem } from "./types";
+import { useSettingsStore } from "@/stores";
+import { ComplexityEnum } from "@/enums/complexity.enum";
 
 export type TabsName = "settings" | "advanced";
+
+const settingsStore = useSettingsStore();
 
 // icon
 const RiLightbulbLine = useIcon({ name: "ri-lightbulb-line" });
@@ -111,7 +118,19 @@ const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
 	usePageForm();
 const generateLoading = ref(false);
-const generateAudioPath = ref(templateAudio);
+const generateAudioPath = ref("");
+const showExampleDrawer = ref(true);
+
+/** 查看示例 */
+function onViewExample() {
+	showExampleDrawer.value = true;
+}
+/** 应用示例 */
+function onApplyExample(item: ExampleItem) {
+	const { isExpert, ...data } = item;
+	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
+	ruleForm.value = data;
+}
 
 /** 注册校验器 */
 registerValidator(async () => {

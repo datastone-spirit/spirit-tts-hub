@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-24 09:32:10
- * @LastEditTime: 2025-09-25 10:18:29
+ * @LastEditTime: 2025-10-22 15:40:54
  * @LastEditors: mulingyuer
  * @Description: header
  * @FilePath: \frontend\src\layout\admin-layout\components\Header\index.vue
@@ -12,12 +12,7 @@
 		<div class="header-left"></div>
 		<div class="header-right">
 			<el-space class="header-right-space" :size="10">
-				<ZLSwitch
-					v-model="openComplexity"
-					off-text="新手"
-					on-text="专家"
-					@change="onComplexityChange"
-				/>
+				<ZLSwitch v-model="openComplexity" off-text="新手" on-text="专家" />
 				<LightDarkToggle />
 				<router-link class="help-btn" :to="{ name: 'Help' }">
 					<Icon name="ri-question-line" />
@@ -46,11 +41,14 @@ const headerClass = computed(() => {
 });
 
 /** 难度切换 */
-const openComplexity = ref(settingsStore.complexity === ComplexityEnum.EXPERT);
-function onComplexityChange(val: boolean) {
-	const value = val ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER;
-	settingsStore.setComplexity(value);
-}
+const openComplexity = computed({
+	get() {
+		return settingsStore.isExpert;
+	},
+	set(val: boolean) {
+		settingsStore.setComplexity(val ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
+	}
+});
 </script>
 
 <style lang="scss" scoped>

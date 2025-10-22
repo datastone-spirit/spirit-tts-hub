@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-22 09:37:52
+ * @LastEditTime: 2025-10-22 14:49:55
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -18,8 +18,8 @@
 			label-suffix="："
 			size="large"
 		>
-			<el-form-item label="情感控制方法" prop="emotionControlStrategy">
-				<el-select v-model="ruleForm.emotionControlStrategy" placeholder="请选择情感控制方法">
+			<el-form-item label="情感控制方式" prop="emotionControlStrategy">
+				<el-select v-model="ruleForm.emotionControlStrategy" placeholder="请选择情感控制方式">
 					<el-option label="与参考音频相同" value="same_as_voice" />
 					<el-option label="使用情感参考音频" value="use_emotion_audio" />
 					<el-option label="使用情感向量" value="use_emotion_vectors" />

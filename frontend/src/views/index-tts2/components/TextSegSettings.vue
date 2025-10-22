@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-21 15:16:32
+ * @LastEditTime: 2025-10-22 11:30:31
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -163,13 +163,23 @@ async function onResetTokenCount() {
 .text-seg-preview-table td:last-child {
 	border-right: none;
 }
+.text-seg-preview-table tbody tr:hover td {
+	background-color: var(--el-fill-color);
+}
 .text-seg-preview-table tbody tr:last-child td {
 	border-bottom: none;
+	&:first-child {
+		border-bottom-left-radius: math.div($zl-border-radius, 2);
+	}
+	&:last-child {
+		border-bottom-right-radius: math.div($zl-border-radius, 2);
+	}
 }
 .text-seg-preview-table thead th {
-	background-color: var(--zl-tts2-seg-th-bg);
+	background-color: var(--zl-tts2-table-th-bg);
 	text-align: left;
 	font-weight: normal;
+	height: 40px;
 	&:first-child {
 		border-top-left-radius: math.div($zl-border-radius, 2);
 	}
@@ -178,7 +188,9 @@ async function onResetTokenCount() {
 	}
 }
 .text-seg-preview-table tbody td {
-	background-color: var(--zl-tts2-seg-td-bg);
+	background-color: var(--zl-tts2-table-td-bg);
+	word-break: break-all;
+	transition: background-color 0.25s ease;
 }
 .text-seg-preview-table .col-index {
 	width: 120px;

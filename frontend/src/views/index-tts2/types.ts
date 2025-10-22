@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-22 09:06:50
+ * @LastEditTime: 2025-10-22 11:33:02
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -67,7 +67,9 @@ export interface RuleForm {
 	max_mel_tokens: number;
 }
 
-/** 需要持久化的数据 */
-// export type LocalRuleForm = Omit<RuleForm, "referenceAudioPath" | "emotionReferenceAudioPath">;
-/** 不需要持久化的数据 */
-// export type NoLocalRuleForm = Pick<RuleForm, "referenceAudioPath" | "emotionReferenceAudioPath">;
+/** 示例数据 */
+export interface ExampleItem extends RuleForm {
+	/** 专家模式 */
+	isExpert: boolean;
+}
+export type ExampleData = ExampleItem[];
