@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-21 10:02:55
+ * @LastEditTime: 2025-10-22 09:06:50
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts

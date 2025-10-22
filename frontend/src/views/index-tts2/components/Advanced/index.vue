@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:31
- * @LastEditTime: 2025-10-21 16:37:39
+ * @LastEditTime: 2025-10-22 09:37:26
  * @LastEditors: mulingyuer
  * @Description: 高级设置
  * @FilePath: \frontend\src\views\index-tts2\components\Advanced\index.vue
@@ -99,9 +99,10 @@
 
 <script setup lang="ts">
 import type { FormInstance } from "element-plus";
-import { useFormValidator } from "../../composables/useFormValidator";
+import { usePageForm } from "../../composables/usePageForm";
+import { validateForm } from "@/utils/tools";
 
-const { ruleForm, rules, registerValidator, registerResetter, validateForm } = useFormValidator();
+const { ruleForm, rules, registerValidator, registerResetter } = usePageForm();
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 
 // 注册表单验证器

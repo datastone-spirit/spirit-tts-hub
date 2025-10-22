@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-21 16:37:58
+ * @LastEditTime: 2025-10-22 09:37:52
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -96,16 +96,17 @@
 <script setup lang="ts">
 import { useSettingsStore } from "@/stores";
 import type { FormInstance } from "element-plus";
-import { useFormValidator } from "../../composables/useFormValidator";
+import { usePageForm } from "../../composables/usePageForm";
 import type { RuleForm } from "../../types";
 import VoiceReference from "../VoiceReference.vue";
 import EmotionRadar from "./EmotionRadar.vue";
 import EmotionSlider from "./EmotionSlider.vue";
 import type { EmotionChangeType } from "./types";
+import { validateForm } from "@/utils/tools";
 
 const settingsStore = useSettingsStore();
 
-const { ruleForm, rules, registerValidator, registerResetter, validateForm } = useFormValidator();
+const { ruleForm, rules, registerValidator, registerResetter } = usePageForm();
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const emotionChangeType = ref<EmotionChangeType>("none");
 /** 显示随机情绪采样 */

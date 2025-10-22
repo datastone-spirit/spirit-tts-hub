@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-21 16:56:59
+ * @LastEditTime: 2025-10-22 09:36:57
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -90,12 +90,12 @@ import FooterAudio from "./components/FooterAudio.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { useIcon } from "@/hooks/useIcon";
 import TextSegSettings from "./components/TextSegSettings.vue";
-import { sleep } from "@/utils/tools";
+import { sleep, validateForm } from "@/utils/tools";
 import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
 import Advanced from "./components/Advanced/index.vue";
 import Settings from "./components/Settings/index.vue";
 import BodyCard from "./components/BodyCard.vue";
-import { useFormValidator } from "./composables/useFormValidator";
+import { usePageForm } from "./composables/usePageForm";
 import type { FormInstance } from "element-plus";
 
 export type TabsName = "settings" | "advanced";
@@ -108,15 +108,8 @@ const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
 const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
 const activeName = ref<TabsName>("settings");
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
-const {
-	ruleForm,
-	rules,
-	registerValidator,
-	registerResetter,
-	validateAll,
-	resetAll,
-	validateForm
-} = useFormValidator();
+const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
+	usePageForm();
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
 

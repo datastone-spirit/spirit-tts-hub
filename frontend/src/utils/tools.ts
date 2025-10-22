@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-21 15:57:32
+ * @LastEditTime: 2025-10-22 09:45:02
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -40,9 +40,7 @@ export function objectHasKeys(obj: any, key: string | string[]): boolean {
 }
 
 /** 将element-plus的表单校验转换成promise形式 */
-export function validateForm(
-	form: FormInstance
-): Promise<{ isValid: boolean; invalidFields?: FormValidateFailure["fields"] }> {
+export function validateForm(form: FormInstance): Promise<FormValidateResult> {
 	return new Promise((resolve) => {
 		if (!form) return resolve({ isValid: false });
 		form.validate((isValid, invalidFields) => resolve({ isValid, invalidFields }));
