@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-22 09:36:33
+ * @LastEditTime: 2025-10-22 16:48:13
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -57,7 +57,7 @@ const ruleForm = useEnhancedLocalStorage<RuleForm>({
 const rules = reactive<FormRules<RuleForm>>({
 	referenceAudioPath: [
 		{
-			trigger: "blur",
+			trigger: "change",
 			validator: (_rule, value, callback) => {
 				if (typeof value !== "string" || value.trim() === "") {
 					return callback(new Error("请配置参考音频"));

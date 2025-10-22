@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-22 14:49:55
+ * @LastEditTime: 2025-10-22 16:49:12
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -37,6 +37,7 @@
 				prop="emotionReferenceAudioPath"
 			>
 				<VoiceReference v-model:audio-path="ruleForm.emotionReferenceAudioPath" />
+				<el-input v-show="false" v-model="ruleForm.emotionReferenceAudioPath" />
 			</el-form-item>
 
 			<el-form-item

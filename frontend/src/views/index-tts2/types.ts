@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-22 11:33:02
+ * @LastEditTime: 2025-10-22 16:17:45
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -73,3 +73,13 @@ export interface ExampleItem extends RuleForm {
 	isExpert: boolean;
 }
 export type ExampleData = ExampleItem[];
+
+/** 历史数据 */
+export interface HistoryItem extends RuleForm {
+	id: string;
+	/** 专家模式 */
+	isExpert: boolean;
+	/** 创建事件 ms */
+	createTime: number;
+}
+export type HistoryData = HistoryItem[];

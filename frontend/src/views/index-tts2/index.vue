@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-22 15:56:02
+ * @LastEditTime: 2025-10-22 16:47:52
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -16,7 +16,7 @@
 						<div class="tts-main-head">
 							<el-space :size="12">
 								<el-button :icon="RiLightbulbLine" @click="onViewExample">查看示例</el-button>
-								<el-button :icon="RiHistoryLine">历史记录</el-button>
+								<el-button :icon="RiHistoryLine" @click="onViewHistory">历史记录</el-button>
 							</el-space>
 						</div>
 						<div class="tts-main-body">
@@ -24,6 +24,7 @@
 								<BodyCard title="参考音频" icon-name="ri-music-2-fill">
 									<el-form-item prop="referenceAudioPath">
 										<VoiceReference v-model:audio-path="ruleForm.referenceAudioPath" />
+										<el-input v-show="false" v-model="ruleForm.referenceAudioPath" />
 									</el-form-item>
 								</BodyCard>
 								<el-divider class="tts-divider" />
@@ -82,6 +83,7 @@
 			/>
 		</div>
 		<ExampleDrawer v-model="showExampleDrawer" @apply-example="onApplyExample" />
+		<HistoryDrawer v-model="showHistoryDrawer" @apply-history="onApplyHistory" />
 	</div>
 </template>
 
@@ -99,9 +101,11 @@ import BodyCard from "./components/BodyCard.vue";
 import { usePageForm } from "./composables/usePageForm";
 import type { FormInstance } from "element-plus";
 import ExampleDrawer from "./components/ExampleDrawer/index.vue";
-import type { ExampleItem } from "./types";
+import type { ExampleItem, HistoryItem } from "./types";
 import { useSettingsStore } from "@/stores";
 import { ComplexityEnum } from "@/enums/complexity.enum";
+import HistoryDrawer from "./components/HistoryDrawer.vue";
+import { useHistory } from "./composables/useHistory";
 
 export type TabsName = "settings" | "advanced";
 
@@ -120,6 +124,8 @@ const { ruleForm, rules, registerValidator, registerResetter, validateAll, reset
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
 const showExampleDrawer = ref(false);
+const showHistoryDrawer = ref(false);
+const { addHistory } = useHistory();
 
 /** 查看示例 */
 function onViewExample() {
@@ -128,6 +134,17 @@ function onViewExample() {
 /** 应用示例 */
 function onApplyExample(item: ExampleItem) {
 	const { isExpert, ...data } = item;
+	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
+	ruleForm.value = data;
+}
+
+/** 查看历史记录 */
+function onViewHistory() {
+	showHistoryDrawer.value = true;
+}
+/** 应用历史记录 */
+function onApplyHistory(item: HistoryItem) {
+	const { isExpert, createTime, id, ...data } = item;
 	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
 	ruleForm.value = data;
 }
@@ -161,6 +178,9 @@ async function onSubmitForm() {
 	generateLoading.value = false;
 
 	generateAudioPath.value = templateAudio;
+
+	// 添加历史记录
+	addHistory(ruleForm.value);
 }
 </script>
 
