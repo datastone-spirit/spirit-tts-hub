@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-22 09:36:57
+ * @LastEditTime: 2025-10-22 09:48:42
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -111,7 +111,7 @@ const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
 	usePageForm();
 const generateLoading = ref(false);
-const generateAudioPath = ref("");
+const generateAudioPath = ref(templateAudio);
 
 /** 注册校验器 */
 registerValidator(async () => {
@@ -143,11 +143,6 @@ async function onSubmitForm() {
 
 	generateAudioPath.value = templateAudio;
 }
-
-// /** 音频生成成功 */
-// function onGenerateComplete(path: string) {
-// 	generateAudioPath.value = path;
-// }
 </script>
 
 <style lang="scss" scoped>

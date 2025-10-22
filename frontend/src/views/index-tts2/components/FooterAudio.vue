@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-20 17:04:35
+ * @LastEditTime: 2025-10-22 10:31:57
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -14,8 +14,8 @@
 			<h3 class="audio-title">生成音频</h3>
 		</div>
 
-		<div class="footer-audio-right">
-			<div v-show="isAudioPath" class="footer-audio-right-content">
+		<div class="footer-audio-center">
+			<div v-show="isAudioPath" class="footer-audio-player">
 				<div class="audio-progress">
 					<div class="audio-played-time">
 						{{ AudioHelper.formatDuration(playerData.currentDuration) }}
@@ -45,20 +45,21 @@
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="footer-buttons">
-				<el-button :icon="RiResetLeftLine" :disabled="loading" @click="$emit('reset-form')">
-					重置表单
-				</el-button>
-				<el-button
-					type="primary"
-					:loading="loading"
-					:icon="RiMusicAiFill"
-					@click="$emit('submit-form')"
-				>
-					生成语音
-				</el-button>
-			</div>
+		<div class="footer-audio-right">
+			<el-button class="footer-button reset" :disabled="loading" @click="$emit('reset-form')">
+				重置表单
+			</el-button>
+			<el-button
+				class="footer-button submit"
+				type="primary"
+				:loading="loading"
+				:icon="RiMusicAiFill"
+				@click="$emit('submit-form')"
+			>
+				生成语音
+			</el-button>
 		</div>
 	</div>
 </template>
@@ -86,7 +87,6 @@ const _emit = defineEmits<{
 // 图标定义
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });
 const RiMusicAiFill = useIcon({ name: "ri-music-ai-fill", size: 16 });
-const RiResetLeftLine = useIcon({ name: "ri-reset-left-line", size: 16 });
 
 const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
 let playerInstance: WaveSurferInstance | undefined;
@@ -137,10 +137,10 @@ onUnmounted(() => {
 	height: 100%;
 	padding: $zl-padding;
 	display: flex;
+	gap: $zl-padding;
 }
 .footer-audio-left {
 	flex-shrink: 0;
-	width: 200px;
 	.audio-icon {
 		color: var(--el-color-primary);
 		margin-bottom: 10px;
@@ -151,17 +151,15 @@ onUnmounted(() => {
 		color: var(--el-text-color-primary);
 	}
 }
-.footer-audio-right {
+.footer-audio-center {
 	flex-grow: 1;
 	min-width: 0;
-	height: 100%;
 	display: flex;
-	align-items: center;
-	justify-content: center;
 }
-.footer-audio-right-content {
+.footer-audio-player {
 	flex-grow: 1;
 	max-width: 900px;
+	margin: auto;
 }
 .audio-progress {
 	display: flex;
@@ -207,5 +205,12 @@ onUnmounted(() => {
 }
 .audio-other {
 	flex-shrink: 0;
+}
+.footer-audio-right {
+	flex-shrink: 0;
+	height: 100%;
+}
+.footer-button {
+	height: 100%;
 }
 </style>
