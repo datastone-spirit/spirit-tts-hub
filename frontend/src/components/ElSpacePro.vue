@@ -1,35 +1,25 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-07-08 11:11:20
- * @LastEditTime: 2025-09-30 10:33:49
+ * @LastEditTime: 2025-10-23 09:19:36
  * @LastEditors: mulingyuer
  * @Description: 增强版ElSpace组件
- * @FilePath: \frontend\src\components\ZLSpace\index.vue
+ * @FilePath: \frontend\src\components\ElSpacePro.vue
  * 怎么可能会有bug！！！
 -->
 <script lang="ts">
 import { ElSpace } from "element-plus";
-import type { SpaceProps } from "element-plus";
+import { type SpaceProps, spaceProps } from "element-plus";
 import { Comment, type VNode } from "vue";
 
-export interface ElSpaceProProps {
-	size?: SpaceProps["size"];
-	spacer?: SpaceProps["spacer"];
-}
+export type ElSpaceProProps = SpaceProps;
 
 export default defineComponent({
 	name: "ElSpacePro",
-	props: {
-		size: {
-			type: [Number, String] as PropType<SpaceProps["size"]>,
-			default: "small"
-		},
-		spacer: {
-			type: [String, Object] as PropType<SpaceProps["spacer"]>
-		}
-	},
+	props: spaceProps,
 	setup(props) {
 		const slots = useSlots();
+		const attrs = useAttrs();
 
 		/** 判断是不是Comment节点
 		 * 当`v-if="false"`时默认会插入一个注释节点Comment
@@ -48,8 +38,8 @@ export default defineComponent({
 			h(
 				ElSpace,
 				{
-					size: props.size,
-					spacer: props.spacer
+					...props,
+					...attrs
 				},
 				() => {
 					return (slots.default?.() || []).filter((node) => {
