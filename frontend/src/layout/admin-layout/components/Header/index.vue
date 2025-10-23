@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-24 09:32:10
- * @LastEditTime: 2025-10-22 15:40:54
+ * @LastEditTime: 2025-10-22 17:24:41
  * @LastEditors: mulingyuer
  * @Description: header
  * @FilePath: \frontend\src\layout\admin-layout\components\Header\index.vue
@@ -15,7 +15,7 @@
 				<ZLSwitch v-model="openComplexity" off-text="新手" on-text="专家" />
 				<LightDarkToggle />
 				<router-link class="help-btn" :to="{ name: 'Help' }">
-					<Icon name="ri-question-line" />
+					<Icon name="ri-question-line" size="14" />
 					<span>帮助</span>
 				</router-link>
 			</el-space>
@@ -86,9 +86,11 @@ const openComplexity = computed({
 .help-btn {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 4px;
 	text-decoration: none;
 	padding: 0 6px;
+	font-size: 14px;
+	line-height: 1;
 	color: var(--el-text-color-regular);
 	transition: color var(--el-transition-duration);
 	&:hover {
