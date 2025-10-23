@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-24 09:51:09
- * @LastEditTime: 2025-10-23 09:54:48
+ * @LastEditTime: 2025-10-23 10:41:06
  * @LastEditors: mulingyuer
  * @Description: 帮助页面
  * @FilePath: \frontend\src\views\help\index.vue
@@ -21,11 +21,11 @@
 				</div>
 				<div class="help-item">
 					<div class="help-item-label">最后更新时间</div>
-					<div class="help-item-value">2025/10/23 09:05:03</div>
+					<div class="help-item-value">{{ commitTime }}</div>
 				</div>
 				<div class="help-item">
 					<div class="help-item-label">哈希</div>
-					<div class="help-item-value">bcdbc05</div>
+					<div class="help-item-value">{{ commitId }}</div>
 				</div>
 			</HelpCard>
 			<el-divider class="help-divider" />
@@ -71,9 +71,12 @@
 </template>
 
 <script setup lang="ts">
+import { formatDate } from "@/utils/dayjs";
 import HelpCard from "./components/HelpCard.vue";
 
 const logoTitle = import.meta.env.VITE_APP_TITLE;
+const commitTime = formatDate(__GIT_COMMIT_TIME__, "YYYY/MM/DD HH:mm:ss");
+const commitId = __GIT_COMMIT_ID__;
 </script>
 
 <style lang="scss" scoped>
