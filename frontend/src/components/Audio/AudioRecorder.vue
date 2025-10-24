@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 10:56:07
- * @LastEditTime: 2025-10-16 15:28:17
+ * @LastEditTime: 2025-10-23 17:34:12
  * @LastEditors: mulingyuer
  * @Description: 录音组件
  * @FilePath: \frontend\src\components\Audio\AudioRecorder.vue
@@ -125,11 +125,14 @@ export interface AudioRecorderProps {
 	uploadConfig?: AudioUploadConfig;
 	/** 示波器高度 */
 	waveSurferHeight?: number;
+	/** 是否一开始就获取录音设备 */
+	acquireAudioOnMount?: boolean;
 }
 
 const props = withDefaults(defineProps<AudioRecorderProps>(), {
 	showDeviceSelector: true,
-	waveSurferHeight: 102
+	waveSurferHeight: 102,
+	acquireAudioOnMount: false
 });
 const filePath = defineModel("file-path", { type: String, required: true });
 
@@ -254,7 +257,9 @@ watchEffect(() => {
 });
 
 onMounted(async () => {
-	await getDevices();
+	if (props.acquireAudioOnMount) {
+		await getDevices();
+	}
 
 	if (!waveformRef.value) return;
 
