@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-04 16:14:16
- * @LastEditTime: 2025-09-19 16:50:09
+ * @LastEditTime: 2025-10-24 15:55:18
  * @LastEditors: mulingyuer
  * @Description: 设置数据仓库
  * @FilePath: \frontend\src\stores\modules\settings\index.ts
@@ -9,6 +9,7 @@
  */
 import { defineStore } from "pinia";
 import { ComplexityEnum } from "@/enums/complexity.enum";
+import { getEnv } from "@/utils/env";
 export type * from "./types";
 
 export const useSettingsStore = defineStore(
@@ -25,12 +26,15 @@ export const useSettingsStore = defineStore(
 		/** 是否专家难度 */
 		const isExpert = computed(() => complexity.value === ComplexityEnum.EXPERT);
 
+		/** 是否开启小白校验 */
+		const whiteCheck = readonly(computed(() => getEnv().VITE_APP_WHITE_CHECK === "true"));
 
 		return {
 			complexity,
 			setComplexity,
 			isBeginner,
 			isExpert,
+			whiteCheck
 		};
 	},
 	{

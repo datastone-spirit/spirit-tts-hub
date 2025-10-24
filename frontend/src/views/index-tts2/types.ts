@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-22 16:17:45
+ * @LastEditTime: 2025-10-24 16:30:01
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -10,14 +10,20 @@
 
 /** 表单 */
 export interface RuleForm {
+	/** 参考音频文件名称 */
+	referenceAudioName: string;
 	/** 参考音频文件路径（用于音色克隆等） */
 	referenceAudioPath: string;
+	/** 选择的本地path */
+	localReferenceAudioPath: string;
 	/** 需要合成的原始文本内容 */
 	text: string;
 	/** 文本分段的最大 token 数量，默认：120 */
 	maxTokensPerSegment: number;
 	/** 情感控制策略，默认："same_as_voice" */
 	emotionControlStrategy: string;
+	/** 情感参考音频文件名 */
+	emotionReferenceAudioName: string;
 	/** 情感参考音频文件路径（当 emotionControlStrategy 为 "use_emotion_audio" 时生效） */
 	emotionReferenceAudioPath: string;
 	/**
