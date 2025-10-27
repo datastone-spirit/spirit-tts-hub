@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-24 15:11:33
- * @LastEditTime: 2025-10-24 15:48:36
+ * @LastEditTime: 2025-10-27 10:41:02
  * @LastEditors: mulingyuer
  * @Description: 全局弹窗管理 hooks 类型
  * @FilePath: \frontend\src\hooks\useModalManager\types.ts
@@ -9,23 +9,23 @@
  */
 
 /** 文件选择器类型 */
-export type FileDialogType =
+export type PathPickerDialogType =
 	| "file" // 文件
 	| "directory" // 目录
 	| "both"; // 文件和目录
 
 /** 文件选择器数据 */
-export interface FileDialogData {
+export interface PathPickerDialogData {
 	/** 是否显示 */
 	show: boolean;
 	/** 初始路径 */
 	path: string;
 	/** 类型 */
-	type: FileDialogType;
+	type: PathPickerDialogType;
 }
 
 /** 显示文件选择器弹窗的参数 */
-export interface FileDialogOptions {
+export interface PathPickerDialogOptions {
 	path: string;
 	type: "file" | "directory" | "both";
 }
@@ -69,8 +69,8 @@ export interface FileResult {
 }
 
 /** 文件选择器控制器 */
-export interface FileDialogController {
-	show(options: FileDialogOptions): Promise<any>;
+export interface PathPickerDialogController {
+	show(options: PathPickerDialogOptions): Promise<any>;
 	resolve: ((data: any) => void) | null;
 	reject: ((reason?: any) => void) | null;
 }

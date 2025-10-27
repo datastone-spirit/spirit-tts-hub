@@ -1,17 +1,17 @@
 <!--
  * @Author: mulingyuer
- * @Date: 2025-10-24 10:48:30
- * @LastEditTime: 2025-10-27 10:51:59
+ * @Date: 2025-10-27 10:28:33
+ * @LastEditTime: 2025-10-27 10:44:28
  * @LastEditors: mulingyuer
- * @Description: 文件选择器
- * @FilePath: \frontend\src\components\Form\FilePicker.vue
+ * @Description: 目录选择器
+ * @FilePath: \frontend\src\components\Form\FolderPicker.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<div class="file-picker">
-		<div class="file-picker-head">
+	<div class="folder-picker">
+		<div class="folder-picker-head">
 			<el-input
-				class="file-picker-input"
+				class="folder-picker-input"
 				v-model="modelValue"
 				:placeholder="placeholder"
 				:size="size"
@@ -24,15 +24,15 @@
 				<el-button class="file-manager-info-btn" :icon="RiInformationLine" link />
 			</el-tooltip>
 		</div>
-		<div class="file-picker-footer">
-			<el-button class="file-picker-btn" type="primary" :size="size">确认选择</el-button>
+		<div class="folder-picker-footer">
+			<el-button class="folder-picker-btn" type="primary" :size="size">确认选择</el-button>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { useIcon } from "@/hooks/useIcon";
-import { useModalManager, type FileResult } from "@/hooks/useModalManager";
+import { useModalManager, type DirectoryResult } from "@/hooks/useModalManager";
 import { getEnv } from "@/utils/env";
 import { useSettingsStore } from "@/stores";
 import type { ComponentSize } from "element-plus";
@@ -42,12 +42,10 @@ export interface FilePickerProps {
 	placeholder?: string;
 	/** 大小 */
 	size?: ComponentSize;
-	/** 指定文件类型 */
-	mimeType?: string;
 }
 
-const props = withDefaults(defineProps<FilePickerProps>(), {
-	placeholder: "请输入或选择文件",
+const _props = withDefaults(defineProps<FilePickerProps>(), {
+	placeholder: "请输入或选择目录",
 	size: "default"
 });
 const emit = defineEmits<{
@@ -70,18 +68,9 @@ const tooltipContent = `如果挂载了存储请使用挂载存储所使用的�
 function onShowSelector() {
 	showPathPickerDialog({
 		path: modelValue.value,
-		type: "file"
+		type: "directory"
 	})
-		.then((item: FileResult) => {
-			console.log("🚀 ~ onShowSelector ~ item:", item);
-			// mime 校验
-			if (typeof props.mimeType === "string" && props.mimeType.trim() !== "") {
-				if (!item.mime_type || !item.mime_type.startsWith(props.mimeType.toLowerCase())) {
-					ElMessage.error(`请选择正确的 ${props.mimeType} 文件`);
-					return;
-				}
-			}
-
+		.then((item: DirectoryResult) => {
 			modelValue.value = item.path;
 			emit("confirm", { name: item.basename, path: item.path });
 		})
@@ -90,16 +79,16 @@ function onShowSelector() {
 </script>
 
 <style lang="scss" scoped>
-.file-picker {
+.folder-picker {
 	width: 100%;
 	height: 165px;
 }
-.file-picker-head {
+.folder-picker-head {
 	width: 100%;
 	display: flex;
 	gap: $zl-padding;
 }
-.file-picker-footer {
+.folder-picker-footer {
 	margin-top: $zl-padding;
 	text-align: right;
 }

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-24 17:19:06
+ * @LastEditTime: 2025-10-27 10:55:23
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -30,7 +30,7 @@
 				<template #label>
 					<div class="voice-tab-label">
 						<Icon class="voice-tab-label-icon" name="ri-file-music-line" />
-						<span>选择文件</span>
+						<span>文件</span>
 					</div>
 				</template>
 				<el-form-item prop="localReferenceAudioPath">
@@ -100,6 +100,11 @@ function onFilePickerConfirm(data: { name: string; path: string }) {
 <style lang="scss" scoped>
 .voice-reference {
 	width: 100%;
+}
+.voice-tab {
+	:deep(.el-tabs__header) {
+		@include no-select();
+	}
 }
 .voice-tab-label {
 	display: flex;

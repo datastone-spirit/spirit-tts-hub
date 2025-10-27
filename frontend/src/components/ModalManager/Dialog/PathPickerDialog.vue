@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-10-24 16:16:21
+ * @LastEditTime: 2025-10-27 10:44:11
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
- * @FilePath: \frontend\src\components\ModalManager\Dialog\FileDialog.vue
+ * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -12,7 +12,7 @@
 		id="file-dialog-vuefinder"
 		class="file-dialog"
 		width="700"
-		v-model="fileDialogData.show"
+		v-model="pathPickerDialogData.show"
 		align-center
 		@close="onClose"
 	>
@@ -30,7 +30,7 @@ import { useModalManager } from "@/hooks/useModalManager";
 import { getEnv } from "@/utils/env";
 
 const env = getEnv();
-const { fileDialogData, resolveFileDialog, rejectFileDialog } = useModalManager();
+const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
 
 const features = ["select", "preview", "newfolder", "delete"];
 const handleSelectButton = {
@@ -41,14 +41,14 @@ const handleSelectButton = {
 		const item = items[0];
 
 		// 判断类型
-		switch (fileDialogData.type) {
+		switch (pathPickerDialogData.type) {
 			case "file":
 				if (item.type !== "file") {
 					return ElMessage.error("请选择文件");
 				}
 				break;
 			case "directory":
-				if (item.type !== "directory") {
+				if (item.type !== "dir") {
 					return ElMessage.error("请选择文件夹");
 				}
 				break;
@@ -58,14 +58,14 @@ const handleSelectButton = {
 		}
 
 		// 用户选择成功，resolve Promise
-		resolveFileDialog(item);
+		resolvePathPickerDialog(item);
 	}
 };
 const request = computed(() => {
 	return {
 		baseUrl: `${env.VITE_APP_API_BASE_URL}/file`,
 		params: {
-			path: fileDialogData.path
+			path: pathPickerDialogData.path
 		},
 		body: { additionalBody1: ["yes"] },
 		transformRequest: (req: any) => {
@@ -92,7 +92,7 @@ function refresh() {
 /** 弹窗关闭 */
 function onClose() {
 	// 用户点击右上角关闭或按 ESC，视为取消
-	rejectFileDialog(new Error("用户取消选择"));
+	rejectPathPickerDialog(new Error("用户取消选择"));
 }
 </script>
 

@@ -8,11 +8,11 @@
  * 怎么可能会有bug！！！
 -->
 <template>
-	<FileDialog />
+	<PathPickerDialog />
 </template>
 
 <script setup lang="ts">
-import FileDialog from "./Dialog/FileDialog.vue";
+import PathPickerDialog from "./Dialog/PathPickerDialog.vue";
 </script>
 
 <style scoped></style>
