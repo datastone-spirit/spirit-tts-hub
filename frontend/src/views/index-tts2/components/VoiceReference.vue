@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-27 10:55:23
+ * @LastEditTime: 2025-10-28 09:45:56
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -34,11 +34,23 @@
 					</div>
 				</template>
 				<el-form-item prop="localReferenceAudioPath">
-					<FilePicker
-						v-model="ruleForm.localReferenceAudioPath"
-						mime-type="audio"
-						@confirm="onFilePickerConfirm"
-					/>
+					<div class="local-path">
+						<el-space fill style="width: 100%">
+							<FilePicker
+								v-model="ruleForm.localReferenceAudioPath"
+								mime-type="audio/"
+								size="large"
+								confirm-on-enter
+								@confirm="onFilePickerConfirm"
+							/>
+							<el-alert class="local-path-info" type="info" :closable="false">
+								<ol>
+									<li>点击右侧文件图标选择音频文件。</li>
+									<li>点击输入框可自行输入文件路径，回车确认。</li>
+								</ol>
+							</el-alert>
+						</el-space>
+					</div>
 				</el-form-item>
 			</el-tab-pane>
 		</el-tabs>
@@ -113,5 +125,17 @@ function onFilePickerConfirm(data: { name: string; path: string }) {
 }
 .voice-tab-label-icon {
 	margin-right: 6px;
+}
+.local-path {
+	width: 100%;
+	height: 165px;
+}
+.local-path-info {
+	padding: 8px;
+	:deep(ol) {
+		padding-inline-start: 24px;
+		font-size: 14px;
+		line-height: 24px;
+	}
 }
 </style>

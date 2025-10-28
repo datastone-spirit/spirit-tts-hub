@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-24 16:31:21
+ * @LastEditTime: 2025-10-27 14:56:12
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -110,9 +110,8 @@ export function usePageForm() {
 	 * 所以这里手动复写表单数据
 	 */
 	function resetAllPro() {
-		return resetAll().finally(() => {
-			ruleForm.value = structuredClone(toRaw(defaultForm));
-		});
+		ruleForm.value = structuredClone(toRaw(defaultForm));
+		return resetAll();
 	}
 
 	return {

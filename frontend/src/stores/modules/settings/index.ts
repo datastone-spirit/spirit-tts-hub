@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-04 16:14:16
- * @LastEditTime: 2025-10-24 15:55:18
+ * @LastEditTime: 2025-10-27 14:35:23
  * @LastEditors: mulingyuer
  * @Description: 设置数据仓库
  * @FilePath: \frontend\src\stores\modules\settings\index.ts
@@ -10,7 +10,9 @@
 import { defineStore } from "pinia";
 import { ComplexityEnum } from "@/enums/complexity.enum";
 import { getEnv } from "@/utils/env";
+import type { AppSettings } from "./types";
 export type * from "./types";
+import { resettableRef } from "@/utils/ref";
 
 export const useSettingsStore = defineStore(
 	"settings",
@@ -29,12 +31,23 @@ export const useSettingsStore = defineStore(
 		/** 是否开启小白校验 */
 		const whiteCheck = readonly(computed(() => getEnv().VITE_APP_WHITE_CHECK === "true"));
 
+		/** 应用设置 */
+		const [appSettings, restoreAppSettings] = resettableRef<AppSettings>({
+			uploadPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}/upload` : "",
+			outputPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}/output` : ""
+		});
+		function resetAppSettings() {
+			restoreAppSettings();
+		}
+
 		return {
 			complexity,
 			setComplexity,
 			isBeginner,
 			isExpert,
-			whiteCheck
+			whiteCheck,
+			appSettings,
+			resetAppSettings
 		};
 	},
 	{
