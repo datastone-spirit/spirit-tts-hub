@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-28 17:07:14
+ * @LastEditTime: 2025-10-28 17:23:31
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -208,14 +208,14 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000), { immediate: t
 	line-height: 1.6;
 }
 .text-seg-preview-table .col-index {
-	width: 120px;
+	width: 80px;
 }
 .text-seg-preview-table .col-content {
 	width: auto;
 	min-width: 300px;
 }
 .text-seg-preview-table .col-token {
-	width: 160px;
+	width: 120px;
 }
 .table-empty {
 	text-align: center;
