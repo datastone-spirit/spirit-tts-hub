@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-01-21 09:10:49
- * @LastEditTime: 2025-01-21 09:10:49
+ * @LastEditTime: 2025-10-27 15:49:37
  * @LastEditors: mulingyuer
  * @Description: 扩展axios类型
  * @FilePath: \frontend\src\request\axios.d.ts
@@ -24,5 +24,9 @@ declare module "axios" {
 		 *  ```
 		 */
 		showCancelErrorMessage?: boolean;
+		/** 是否解包响应的数据
+		 *  默认：true
+		 */
+		unpack?: boolean;
 	}
 }
