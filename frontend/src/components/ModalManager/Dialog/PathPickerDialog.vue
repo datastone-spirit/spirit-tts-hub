@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-10-27 10:44:11
+ * @LastEditTime: 2025-10-28 09:49:30
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
  * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { useModalManager } from "@/hooks/useModalManager";
 import { getEnv } from "@/utils/env";
+import { validateMimeType } from "@/utils/tools";
 
 const env = getEnv();
 const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
@@ -41,7 +42,7 @@ const handleSelectButton = {
 		const item = items[0];
 
 		// 判断类型
-		switch (pathPickerDialogData.type) {
+		switch (pathPickerDialogData.value.type) {
 			case "file":
 				if (item.type !== "file") {
 					return ElMessage.error("请选择文件");
@@ -57,6 +58,16 @@ const handleSelectButton = {
 				break;
 		}
 
+		// mime type 校验
+		const mimeType = pathPickerDialogData.value.mime_type;
+		if (typeof mimeType === "string" && mimeType.trim() !== "") {
+			const isValid = validateMimeType(item.mime_type, mimeType);
+			if (!isValid) {
+				ElMessage.error(`请选择正确的 ${mimeType} 类型内容`);
+				return;
+			}
+		}
+
 		// 用户选择成功，resolve Promise
 		resolvePathPickerDialog(item);
 	}
@@ -65,7 +76,7 @@ const request = computed(() => {
 	return {
 		baseUrl: `${env.VITE_APP_API_BASE_URL}/file`,
 		params: {
-			path: pathPickerDialogData.path
+			path: pathPickerDialogData.value.path
 		},
 		body: { additionalBody1: ["yes"] },
 		transformRequest: (req: any) => {

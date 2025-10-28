@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-22 09:45:02
+ * @LastEditTime: 2025-10-28 09:31:39
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -329,4 +329,54 @@ export function getFileExtension(filename: string) {
 		}
 	}
 	return "";
+}
+
+/**
+ * 校验实际 MIME 类型是否匹配一个或多个期望类型。
+ * 支持精确匹配 ('image/png')、前缀匹配 ('image/') 和通配符匹配 ('image/*')。
+ * @param actualMimeType - 实际的 MIME 类型（如 'image/png'）
+ * @param expectedMimeTypes - 期望的 MIME 类型，可以是单个字符串或字符串数组。
+ * @returns 如果实际类型匹配任何一个期望类型，则返回 true，否则返回 false。
+ */
+export function validateMimeType(
+	actualMimeType: string | null | undefined,
+	expectedMimeTypes: string | string[] | null | undefined
+): boolean {
+	if (!actualMimeType || typeof actualMimeType !== "string" || !expectedMimeTypes) {
+		return false;
+	}
+
+	const actual = actualMimeType.trim().toLowerCase();
+	const expected = Array.isArray(expectedMimeTypes) ? expectedMimeTypes : [expectedMimeTypes];
+
+	if (expected.length === 0) {
+		return false;
+	}
+
+	// 遍历所有期望的类型，只要有一个匹配就返回 true
+	return expected.some((expectedType) => {
+		if (typeof expectedType !== "string" || expectedType.trim() === "") {
+			return false;
+		}
+
+		const expected = expectedType.trim().toLowerCase();
+
+		if (expected === "*/*" || expected === "*") {
+			return true;
+		}
+
+		if (expected.endsWith("/*")) {
+			// 如 'image/*' 匹配 'image/png'
+			const prefix = expected.slice(0, -1); // 'image/'
+			return actual.startsWith(prefix);
+		}
+
+		if (expected.endsWith("/")) {
+			// 如 'image/' 匹配 'image/png'
+			return actual.startsWith(expected);
+		}
+
+		// 精确匹配 'image/png'
+		return actual === expected;
+	});
 }
