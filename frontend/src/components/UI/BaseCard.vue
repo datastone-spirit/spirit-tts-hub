@@ -1,31 +1,32 @@
 <!--
  * @Author: mulingyuer
- * @Date: 2025-10-22 17:25:52
- * @LastEditTime: 2025-10-22 17:40:59
+ * @Date: 2025-10-27 11:37:32
+ * @LastEditTime: 2025-10-27 11:38:40
  * @LastEditors: mulingyuer
- * @Description: 帮助卡片
- * @FilePath: \frontend\src\views\help\components\HelpCard.vue
+ * @Description: 基础卡片
+ * @FilePath: \frontend\src\components\UI\BaseCard.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<div class="help-card">
-		<h3 class="help-card-title">{{ title }}</h3>
-		<div class="help-card-content">
+	<div class="base-card">
+		<h3 class="base-card-title">{{ title }}</h3>
+		<div class="base-card-content">
 			<slot></slot>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-export interface HelpCardProps {
+export interface BaseCardProps {
+	/** 标题 */
 	title: string;
 }
 
-defineProps<HelpCardProps>();
+withDefaults(defineProps<BaseCardProps>(), {});
 </script>
 
 <style lang="scss" scoped>
-.help-card-title {
+.base-card-title {
 	font-size: 16px;
 	font-weight: bold;
 	height: 70px;
