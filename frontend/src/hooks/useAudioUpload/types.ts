@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:40:33
- * @LastEditTime: 2025-10-15 09:44:16
+ * @LastEditTime: 2025-10-28 14:11:02
  * @LastEditors: mulingyuer
  * @Description: 音频上传 Hook 类型
  * @FilePath: \frontend\src\hooks\useAudioUpload\types.ts
@@ -17,7 +17,7 @@ export interface AudioUploadConfig {
 	/** 允许的文件类型 */
 	accept?: string[];
 	/** 自定义上传函数 */
-	customUpload?: (file: File, onProgress?: (progress: number) => void) => Promise<string>;
+	customUpload?: (file: File, onProgress?: (progress: number) => void) => Promise<UploadFileResult>;
 }
 
 /** 上传状态数据 */
@@ -42,4 +42,13 @@ export interface UploadFileData {
 }
 
 /** 上传文件结果 */
-export type UploadFileResult = { filePath: string } | { filePath: null; message: string };
+export type UploadFileResult =
+	| {
+			success: true;
+			filePath: string;
+			fileName: string;
+	  }
+	| {
+			success: false;
+			message: string;
+	  };

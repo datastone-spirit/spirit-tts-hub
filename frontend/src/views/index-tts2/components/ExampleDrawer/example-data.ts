@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-22 11:35:03
- * @LastEditTime: 2025-10-27 10:48:40
+ * @LastEditTime: 2025-10-28 15:46:10
  * @LastEditors: mulingyuer
  * @Description: 示例数据
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\example-data.ts
@@ -22,6 +22,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -54,6 +55,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -86,6 +88,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -118,6 +121,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -150,6 +154,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -182,6 +187,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -214,6 +220,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "emo_sad.wav",
 		emotionReferenceAudioPath: "emo_sad.wav",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -246,6 +253,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "emo_hate.wav",
 		emotionReferenceAudioPath: "emo_hate.wav",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -278,6 +286,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -310,6 +319,7 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
+		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-10-28 09:49:30
+ * @LastEditTime: 2025-10-28 11:35:47
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
  * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
@@ -19,6 +19,7 @@
 		<vue-finder
 			:features="features"
 			:request="request"
+			:path="pathPickerDialogData.path"
 			:select-button="handleSelectButton"
 			class="file-finder"
 		/>
@@ -74,17 +75,22 @@ const handleSelectButton = {
 };
 const request = computed(() => {
 	return {
-		baseUrl: `${env.VITE_APP_API_BASE_URL}/file`,
+		baseUrl: `${env.VITE_APP_API_BASE_URL}/files/file`,
 		params: {
-			path: pathPickerDialogData.value.path
+			additionalParam1: "yes",
+			path: computed(() => pathPickerDialogData.value.path)
 		},
 		body: { additionalBody1: ["yes"] },
 		transformRequest: (req: any) => {
+			if (req.method === "get") {
+				req.params.vf = "1";
+			}
 			if (req.method === "post") {
 				refresh();
 			}
 			return req;
 		},
+		headers: { "X-ADDITIONAL-HEADER": "yes" },
 		xsrfHeaderName: "CSRF-TOKEN"
 	};
 });

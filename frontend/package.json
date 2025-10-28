@@ -26,6 +26,7 @@
     "dayjs": "^1.11.13",
     "default-passive-events": "^4.0.0",
     "element-plus": "^2.11.4",
+    "mime": "^4.1.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.3",

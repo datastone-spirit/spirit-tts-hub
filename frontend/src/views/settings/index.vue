@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-27 11:06:39
- * @LastEditTime: 2025-10-28 10:26:18
+ * @LastEditTime: 2025-10-28 15:42:15
  * @LastEditors: mulingyuer
  * @Description: 设置页面
  * @FilePath: \frontend\src\views\settings\index.vue
@@ -39,6 +39,8 @@ import type { FormInstance, FormRules } from "element-plus";
 import { getEnv } from "@/utils/env";
 import { getFileInfo, type DirectoryResult } from "@/api/common";
 
+type DirExistResult = { valid: true } | { valid: false; message: string };
+
 const settingsStore = useSettingsStore();
 
 const env = getEnv();
@@ -47,86 +49,79 @@ const ruleForm = storeToRefs(settingsStore).appSettings;
 const rules = reactive<FormRules<AppSettings>>({
 	uploadPath: [
 		{
-			trigger: "change",
-			validator: (_rule, value: string, callback) => {
-				// 小白校验
-				if (settingsStore.whiteCheck && !value.startsWith(env.VITE_APP_OUTPUT_PARENT_PATH)) {
-					return callback(new Error(`请选择以${env.VITE_APP_OUTPUT_PARENT_PATH}路径开头的目录`));
-				}
-
-				callback();
-			}
-		},
-		{
 			trigger: "blur",
-			validator: async (_rule, value: string, callback) => {
+			asyncValidator: async (_rule, value: string, callback) => {
 				try {
-					const result = await getFileInfo(value);
-
-					if (!result || (result as any).error) {
-						return callback(new Error("路径不正确，请输入正确的路径"));
+					// 小白校验
+					if (settingsStore.whiteCheck && !value.startsWith(env.VITE_APP_OUTPUT_PARENT_PATH)) {
+						callback(new Error(`请选择以${env.VITE_APP_OUTPUT_PARENT_PATH}路径开头的目录`));
+						return;
 					}
 
-					if (result.dirname === value) {
-						return callback();
-					}
-
-					const findFolder = result.files.find((item): item is DirectoryResult => {
-						return item.path === value && item.type === "dir";
-					});
-					if (!findFolder) {
-						return callback(new Error("目录不存在"));
+					// 判断目录是否存在
+					const result = await isDirExist(value);
+					if (!result.valid) {
+						callback(new Error(result.message));
+						return;
 					}
 
 					callback();
 				} catch (error) {
 					console.error("获取目录信息发生错误：", error);
-					return callback(new Error("获取目录信息发生错误"));
+					callback(new Error("获取目录信息发生错误"));
 				}
 			}
 		}
 	],
 	outputPath: [
 		{
-			trigger: "change",
-			validator: (_rule, value: string, callback) => {
-				// 小白校验
-				if (settingsStore.whiteCheck && !value.startsWith(env.VITE_APP_OUTPUT_PARENT_PATH)) {
-					return callback(new Error(`请选择以${env.VITE_APP_OUTPUT_PARENT_PATH}路径开头的目录`));
-				}
-
-				callback();
-			}
-		},
-		{
 			trigger: "blur",
-			validator: async (_rule, value: string, callback) => {
+			asyncValidator: async (_rule, value: string, callback) => {
 				try {
-					const result = await getFileInfo(value);
-					if (!result || (result as any).error) {
-						return callback(new Error("路径不正确，请输入正确的路径"));
+					// 小白校验
+					if (settingsStore.whiteCheck && !value.startsWith(env.VITE_APP_OUTPUT_PARENT_PATH)) {
+						callback(new Error(`请选择以${env.VITE_APP_OUTPUT_PARENT_PATH}路径开头的目录`));
+						return;
 					}
 
-					if (result.dirname === value) {
-						return callback();
-					}
-
-					const findFolder = result.files.find((item): item is DirectoryResult => {
-						return item.path === value && item.type === "dir";
-					});
-					if (!findFolder) {
-						return callback(new Error("目录不存在"));
+					// 判断目录是否存在
+					const result = await isDirExist(value);
+					if (!result.valid) {
+						callback(new Error(result.message));
+						return;
 					}
 
 					callback();
 				} catch (error) {
 					console.error("获取目录信息发生错误：", error);
-					return callback(new Error("获取目录信息发生错误"));
+					callback(new Error("获取目录信息发生错误"));
 				}
 			}
 		}
 	]
 });
+
+/** 判断目录是否存在 */
+async function isDirExist(path: string): Promise<DirExistResult> {
+	const result = await getFileInfo(path);
+
+	if (!result || (result as any).error) {
+		return { valid: false, message: "路径不正确，请输入正确的路径" };
+	}
+
+	if (result.dirname === path) {
+		return { valid: true };
+	}
+
+	const findFolder = result.files.find((item): item is DirectoryResult => {
+		return item.path === path && item.type === "dir";
+	});
+	if (!findFolder) {
+		return { valid: false, message: "目录不存在" };
+	}
+
+	return { valid: true };
+}
 
 /** 重置设置 */
 function onReset() {

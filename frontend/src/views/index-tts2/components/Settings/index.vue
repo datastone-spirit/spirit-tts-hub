@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-22 16:49:12
+ * @LastEditTime: 2025-10-28 14:28:38
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -36,7 +36,12 @@
 				label="情感参考音频"
 				prop="emotionReferenceAudioPath"
 			>
-				<VoiceReference v-model:audio-path="ruleForm.emotionReferenceAudioPath" />
+				<VoiceReference
+					v-model:audio-path="ruleForm.emotionReferenceAudioPath"
+					v-model:audio-name="ruleForm.emotionReferenceAudioName"
+					v-model:local-path="ruleForm.localEmotionReferenceAudioPath"
+					local-path-prop="localEmotionReferenceAudioPath"
+				/>
 				<el-input v-show="false" v-model="ruleForm.emotionReferenceAudioPath" />
 			</el-form-item>
 

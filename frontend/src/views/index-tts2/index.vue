@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-27 10:50:26
+ * @LastEditTime: 2025-10-28 14:28:29
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -23,7 +23,12 @@
 							<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
 								<BodyCard title="参考音频" icon-name="ri-music-2-fill">
 									<el-form-item prop="referenceAudioPath">
-										<VoiceReference v-model:audio-path="ruleForm.referenceAudioPath" />
+										<VoiceReference
+											v-model:audio-path="ruleForm.referenceAudioPath"
+											v-model:audio-name="ruleForm.referenceAudioName"
+											v-model:local-path="ruleForm.localReferenceAudioPath"
+											local-path-prop="localReferenceAudioPath"
+										/>
 										<el-input v-show="false" v-model="ruleForm.referenceAudioPath" />
 									</el-form-item>
 								</BodyCard>

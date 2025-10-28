@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-14 16:26:13
- * @LastEditTime: 2025-10-16 15:25:26
+ * @LastEditTime: 2025-10-28 15:18:37
  * @LastEditors: mulingyuer
  * @Description: 音频播放组件
  * @FilePath: \frontend\src\components\Audio\AudioPlayer.vue
@@ -9,7 +9,7 @@
 -->
 <template>
 	<div class="audio-player" :class="{ 'has-controls': showControls }">
-		<div class="waveform-container">
+		<div class="waveform-container" v-loading="loading">
 			<el-button
 				v-if="showClearButton"
 				class="audio-player-clear"
@@ -43,8 +43,11 @@
 				</ElSpacePro>
 			</div>
 			<div v-if="enableRegion" class="regin-controls">
-				<div v-if="uploadState.loading" class="regin-upload-progress">
-					<el-progress :percentage="uploadState.progress" />
+				<div v-if="uploadState.loading" class="regin-upload-progress-wrapper">
+					<div class="regin-upload-text">处理中</div>
+					<div class="regin-upload-progress">
+						<el-progress :percentage="uploadState.progress" />
+					</div>
 				</div>
 				<ElSpacePro v-else :size="8">
 					<el-button v-show="!isRegion" :icon="RiScissorsLine" size="default" @click="onAddRegion">
@@ -81,6 +84,7 @@ import {
 import { useAppStore } from "@/stores";
 import { useAudioUpload } from "@/hooks/useAudioUpload";
 import { generateUUID } from "@/utils/tools";
+import mime from "mime";
 
 export interface AudioPlayerProps {
 	/** 是否启用区域选择 */
@@ -97,7 +101,8 @@ export interface AudioPlayerProps {
 	waveSurferHeight?: number;
 }
 
-const audioPath = defineModel("audioPath", { type: String, required: true });
+const audioPath = defineModel("audio-path", { type: String, required: true });
+const audioName = defineModel("audio-name", { type: String, required: true });
 const props = withDefaults(defineProps<AudioPlayerProps>(), {
 	regionEnabled: false,
 	showControls: true,
@@ -108,7 +113,7 @@ const props = withDefaults(defineProps<AudioPlayerProps>(), {
 });
 const emit = defineEmits<{
 	/** 裁剪完成 */
-	"cut-complete": [path: string];
+	"cut-complete": [{ fileName: string; filePath: string }];
 	/** 裁剪结束 */
 	"region-complete": [blob: Blob];
 	/** 清除 */
@@ -126,6 +131,7 @@ const waveformRef = useTemplateRef("waveformRef");
 const originAudioPath = ref<string>();
 let playerInstance: WaveSurferInstance | undefined;
 const {
+	loading,
 	state,
 	isRegion,
 	playerControls,
@@ -134,7 +140,8 @@ const {
 	destroyPlayer,
 	playerData,
 	toggleTheme,
-	playerEmitter
+	playerEmitter,
+	getPreviewPath
 } = useWaveSurferPlayer({ loop: false });
 const { uploadFile, uploadState } = useAudioUpload();
 
@@ -148,6 +155,7 @@ function onAudioPlayerClear() {
 	playerControls.stop();
 	regionControls.clear();
 	audioPath.value = "";
+	audioName.value = "";
 
 	// 事件
 	emit("clear");
@@ -195,21 +203,20 @@ async function onConfirmRegion() {
 	}
 
 	// 上传
-	const fileName = `${generateUUID()}`;
+	const fileName = `${generateUUID()}.${mime.getExtension(audioBlob.type)}`;
 	const file = new File([audioBlob], fileName, { type: audioBlob.type });
 	const result = await uploadFile({ file: file });
 
-	if (typeof result.filePath !== "string") {
+	if (!result.success) {
 		ElMessage.error(result.message);
 		return;
 	}
 
 	// 上传完成
-	// audioPath.value = result.filePath;
-	// TODO: 临时将blob转换为url使用
-	audioPath.value = URL.createObjectURL(audioBlob);
+	audioPath.value = result.filePath;
+	audioName.value = result.fileName;
 	// 发送裁剪完成事件
-	emit("cut-complete", result.filePath);
+	emit("cut-complete", { fileName: result.fileName, filePath: result.filePath });
 }
 
 /** 监听主题变化 */
@@ -222,7 +229,7 @@ watchEffect(() => {
 /** 监听音频路径变化 */
 watchEffect(() => {
 	if (audioPath.value && playerInstance) {
-		playerControls.loadAudio(audioPath.value);
+		playerControls.loadAudio(getPreviewPath(audioPath.value));
 	}
 });
 
@@ -233,10 +240,14 @@ playerEmitter.on("region-complete", (blob: Blob) => {
 
 onMounted(() => {
 	if (!waveformRef.value) return;
+	let url = "";
+	if (typeof audioPath.value === "string" && audioPath.value.trim() !== "") {
+		url = getPreviewPath(audioPath.value);
+	}
 
 	playerInstance = initPlayer({
 		container: waveformRef.value,
-		url: audioPath.value,
+		url,
 		theme: appStore.isDark ? "dark" : "light",
 		options: {
 			height: props.waveSurferHeight
@@ -319,6 +330,15 @@ onUnmounted(() => {
 	flex-shrink: 0;
 	display: flex;
 	align-items: center;
+}
+.regin-upload-progress-wrapper {
+	display: flex;
+	align-items: center;
+	gap: $zl-padding;
+}
+.regin-upload-text {
+	font-size: 14px;
+	color: var(--el-text-color-regular);
 }
 .regin-upload-progress {
 	min-width: 120px;

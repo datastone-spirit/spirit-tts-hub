@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-27 14:56:12
+ * @LastEditTime: 2025-10-28 14:24:14
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -33,6 +33,7 @@ const defaultForm = readonly<RuleForm>({
 	enableRandomEmotion: false,
 	emotionReferenceAudioName: "",
 	emotionReferenceAudioPath: "",
+	localEmotionReferenceAudioPath: settingsStore.whiteCheck ? env.VITE_APP_OUTPUT_PARENT_PATH : "",
 	emotionStrengths: {
 		happy: 0,
 		angry: 0,

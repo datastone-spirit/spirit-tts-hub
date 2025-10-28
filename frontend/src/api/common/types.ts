@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-28 15:22:03
- * @LastEditTime: 2025-10-27 16:35:59
+ * @LastEditTime: 2025-10-28 11:42:36
  * @LastEditors: mulingyuer
  * @Description: 公共接口类型
  * @FilePath: \frontend\src\api\common\types.ts
@@ -35,6 +35,18 @@ export type UploadFilesResult = {
 	/** 由请求方生成的唯一的 upload_id，标识这一批上传的文件 */
 	upload_id: string;
 };
+
+/** 上传单个文件结果 */
+export interface UploadFileResult {
+	/** 文件路径 */
+	file_path: string;
+	/** 文件名 */
+	filename: string;
+	/** 原始文件名 */
+	original_filename: string;
+	/** 保存路径 */
+	path: string;
+}
 
 export interface DirectoryResult {
 	/** 文件夹名 */

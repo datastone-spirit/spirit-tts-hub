@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 10:56:07
- * @LastEditTime: 2025-10-23 17:34:12
+ * @LastEditTime: 2025-10-28 15:11:46
  * @LastEditors: mulingyuer
  * @Description: 录音组件
  * @FilePath: \frontend\src\components\Audio\AudioRecorder.vue
@@ -104,6 +104,7 @@ import {
 } from "@/hooks/useWaveSurfer";
 import { useAppStore } from "@/stores";
 import { generateUUID } from "@/utils/tools";
+import mime from "mime";
 
 export interface RecordDevice {
 	label: string;
@@ -134,7 +135,8 @@ const props = withDefaults(defineProps<AudioRecorderProps>(), {
 	waveSurferHeight: 102,
 	acquireAudioOnMount: false
 });
-const filePath = defineModel("file-path", { type: String, required: true });
+const audioPath = defineModel("audio-path", { type: String, required: true });
+const audioName = defineModel("audio-name", { type: String, required: true });
 
 // icon
 const RiRecordCircleFill = useIcon({ name: "ri-record-circle-fill", size: 16 });
@@ -223,19 +225,20 @@ const handleResumeRecord = () => {
 const handleRecordComplete = async (blob: Blob) => {
 	try {
 		// 创建文件对象
-		const fileName = `${generateUUID()}`;
+		const fileName = `${generateUUID()}.${mime.getExtension(blob.type)}`;
 		const file = new File([blob], fileName, { type: blob.type });
 
 		// 上传文件
 		const result = await uploadFile({ file, showErrorMessage: false });
 
-		if (typeof result.filePath !== "string") {
+		if (!result.success) {
 			ElMessage.error(result.message);
 			return;
 		}
 
 		// 录制文件上传成功
-		filePath.value = result.filePath;
+		audioPath.value = result.filePath;
+		audioName.value = result.fileName;
 		// 重置录制状态
 		resetRecord();
 	} catch (error) {

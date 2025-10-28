@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:21:42
- * @LastEditTime: 2025-10-15 15:19:38
+ * @LastEditTime: 2025-10-28 15:28:34
  * @LastEditors: mulingyuer
  * @Description: 音频上传 Hook
  * @FilePath: \frontend\src\hooks\useAudioUpload\index.ts
@@ -17,8 +17,12 @@ import type {
 	ValidateFileResult
 } from "./types";
 export type * from "./types";
+import { uploadFile as uploadFileApi } from "@/api/common";
+import { validateMimeType } from "@/utils/tools";
+import { useSettingsStore } from "@/stores";
 
 export function useAudioUpload(config: AudioUploadConfig = {}) {
+	const settingsStore = useSettingsStore();
 	const {
 		uploadPath = "/root/audio-upload",
 		maxSize = 50, // 50MB
@@ -47,10 +51,7 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 		}
 
 		// 检查文件类型
-		const isValidType = accept.some((type) => {
-			if (type === "audio/*") return file.type.startsWith("audio/");
-			return file.type === type;
-		});
+		const isValidType = accept.some((type) => validateMimeType(file.type, type));
 
 		if (!isValidType) {
 			return { valid: false, message: `不支持的文件类型: ${file.type}` };
@@ -66,29 +67,29 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 		const validResult = validateFile(file);
 		if (!validResult.valid) {
 			showErrorMessage && ElMessage.error(validResult.message);
-			return { filePath: null, message: validResult.message };
+			return { success: false, message: validResult.message };
 		}
 
 		resetState();
 		uploadState.loading = true;
 
 		try {
-			let filePath: string;
+			let result: UploadFileResult;
 
 			if (customUpload) {
 				// 使用自定义上传函数
-				filePath = await customUpload(file, (progress) => {
+				result = await customUpload(file, (progress) => {
 					uploadState.progress = progress;
 				});
 			} else {
 				// 默认上传逻辑
-				filePath = await defaultUpload(file);
+				result = await defaultUpload(file);
 			}
 
 			uploadState.completed = true;
 			uploadState.loading = false;
 
-			return { filePath };
+			return result;
 		} catch (error: any) {
 			uploadState.loading = false;
 			uploadState.completed = false;
@@ -96,41 +97,42 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 			const message = error.message || "上传失败";
 			showErrorMessage && ElMessage.error(message);
 
-			return { filePath: null, message };
+			return { success: false, message };
 		}
 	};
 
 	/** 默认上传实现 */
-	const defaultUpload = async (file: File): Promise<string> => {
-		console.log("🚀 ~ defaultUpload ~ file:", file);
-		return new Promise((resolve) => {
-			// 模拟上传进度
-			let progress = 0;
-			const timer = setInterval(() => {
-				progress += Math.random() * 30;
-				uploadState.progress = Math.floor(Math.min(progress, 100));
+	const defaultUpload = async (file: File): Promise<UploadFileResult> => {
+		// 数据
+		const formData = new FormData();
+		formData.append("file", file);
+		formData.append("path", settingsStore.appSettings.uploadPath);
 
-				if (progress >= 100) {
-					clearInterval(timer);
-					// 模拟返回文件路径
-					const mockPath = `/admin/src/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg`;
-					resolve(mockPath);
-				}
-			}, 200);
+		// api
+		const result = await uploadFileApi(formData, (progressEvent) => {
+			if (!progressEvent) return;
+			const value = progressEvent.progress ?? 0;
+			uploadState.progress = Math.floor(value * 100);
 		});
+
+		return {
+			success: true,
+			fileName: result.filename,
+			filePath: result.file_path
+		};
 	};
 
 	/** Element Plus 上传处理
 	 * 用于替换Element Plus 上传组件的默认上传处理逻辑
 	 */
-	const handleUpload = async (options: UploadRequestOptions) => {
+	const handleUpload = async (options: UploadRequestOptions): Promise<UploadFileResult | void> => {
 		const { file, onError } = options;
 
 		try {
 			const result = await uploadFile({ file: file });
 
 			// 上传失败
-			if (typeof result.filePath !== "string") {
+			if (!result.success) {
 				onError({
 					message: result.message || "上传失败",
 					name: "UploadError",
@@ -142,7 +144,7 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 			}
 
 			// 上传成功
-			return result.filePath;
+			return result;
 		} catch (error) {
 			// TODO: 目前是瞎编的
 			onError({

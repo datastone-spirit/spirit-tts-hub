@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:10:30
- * @LastEditTime: 2025-10-16 15:21:06
+ * @LastEditTime: 2025-10-28 14:29:42
  * @LastEditors: mulingyuer
  * @Description: 音频上传
  * @FilePath: \frontend\src\components\Audio\AudioUpload.vue
@@ -46,7 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { useAudioUpload, type AudioUploadConfig } from "@/hooks/useAudioUpload";
+import {
+	useAudioUpload,
+	type AudioUploadConfig,
+	type UploadFileResult
+} from "@/hooks/useAudioUpload";
 import { genFileId, type UploadInstance, type UploadRawFile } from "element-plus";
 
 export interface AudioUploaderProps {
@@ -63,6 +67,7 @@ export interface AudioUploaderProps {
 }
 
 const filePath = defineModel("file-path", { type: String, required: true });
+const fileName = defineModel("file-name", { type: String, required: true });
 const props = withDefaults(defineProps<AudioUploaderProps>(), {
 	progressSize: 80,
 	height: 165
@@ -83,10 +88,11 @@ const handleExceed = (files: File[]) => {
 const handleUpload = _handleUpload;
 
 /** 上传成功 */
-const handleSuccess = (response: string) => {
-	if (!response) return;
+const handleSuccess = (response: UploadFileResult) => {
+	if (!response || !response.success) return;
 
-	filePath.value = response;
+	filePath.value = response.filePath;
+	fileName.value = response.fileName;
 	uploadRef.value?.clearFiles();
 };
 

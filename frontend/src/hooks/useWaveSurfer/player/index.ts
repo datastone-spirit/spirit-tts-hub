@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:29:57
- * @LastEditTime: 2025-10-21 17:02:17
+ * @LastEditTime: 2025-10-28 14:54:17
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer hooks
  * @FilePath: \frontend\src\hooks\useWaveSurfer\player\index.ts
@@ -22,12 +22,14 @@ import type {
 export * from "../helper";
 export type * from "./types";
 import mitt from "mitt";
+import { getEnv } from "@/utils/env";
 
 // 常量
 const DEFAULT_SKIP_SECONDS = 5;
 const RESET_DELAY = 500; // 播放结束后重置延迟时间（毫秒）
 
 export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
+	const env = getEnv();
 	const useDefaultOptions = config?.options;
 	const SKIP_SECONDS = config?.skipSeconds ?? DEFAULT_SKIP_SECONDS;
 
@@ -312,6 +314,11 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		isRegion.value = false;
 	};
 
+	/** 拼接可读取的音频路径 */
+	const getPreviewPath = (path: string) => {
+		return `${env.VITE_APP_API_BASE_URL}/audio/preview/${path.replace(/^\//, "")}`;
+	};
+
 	return {
 		loading,
 		state,
@@ -324,6 +331,7 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 		getPlayer,
 		getRegions,
 		initPlayer,
-		destroyPlayer
+		destroyPlayer,
+		getPreviewPath
 	};
 }
