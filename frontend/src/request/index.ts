@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-09-25 16:18:08
- * @LastEditTime: 2025-03-11 09:17:25
+ * @LastEditTime: 2025-10-27 16:31:45
  * @LastEditors: mulingyuer
  * @Description: 请求封装
  * @FilePath: \frontend\src\request\index.ts
@@ -17,6 +17,11 @@ export function request<T>(config: AxiosRequestConfig): Promise<T> {
 	return instance.request(config).then((response) => {
 		if (!response?.data) return null;
 
+		// 非解包数据
+		const { unpack } = response.config;
+		if (!unpack) return response.data;
+
+		// 解包处理
 		const { success, data, message } = response.data as RequestResult;
 
 		// 接口请求成功，但是响应业务是失败的，这里要抛出错误，防止走then处理

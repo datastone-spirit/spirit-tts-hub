@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-10-22 16:55:50
+ * @LastEditTime: 2025-10-27 10:58:57
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
@@ -40,10 +40,10 @@
 				</thead>
 				<tbody>
 					<tr v-for="item in historyData" :key="item.id">
-						<td>{{ item.referenceAudioPath }}</td>
+						<td>{{ item.referenceAudioName }}</td>
 						<td>{{ getEmotionControlStrategyName(item.emotionControlStrategy) }}</td>
 						<td>{{ item.text }}</td>
-						<td>{{ item.emotionReferenceAudioPath }}</td>
+						<td>{{ item.emotionReferenceAudioName }}</td>
 						<td>
 							<el-tag v-if="item.isExpert" type="success">是</el-tag>
 							<el-tag v-else type="info">否</el-tag>
@@ -71,6 +71,9 @@
 				{{ formatDate(viewData!.createTime, "YYYY-MM-DD HH:mm:ss") }}
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频" :span="2">
+				{{ viewData?.referenceAudioName }}
+			</el-descriptions-item>
+			<el-descriptions-item label="参考音频路径" :span="2">
 				{{ viewData?.referenceAudioPath }}
 			</el-descriptions-item>
 			<el-descriptions-item label="生成内容" :span="2"> {{ viewData?.text }} </el-descriptions-item>
@@ -78,6 +81,9 @@
 				{{ getEmotionControlStrategyName(viewData?.emotionControlStrategy) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频" :span="2">
+				{{ viewData?.emotionReferenceAudioName }}
+			</el-descriptions-item>
+			<el-descriptions-item label="情感参考音频路径" :span="2">
 				{{ viewData?.emotionReferenceAudioPath }}
 			</el-descriptions-item>
 			<el-descriptions-item label="文本分段最大Token">

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2024-12-11 16:13:18
- * @LastEditTime: 2025-09-24 09:40:18
+ * @LastEditTime: 2025-10-27 11:11:10
  * @LastEditors: mulingyuer
  * @Description: 底部
  * @FilePath: \frontend\src\layout\admin-layout\components\Aside\Footer\index.vue
@@ -10,7 +10,9 @@
 <template>
 	<div class="aside-footer">
 		<div class="aside-footer-content">
-			<div class="aside-footer-content-left"></div>
+			<div class="aside-footer-content-left">
+				<SettingsMenu />
+			</div>
 			<div class="aside-footer-content-right">
 				<MenuCollapse />
 			</div>
@@ -20,6 +22,7 @@
 
 <script setup lang="ts">
 import MenuCollapse from "./MenuCollapse.vue";
+import SettingsMenu from "./SettingsMenu.vue";
 </script>
 
 <style lang="scss" scoped>

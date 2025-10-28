@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-01-21 09:12:05
- * @LastEditTime: 2025-03-11 10:11:57
+ * @LastEditTime: 2025-10-27 16:33:13
  * @LastEditors: mulingyuer
  * @Description: 请求辅助函数
  * @FilePath: \frontend\src\request\helper.ts
@@ -63,7 +63,16 @@ export function showErrorMessage(message: string) {
 
 /** 成功响应的错误消息 */
 export function showResponseErrorMessage(response: AxiosResponse) {
+	const { unpack } = response.config as AxiosRequestConfig;
 	const { success, message } = response.data as RequestResult;
+
+	// 如果是非解包数据，那么响应值就不是预设格式，需要特殊处理
+	const isUnpack = typeof unpack === "boolean" && !unpack;
+	const isUnpackError = isUnpack && !response.data;
+	if (isUnpackError && shouldShowErrorMessageByConfig(response.config)) {
+		showErrorMessage("请求的响应数据不存在或格式错误");
+		return;
+	}
 
 	// 是否报错
 	if (success === false && shouldShowErrorMessageByConfig(response.config)) {

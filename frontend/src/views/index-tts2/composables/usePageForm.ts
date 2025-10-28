@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-22 16:48:13
+ * @LastEditTime: 2025-10-27 14:56:12
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -12,19 +12,26 @@ import { useFormValidator } from "@/hooks/useFormValidator";
 import { joinPrefixKey } from "@/utils/tools";
 import type { FormRules } from "element-plus";
 import type { RuleForm } from "../types";
+import { useSettingsStore } from "@/stores";
+import { getEnv } from "@/utils/env";
 
+const settingsStore = useSettingsStore();
+const env = getEnv();
 const { useEnhancedLocalStorage } = useEnhancedStorage();
 const { registerResetterWithCleanup, registerValidatorWithCleanup, validateAll, resetAll } =
 	useFormValidator();
 
 /** 表单数据 */
 const defaultForm = readonly<RuleForm>({
+	referenceAudioName: "",
 	referenceAudioPath: "",
+	localReferenceAudioPath: settingsStore.whiteCheck ? env.VITE_APP_OUTPUT_PARENT_PATH : "",
 	text: "",
 	maxTokensPerSegment: 120,
 	emotionControlStrategy: "same_as_voice",
 	externalEmotionStrength: 0.8,
 	enableRandomEmotion: false,
+	emotionReferenceAudioName: "",
 	emotionReferenceAudioPath: "",
 	emotionStrengths: {
 		happy: 0,
@@ -103,9 +110,8 @@ export function usePageForm() {
 	 * 所以这里手动复写表单数据
 	 */
 	function resetAllPro() {
-		return resetAll().finally(() => {
-			ruleForm.value = structuredClone(toRaw(defaultForm));
-		});
+		ruleForm.value = structuredClone(toRaw(defaultForm));
+		return resetAll();
 	}
 
 	return {

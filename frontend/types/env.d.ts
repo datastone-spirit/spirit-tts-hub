@@ -11,6 +11,10 @@ interface ImportMetaEnv {
 	VITE_APP_LOCAL_KEY_PREFIX: string;
 	/** api请求地址 */
 	VITE_APP_API_BASE_URL: string;
+	/** 开启小白校验 */
+	VITE_APP_WHITE_CHECK: string;
+	/** 输出路径前缀要求 */
+	VITE_APP_OUTPUT_PARENT_PATH: string;
 }
 
 interface ImportMeta {
