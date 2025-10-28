@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-10-28 11:35:47
+ * @LastEditTime: 2025-10-28 15:52:31
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
  * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
@@ -34,7 +34,7 @@ import { validateMimeType } from "@/utils/tools";
 const env = getEnv();
 const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
 
-const features = ["select", "preview", "newfolder", "delete"];
+const features = ["select", "preview", "newfolder"];
 const handleSelectButton = {
 	active: true,
 	multiple: false,
