@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-22 15:55:12
+ * @LastEditTime: 2025-10-28 17:07:14
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -47,28 +47,18 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>0</td>
-							<td>"▁撒▁打▁算▁打▁算▁打▁算"</td>
-							<td>14</td>
-						</tr>
-						<tr>
-							<td>0</td>
-							<td>
-								"▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算▁撒▁打▁算▁打▁算▁打▁算"
+						<tr v-if="previewData.segments.length === 0">
+							<td colspan="3">
+								<div class="table-empty">暂无数据</div>
 							</td>
-							<td>14</td>
 						</tr>
-						<tr>
-							<td>0</td>
-							<td>"▁撒▁打▁算▁打▁算▁打▁算"</td>
-							<td>14</td>
-						</tr>
-						<tr>
-							<td>0</td>
-							<td>"▁撒▁打▁算▁打▁算▁打▁算"</td>
-							<td>14</td>
-						</tr>
+						<template v-else>
+							<tr v-for="item in previewData.segments" :key="item.index">
+								<td>{{ item.index }}</td>
+								<td>{{ item.content }}</td>
+								<td>{{ item.token_count }}</td>
+							</tr>
+						</template>
 					</tbody>
 				</table>
 			</div>
@@ -77,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { sleep } from "@/utils/tools";
 import { usePageForm } from "../composables/usePageForm";
+import { previewTextSegments, type PreviewTextSegmentsResult } from "@/api/index-tts2";
 
 export interface TextSegSettingsProps {
 	/** 每生成段最小令牌数 */
@@ -94,37 +84,47 @@ const _props = withDefaults(defineProps<TextSegSettingsProps>(), {
 
 const { ruleForm } = usePageForm();
 const loading = ref(false);
+const previewData = ref<PreviewTextSegmentsResult>({
+	segments: []
+});
 
 /** api */
 async function getTextSeg() {
-	loading.value = true;
-	await sleep(2000);
-	loading.value = false;
+	try {
+		loading.value = true;
+
+		const result = await previewTextSegments({
+			max_text_tokens_per_segment: ruleForm.value.maxTokensPerSegment,
+			text: ruleForm.value.text
+		});
+
+		previewData.value = result;
+
+		loading.value = false;
+	} catch (error) {
+		loading.value = false;
+
+		console.error("获取文本分段失败：", error);
+	}
 }
 
 /** 滑块值改变 */
 const onSliderChange = useDebounceFn(async (_value: number | number[]) => {
-	loading.value = true;
-	await sleep(2000);
-	loading.value = false;
+	getTextSeg();
 }, 500);
 
 /** 数字值改变 */
 const onInputNumberChange = useDebounceFn(async (_currentValue: number | undefined) => {
-	loading.value = true;
-	await sleep(2000);
-	loading.value = false;
+	getTextSeg();
 }, 1000);
 
 /** 重置令牌数 */
 async function onResetTokenCount() {
-	loading.value = true;
-	await sleep(2000);
-	loading.value = false;
+	getTextSeg();
 }
 
 /** 监听用户输入的文本 */
-watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000));
+watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000), { immediate: true });
 </script>
 
 <style lang="scss" scoped>
@@ -202,6 +202,10 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000));
 	background-color: var(--zl-tts2-table-td-bg);
 	word-break: break-all;
 	transition: background-color 0.25s ease;
+	font-size: 14px;
+	font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+	letter-spacing: 0.1em;
+	line-height: 1.6;
 }
 .text-seg-preview-table .col-index {
 	width: 120px;
@@ -212,5 +216,10 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000));
 }
 .text-seg-preview-table .col-token {
 	width: 160px;
+}
+.table-empty {
+	text-align: center;
+	font-size: var(--el-font-size-base);
+	color: var(--el-text-color-secondary);
 }
 </style>

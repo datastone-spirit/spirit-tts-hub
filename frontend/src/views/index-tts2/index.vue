@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-28 14:28:29
+ * @LastEditTime: 2025-10-28 17:17:46
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -36,10 +36,11 @@
 								<BodyCard title="文本转语音" icon-name="ri-text">
 									<el-form-item prop="text">
 										<el-input
+											class="tts-text-input"
 											v-model="ruleForm.text"
 											type="textarea"
 											placeholder="请输入要合成的文本"
-											:rows="10"
+											:autosize="{ minRows: 8, maxRows: 15 }"
 										/>
 									</el-form-item>
 								</BodyCard>
@@ -236,5 +237,10 @@ async function onSubmitForm() {
 	align-items: center;
 	gap: 10px;
 	padding: 0 20px;
+}
+.tts-text-input :deep(.el-textarea__inner) {
+	font-size: 16px;
+	line-height: 1.6;
+	color: var(--el-text-color-primary);
 }
 </style>
