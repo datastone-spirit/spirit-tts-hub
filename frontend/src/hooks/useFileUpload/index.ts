@@ -1,10 +1,10 @@
 /*
  * @Author: mulingyuer
- * @Date: 2025-10-15 09:21:42
- * @LastEditTime: 2025-10-29 10:26:12
+ * @Date: 2025-10-29 15:56:35
+ * @LastEditTime: 2025-10-29 15:59:32
  * @LastEditors: mulingyuer
- * @Description: 音频上传 Hook
- * @FilePath: \frontend\src\hooks\useAudioUpload\index.ts
+ * @Description: 通用文件上传 Hook
+ * @FilePath: \frontend\src\hooks\useFileUpload\index.ts
  * 怎么可能会有bug！！！
  */
 
@@ -13,7 +13,7 @@ import { useSettingsStore } from "@/stores";
 import { validateMimeType } from "@/utils/tools";
 import type { UploadRawFile, UploadRequestOptions, UploadUserFile } from "element-plus";
 import type {
-	AudioUploadConfig,
+	FileUploadConfig,
 	UploadFileData,
 	UploadFileResult,
 	UploadState,
@@ -21,12 +21,12 @@ import type {
 } from "./types";
 export type * from "./types";
 
-export function useAudioUpload(config: AudioUploadConfig = {}) {
+export function useFileUpload(config: FileUploadConfig = {}) {
 	const settingsStore = useSettingsStore();
 	const {
 		uploadPath,
 		maxSize = 50, // 50MB
-		accept = ["audio/*"],
+		accept = ["*/*"],
 		customUpload
 	} = config;
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-14 16:26:13
- * @LastEditTime: 2025-10-29 14:37:43
+ * @LastEditTime: 2025-10-29 16:06:43
  * @LastEditors: mulingyuer
  * @Description: 音频播放组件
  * @FilePath: \frontend\src\components\Audio\AudioPlayer.vue
@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { useFileUpload, type FileUploadConfig } from "@/hooks/useFileUpload";
 import { useIcon } from "@/hooks/useIcon";
 import {
 	AudioHelper,
@@ -82,10 +83,9 @@ import {
 	type WaveSurferThemeKey
 } from "@/hooks/useWaveSurfer";
 import { useAppStore } from "@/stores";
-import { useAudioUpload } from "@/hooks/useAudioUpload";
 import { generateUUID } from "@/utils/tools";
-import mime from "mime";
 import type { UploadRawFile, UploadUserFile } from "element-plus";
+import mime from "mime";
 
 export interface AudioPlayerProps {
 	/** 音频文件路径 */
@@ -102,6 +102,8 @@ export interface AudioPlayerProps {
 	enableRegion?: boolean;
 	/** 示波器高度 */
 	waveSurferHeight?: number;
+	/** 上传配置 */
+	config?: FileUploadConfig;
 }
 
 export interface AudioPlayerEmits {
@@ -119,8 +121,6 @@ export interface AudioPlayerEmits {
 	clear: [];
 }
 
-// const audioPath = defineModel("audio-path", { type: String, required: true });
-// const audioName = defineModel("audio-name", { type: String, required: true });
 const props = withDefaults(defineProps<AudioPlayerProps>(), {
 	regionEnabled: false,
 	showControls: true,
@@ -153,7 +153,10 @@ const {
 	playerEmitter,
 	getPreviewPath
 } = useWaveSurferPlayer({ loop: false });
-const { uploadFile, uploadState } = useAudioUpload();
+const { uploadState, uploadFile } = useFileUpload({
+	accept: ["audio/"],
+	...props.config
+});
 
 const showRegion = computed(() => {
 	return props.enableRegion && isRegion.value;

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:10:30
- * @LastEditTime: 2025-10-29 14:35:18
+ * @LastEditTime: 2025-10-29 16:10:06
  * @LastEditors: mulingyuer
  * @Description: 音频上传
  * @FilePath: \frontend\src\components\Audio\AudioUpload.vue
@@ -46,11 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-	useAudioUpload,
-	type AudioUploadConfig,
-	type UploadFileResult
-} from "@/hooks/useAudioUpload";
+import { useFileUpload, type FileUploadConfig, type UploadFileResult } from "@/hooks/useFileUpload";
 import {
 	genFileId,
 	type UploadInstance,
@@ -66,7 +62,7 @@ export interface AudioUploaderProps {
 	/** 进度条大小 */
 	progressSize?: number;
 	/** 上传配置 */
-	config?: AudioUploadConfig;
+	config?: FileUploadConfig;
 	/** 高度 */
 	height?: number;
 }
@@ -85,7 +81,10 @@ const props = withDefaults(defineProps<AudioUploaderProps>(), {
 const emit = defineEmits<AudioUploaderEmits>();
 
 const uploadRef = useTemplateRef<UploadInstance>("uploadRef");
-const { uploadState, handleUpload: _handleUpload } = useAudioUpload(props.config);
+const { uploadState, handleUpload: _handleUpload } = useFileUpload({
+	accept: ["audio/"],
+	...props.config
+});
 
 /** 处理文件超出限制 */
 const handleExceed = (files: File[]) => {

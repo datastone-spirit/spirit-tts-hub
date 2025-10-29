@@ -1,17 +1,16 @@
 /*
  * @Author: mulingyuer
- * @Date: 2025-10-15 09:40:33
- * @LastEditTime: 2025-10-29 10:23:08
+ * @Date: 2025-10-29 15:56:54
+ * @LastEditTime: 2025-10-29 15:56:54
  * @LastEditors: mulingyuer
- * @Description: 音频上传 Hook 类型
- * @FilePath: \frontend\src\hooks\useAudioUpload\types.ts
+ * @Description: 通用文件上传 Hook 类型
+ * @FilePath: \frontend\src\hooks\useFileUpload\types.ts
  * 怎么可能会有bug！！！
  */
-
 import type { UploadRawFile, UploadUserFile } from "element-plus";
 
 /** hooks 配置 */
-export interface AudioUploadConfig {
+export interface FileUploadConfig {
 	/** 上传路径，该选项会覆盖全局的 **文件上传保存路径** */
 	uploadPath?: string;
 	/** 最大文件大小 MB */

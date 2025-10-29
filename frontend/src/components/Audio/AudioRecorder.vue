@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 10:56:07
- * @LastEditTime: 2025-10-29 14:36:29
+ * @LastEditTime: 2025-10-29 16:08:36
  * @LastEditors: mulingyuer
  * @Description: 录音组件
  * @FilePath: \frontend\src\components\Audio\AudioRecorder.vue
@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAudioUpload, type AudioUploadConfig } from "@/hooks/useAudioUpload";
+import { useFileUpload, type FileUploadConfig } from "@/hooks/useFileUpload";
 import { useIcon } from "@/hooks/useIcon";
 import {
 	AudioHelper,
@@ -124,7 +124,7 @@ export interface AudioRecorderProps {
 	/** 继续按钮文字 */
 	resumeText?: string;
 	/** 上传配置 */
-	uploadConfig?: AudioUploadConfig;
+	config?: FileUploadConfig;
 	/** 示波器高度 */
 	waveSurferHeight?: number;
 	/** 是否一开始就获取录音设备 */
@@ -174,7 +174,10 @@ const {
 	resetRecord,
 	cancelRecord
 } = useWaveSurferRecord();
-const { uploadState, uploadFile } = useAudioUpload(props.uploadConfig);
+const { uploadState, uploadFile } = useFileUpload({
+	accept: ["audio/"],
+	...props.config
+});
 
 /** 格式化录制时长 */
 const formattedDuration = computed(() => {
