@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-28 15:26:12
+ * @LastEditTime: 2025-10-29 15:18:29
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -17,6 +17,11 @@
 						<span>上传</span>
 					</div>
 				</template>
+				<AudioUpload
+					v-show="showAudioUpload"
+					ref="audioUploadRef"
+					@audio-uploaded="onAudioUploaded"
+				/>
 			</el-tab-pane>
 			<el-tab-pane name="record">
 				<template #label>
@@ -25,6 +30,11 @@
 						<span>录音</span>
 					</div>
 				</template>
+				<AudioRecorder
+					v-show="showAudioRecorder"
+					ref="audioRecorderRef"
+					@audio-recorded="onAudioRecorded"
+				/>
 			</el-tab-pane>
 			<el-tab-pane name="select-file">
 				<template #label>
@@ -33,49 +43,37 @@
 						<span>文件</span>
 					</div>
 				</template>
-				<el-form-item v-show="showLocalPath" :prop="localPathProp">
-					<div class="local-path">
-						<el-space fill style="width: 100%">
-							<FilePicker
-								v-model="localPath"
-								mime-type="audio/"
-								size="large"
-								confirm-on-enter
-								@confirm="onFilePickerConfirm"
-							/>
-							<el-alert class="local-path-info" type="info" :closable="false">
-								<ol>
-									<li>点击右侧文件图标可选择音频文件。</li>
-									<li>点击输入框可自行输入文件路径，回车确认。</li>
-								</ol>
-							</el-alert>
-						</el-space>
-					</div>
-				</el-form-item>
+				<el-form
+					v-show="showAudioFileSelect"
+					ref="localRuleFormRef"
+					:model="localRuleForm"
+					:rules="localRules"
+					size="large"
+				>
+					<el-form-item prop="audioPath">
+						<AudioFileSelect v-model="localRuleForm.audioPath" />
+					</el-form-item>
+				</el-form>
 			</el-tab-pane>
 		</el-tabs>
-		<AudioUpload
-			v-show="showAudioUpload"
-			v-model:file-path="audioPath"
-			v-model:file-name="audioName"
-		/>
-		<AudioRecorder
-			v-show="showAudioRecorder"
-			v-model:audio-path="audioPath"
-			v-model:audio-name="audioName"
-			ref="audioRecorderRef"
-		/>
+
+		<!-- 音频预览 -->
 		<AudioPlayer
 			v-show="showAudioPlayer"
-			v-model:audio-path="audioPath"
-			v-model:audio-name="audioName"
+			ref="audioPlayerRef"
+			:audio-path="audioPath"
+			@region-start="onRegionStart"
+			@region-reset="onRegionReset"
+			@region-uploaded="onRegionUploaded"
 			@clear="onAudioPlayerClear"
 		/>
 	</div>
 </template>
 
 <script setup lang="ts">
-import type { TabPaneName } from "element-plus";
+import type { FormRules, TabPaneName, UploadUserFile } from "element-plus";
+import { useSettingsStore } from "@/stores";
+import { getEnv } from "@/utils/env";
 
 /** 音频类型 */
 export type VoiceType =
@@ -83,17 +81,31 @@ export type VoiceType =
 	| "record" // 录音
 	| "select-file"; // 选择文件
 
-export interface VoiceReferenceProps {
-	localPathProp: string;
+export interface OriginalData {
+	audioPath: string;
+	audioName: string;
 }
 
-const _props = defineProps<VoiceReferenceProps>();
+export interface LocalRuleForm {
+	audioPath: string;
+}
 
-const voiceType = ref<VoiceType>("upload");
+const env = getEnv();
+const settingsStore = useSettingsStore();
+
 const audioPath = defineModel("audio-path", { type: String, required: true });
 const audioName = defineModel("audio-name", { type: String, required: true });
-const localPath = defineModel("local-path", { type: String, required: true });
+
+const voiceType = ref<VoiceType>("upload");
+const audioUploadRef = useTemplateRef("audioUploadRef");
+const audioPlayerRef = useTemplateRef("audioPlayerRef");
 const audioRecorderRef = useTemplateRef("audioRecorderRef");
+const originalData = ref<OriginalData>(); // 还原用的数据
+const localRuleFormRef = useTemplateRef("localRuleFormRef");
+const localRuleForm = ref<LocalRuleForm>({
+	audioPath: settingsStore.whiteCheck ? env.VITE_APP_OUTPUT_PARENT_PATH : ""
+});
+const localRules = reactive<FormRules<LocalRuleForm>>({});
 
 const showAudioUpload = computed(() => {
 	return voiceType.value === "upload" && !audioPath.value;
@@ -104,26 +116,66 @@ const showAudioRecorder = computed(() => {
 const showAudioPlayer = computed(() => {
 	return typeof audioPath.value === "string" && audioPath.value.trim() !== "";
 });
-const showLocalPath = computed(() => {
+const showAudioFileSelect = computed(() => {
 	return voiceType.value === "select-file" && !audioPath.value;
 });
+
 /** tab 切换 */
 function onTabChange(name: TabPaneName) {
 	if (name === "upload") {
 		audioRecorderRef.value?.cancelRecord(); // 取消正在进行的录音
 	}
 	audioPath.value = "";
+	audioName.value = "";
 }
+/** 音频上传完成 */
+const onAudioUploaded = (file: UploadUserFile) => {
+	audioPath.value = file.url!;
+	audioName.value = file.name;
+};
+/** 音频录制完成 */
+const onAudioRecorded = (data: UploadUserFile) => {
+	audioPath.value = data.url!;
+	audioName.value = data.name;
+};
+/** 开始裁剪 */
+const onRegionStart = () => {
+	if (originalData.value) return;
+	originalData.value = { audioPath: audioPath.value, audioName: audioName.value };
+};
+/** 裁剪完成 */
+const onRegionUploaded = (data: UploadUserFile) => {
+	audioPath.value = data.url!;
+	audioName.value = data.name;
+};
+/** 裁剪还原 */
+const onRegionReset = () => {
+	if (!originalData.value) return;
+	audioPath.value = originalData.value.audioPath;
+	audioName.value = originalData.value.audioName;
+
+	originalData.value = void 0;
+};
 
 /** 清理播放 */
 function onAudioPlayerClear() {
-	// TODO:补充什么？
+	audioPath.value = "";
+	audioName.value = "";
 }
 
-function onFilePickerConfirm(data: { name: string; path: string }) {
-	audioName.value = data.name;
-	audioPath.value = data.path;
-}
+defineExpose({
+	/** 重置数据 */
+	reset() {
+		audioPath.value = "";
+		audioName.value = "";
+		originalData.value = void 0;
+
+		audioUploadRef.value?.reset();
+		audioPlayerRef.value?.reset();
+		audioRecorderRef.value?.reset();
+		localRuleFormRef.value?.resetFields();
+	}
+});
 </script>
 
 <style lang="scss" scoped>

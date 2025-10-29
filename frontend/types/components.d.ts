@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AudioFileSelect: typeof import('./../src/components/Audio/AudioFileSelect.vue')['default']
     AudioPlayer: typeof import('./../src/components/Audio/AudioPlayer.vue')['default']
     AudioRecorder: typeof import('./../src/components/Audio/AudioRecorder.vue')['default']
     AudioUpload: typeof import('./../src/components/Audio/AudioUpload.vue')['default']

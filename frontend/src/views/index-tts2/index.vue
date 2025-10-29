@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-28 17:17:46
+ * @LastEditTime: 2025-10-29 14:54:47
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -22,13 +22,12 @@
 						<div class="tts-main-body">
 							<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
 								<BodyCard title="参考音频" icon-name="ri-music-2-fill">
+									<VoiceReference
+										ref="voiceReferenceRef"
+										v-model:audio-path="ruleForm.referenceAudioPath"
+										v-model:audio-name="ruleForm.referenceAudioName"
+									/>
 									<el-form-item prop="referenceAudioPath">
-										<VoiceReference
-											v-model:audio-path="ruleForm.referenceAudioPath"
-											v-model:audio-name="ruleForm.referenceAudioName"
-											v-model:local-path="ruleForm.localReferenceAudioPath"
-											local-path-prop="localReferenceAudioPath"
-										/>
 										<el-input v-show="false" v-model="ruleForm.referenceAudioPath" />
 									</el-form-item>
 								</BodyCard>
@@ -124,6 +123,7 @@ const RiHistoryLine = useIcon({ name: "ri-history-line" });
 const leftSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_LEFT_SIZE, 1200);
 const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
 const activeName = ref<TabsName>("settings");
+const voiceReferenceRef = useTemplateRef("voiceReferenceRef");
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
 	usePageForm();
@@ -168,8 +168,8 @@ registerValidator(async () => {
 
 /** 注册重置 */
 registerResetter(() => {
-	if (!ruleFormRef.value) return;
-	ruleFormRef.value.resetFields();
+	ruleFormRef.value?.resetFields();
+	voiceReferenceRef.value?.reset();
 });
 
 /** 重置表单 */

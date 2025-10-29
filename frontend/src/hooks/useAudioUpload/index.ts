@@ -1,14 +1,17 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:21:42
- * @LastEditTime: 2025-10-28 15:28:34
+ * @LastEditTime: 2025-10-29 10:26:12
  * @LastEditors: mulingyuer
  * @Description: 音频上传 Hook
  * @FilePath: \frontend\src\hooks\useAudioUpload\index.ts
  * 怎么可能会有bug！！！
  */
 
-import type { UploadRequestOptions } from "element-plus";
+import { uploadFile as uploadFileApi } from "@/api/common";
+import { useSettingsStore } from "@/stores";
+import { validateMimeType } from "@/utils/tools";
+import type { UploadRawFile, UploadRequestOptions, UploadUserFile } from "element-plus";
 import type {
 	AudioUploadConfig,
 	UploadFileData,
@@ -17,14 +20,11 @@ import type {
 	ValidateFileResult
 } from "./types";
 export type * from "./types";
-import { uploadFile as uploadFileApi } from "@/api/common";
-import { validateMimeType } from "@/utils/tools";
-import { useSettingsStore } from "@/stores";
 
 export function useAudioUpload(config: AudioUploadConfig = {}) {
 	const settingsStore = useSettingsStore();
 	const {
-		uploadPath = "/root/audio-upload",
+		uploadPath,
 		maxSize = 50, // 50MB
 		accept = ["audio/*"],
 		customUpload
@@ -74,7 +74,7 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 		uploadState.loading = true;
 
 		try {
-			let result: UploadFileResult;
+			let result: UploadUserFile;
 
 			if (customUpload) {
 				// 使用自定义上传函数
@@ -89,7 +89,7 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 			uploadState.completed = true;
 			uploadState.loading = false;
 
-			return result;
+			return { success: true, data: result };
 		} catch (error: any) {
 			uploadState.loading = false;
 			uploadState.completed = false;
@@ -102,11 +102,11 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 	};
 
 	/** 默认上传实现 */
-	const defaultUpload = async (file: File): Promise<UploadFileResult> => {
+	const defaultUpload = async (file: UploadRawFile): Promise<UploadUserFile> => {
 		// 数据
 		const formData = new FormData();
 		formData.append("file", file);
-		formData.append("path", settingsStore.appSettings.uploadPath);
+		formData.append("path", uploadPath ?? settingsStore.appSettings.uploadPath);
 
 		// api
 		const result = await uploadFileApi(formData, (progressEvent) => {
@@ -116,9 +116,13 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 		});
 
 		return {
-			success: true,
-			fileName: result.filename,
-			filePath: result.file_path
+			name: result.filename,
+			url: result.file_path,
+			size: file.size,
+			percentage: 100,
+			uid: file.uid,
+			status: "success",
+			raw: file
 		};
 	};
 
@@ -138,7 +142,7 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 					name: "UploadError",
 					status: 500,
 					method: "POST",
-					url: uploadPath
+					url: uploadPath ?? settingsStore.appSettings.uploadPath
 				});
 				return;
 			}
@@ -152,34 +156,9 @@ export function useAudioUpload(config: AudioUploadConfig = {}) {
 				name: (error as Error).name || "UploadError",
 				status: 500,
 				method: "POST",
-				url: uploadPath
+				url: uploadPath ?? settingsStore.appSettings.uploadPath
 			});
 		}
-
-		// onError({
-		// 	message: "Element Plus 上传处理",
-		// 	name: "",
-		// 	status: 0,
-		// 	method: "",
-		// 	url: ""
-		// });
-
-		// try {
-		// 	const result = await uploadFile({ file: file });
-		// 	if (typeof result.filePath === "string") {
-		// 		onSuccess(result.filePath);
-		// 	} else {
-		// 		onError({
-		// 			message: result.message || "上传失败",
-		// 			name: "UploadError",
-		// 			status: 500,
-		// 			method: "POST",
-		// 			url: uploadPath
-		// 		});
-		// 	}
-		// } catch (error: any) {
-		// 	onError(error);
-		// }
 	};
 
 	return {

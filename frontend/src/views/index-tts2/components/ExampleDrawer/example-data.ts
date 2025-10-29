@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-22 11:35:03
- * @LastEditTime: 2025-10-28 15:46:10
+ * @LastEditTime: 2025-10-29 15:19:53
  * @LastEditors: mulingyuer
  * @Description: 示例数据
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\example-data.ts
@@ -14,7 +14,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_01.wav",
 		referenceAudioPath: "voice_01.wav",
-		localReferenceAudioPath: "",
 		text: "Translate for me, what is a surprise!",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -22,7 +21,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -47,7 +45,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_02.wav",
 		referenceAudioPath: "voice_02.wav",
-		localReferenceAudioPath: "",
 		text: "The palace is strict, no false rumors, Lady Qi!",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -55,7 +52,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -80,7 +76,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_03.wav",
 		referenceAudioPath: "voice_03.wav",
-		localReferenceAudioPath: "",
 		text: "这个呀，就是我们精心制作准备的纪念品，大家可以看到这个色泽和这个材质啊，哎呀多么的光彩照人。",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -88,7 +83,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -113,7 +107,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_04.wav",
 		referenceAudioPath: "voice_04.wav",
-		localReferenceAudioPath: "",
 		text: "你就需要我这种专业人士的帮助，就像手无缚鸡之力的人进入雪山狩猎，一定需要最老练的猎人指导。",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -121,7 +114,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -146,7 +138,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_05.wav",
 		referenceAudioPath: "voice_05.wav",
-		localReferenceAudioPath: "",
 		text: "在真正的日本剑道中，格斗过程极其短暂，常常短至半秒，最长也不超过两秒，利剑相击的转瞬间，已有一方倒在血泊中。但在这电光石火的对决之前，双方都要以一个石雕般凝固的姿势站定，长时间的逼视对方，这一过程可能长达十分钟！",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -154,7 +145,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -179,7 +169,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_06.wav",
 		referenceAudioPath: "voice_06.wav",
-		localReferenceAudioPath: "",
 		text: "今天呢，咱们开一部新书，叫《赛博朋克二零七七》。这词儿我听着都新鲜。这赛博朋克啊，简单理解就是“高科技，低生活”。这一听，我就明白了，于老师就爱用那高科技的东西，手机都得拿脚纹开，大冬天为了解锁脱得一丝不挂，冻得跟王八蛋似的。",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "same_as_voice",
@@ -187,7 +176,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -212,7 +200,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_07.wav",
 		referenceAudioPath: "voice_07.wav",
-		localReferenceAudioPath: "",
 		text: "酒楼丧尽天良，开始借机竞拍房间，哎，一群蠢货。",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "use_emotion_audio",
@@ -220,7 +207,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "emo_sad.wav",
 		emotionReferenceAudioPath: "emo_sad.wav",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -245,7 +231,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_08.wav",
 		referenceAudioPath: "voice_08.wav",
-		localReferenceAudioPath: "",
 		text: "你看看你，对我还有没有一点父子之间的信任了。",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "use_emotion_audio",
@@ -253,7 +238,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "emo_hate.wav",
 		emotionReferenceAudioPath: "emo_hate.wav",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -278,7 +262,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_09.wav",
 		referenceAudioPath: "voice_09.wav",
-		localReferenceAudioPath: "",
 		text: "对不起嘛！我的记性真的不太好，但是和你在一起的事情，我都会努力记住的~",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "use_emotion_vectors",
@@ -286,7 +269,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,
@@ -311,7 +293,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		isExpert: false,
 		referenceAudioName: "voice_10.wav",
 		referenceAudioPath: "voice_10.wav",
-		localReferenceAudioPath: "",
 		text: "哇塞！这个爆率也太高了！欧皇附体了！",
 		maxTokensPerSegment: 120,
 		emotionControlStrategy: "use_emotion_vectors",
@@ -319,7 +300,6 @@ export const EXAMPLE_DATA: ExampleData = [
 		enableRandomEmotion: false,
 		emotionReferenceAudioName: "",
 		emotionReferenceAudioPath: "",
-		localEmotionReferenceAudioPath: "",
 		emotionStrengths: {
 			happy: 0,
 			angry: 0,

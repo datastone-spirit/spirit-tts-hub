@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-28 14:23:30
+ * @LastEditTime: 2025-10-29 15:18:50
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -14,8 +14,6 @@ export interface RuleForm {
 	referenceAudioName: string;
 	/** 参考音频文件路径（用于音色克隆等） */
 	referenceAudioPath: string;
-	/** 选择本地的path */
-	localReferenceAudioPath: string;
 	/** 需要合成的原始文本内容 */
 	text: string;
 	/** 文本分段的最大 token 数量，默认：120 */
@@ -26,8 +24,6 @@ export interface RuleForm {
 	emotionReferenceAudioName: string;
 	/** 情感参考音频文件路径（当 emotionControlStrategy 为 "use_emotion_audio" 时生效） */
 	emotionReferenceAudioPath: string;
-	/** 选择本地的情感参考音频文件path */
-	localEmotionReferenceAudioPath: string;
 	/**
 	 * 外部情感（如参考音频或指定情绪）的强度权重（0.0 - 1.0）。
 	 * 仅在 emotionControlStrategy 为 "reference_audio"、"custom_emotion" 等支持外部输入的模式下生效。

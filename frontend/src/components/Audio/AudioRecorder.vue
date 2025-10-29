@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 10:56:07
- * @LastEditTime: 2025-10-28 15:11:46
+ * @LastEditTime: 2025-10-29 14:36:29
  * @LastEditors: mulingyuer
  * @Description: 录音组件
  * @FilePath: \frontend\src\components\Audio\AudioRecorder.vue
@@ -104,6 +104,7 @@ import {
 } from "@/hooks/useWaveSurfer";
 import { useAppStore } from "@/stores";
 import { generateUUID } from "@/utils/tools";
+import type { UploadRawFile, UploadUserFile } from "element-plus";
 import mime from "mime";
 
 export interface RecordDevice {
@@ -130,13 +131,20 @@ export interface AudioRecorderProps {
 	acquireAudioOnMount?: boolean;
 }
 
+export interface AudioRecorderEmits {
+	/** 音频录制完成 */
+	"audio-recorded": [data: UploadUserFile];
+	/** 音频上传失败 */
+	"recorder-upload-error": [error: any];
+}
+
 const props = withDefaults(defineProps<AudioRecorderProps>(), {
 	showDeviceSelector: true,
 	waveSurferHeight: 102,
 	acquireAudioOnMount: false
 });
-const audioPath = defineModel("audio-path", { type: String, required: true });
-const audioName = defineModel("audio-name", { type: String, required: true });
+const emit = defineEmits<AudioRecorderEmits>();
+const modelValue = defineModel({ type: Object as PropType<UploadUserFile> });
 
 // icon
 const RiRecordCircleFill = useIcon({ name: "ri-record-circle-fill", size: 16 });
@@ -225,11 +233,16 @@ const handleResumeRecord = () => {
 const handleRecordComplete = async (blob: Blob) => {
 	try {
 		// 创建文件对象
-		const fileName = `${generateUUID()}.${mime.getExtension(blob.type)}`;
+		const uuid = generateUUID();
+		const fileName = `${uuid}.${mime.getExtension(blob.type)}`;
 		const file = new File([blob], fileName, { type: blob.type });
+		// @ts-expect-error fuck ts type
+		file.uid = uuid;
+		// @ts-expect-error fuck ts type
+		file.isDirectory = false;
 
 		// 上传文件
-		const result = await uploadFile({ file, showErrorMessage: false });
+		const result = await uploadFile({ file: file as UploadRawFile, showErrorMessage: false });
 
 		if (!result.success) {
 			ElMessage.error(result.message);
@@ -237,13 +250,16 @@ const handleRecordComplete = async (blob: Blob) => {
 		}
 
 		// 录制文件上传成功
-		audioPath.value = result.filePath;
-		audioName.value = result.fileName;
+		modelValue.value = result.data;
+		emit("audio-recorded", result.data);
+
 		// 重置录制状态
 		resetRecord();
 	} catch (error) {
-		console.error("录制文件上传失败:", error);
+		emit("recorder-upload-error", error);
+
 		ElMessage.error("录制文件上传失败");
+		console.error("录制文件上传失败:", error);
 	}
 };
 
@@ -282,7 +298,9 @@ onUnmounted(() => {
 /** 对外暴露的方法和状态 */
 defineExpose({
 	/** 取消录制 */
-	cancelRecord: () => cancelRecord()
+	cancelRecord: () => cancelRecord(),
+	/** 重置 */
+	reset: () => resetRecord()
 });
 </script>
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:38:02
- * @LastEditTime: 2025-10-28 14:28:38
+ * @LastEditTime: 2025-10-29 15:21:46
  * @LastEditors: mulingyuer
  * @Description: 调试台
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\index.vue
@@ -37,10 +37,9 @@
 				prop="emotionReferenceAudioPath"
 			>
 				<VoiceReference
+					ref="voiceReferenceRef"
 					v-model:audio-path="ruleForm.emotionReferenceAudioPath"
 					v-model:audio-name="ruleForm.emotionReferenceAudioName"
-					v-model:local-path="ruleForm.localEmotionReferenceAudioPath"
-					local-path-prop="localEmotionReferenceAudioPath"
 				/>
 				<el-input v-show="false" v-model="ruleForm.emotionReferenceAudioPath" />
 			</el-form-item>
@@ -113,6 +112,7 @@ import { validateForm } from "@/utils/tools";
 const settingsStore = useSettingsStore();
 
 const { ruleForm, rules, registerValidator, registerResetter } = usePageForm();
+const voiceReferenceRef = useTemplateRef("voiceReferenceRef");
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
 const emotionChangeType = ref<EmotionChangeType>("none");
 /** 显示随机情绪采样 */
@@ -157,8 +157,8 @@ registerValidator(async () => {
 
 /** 注册重置 */
 registerResetter(() => {
-	if (!ruleFormRef.value) return;
-	ruleFormRef.value.resetFields();
+	ruleFormRef.value?.resetFields();
+	voiceReferenceRef.value?.reset();
 });
 </script>
 

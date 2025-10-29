@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-28 09:31:39
+ * @LastEditTime: 2025-10-29 10:25:17
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -131,7 +131,7 @@ export function generateSeed(): number {
 }
 
 /** 是否是空字符串 */
-export function isEmptyString(value: unknown): boolean {
+export function isEmptyString(value: unknown): value is string {
 	return typeof value === "string" && value.trim() === "";
 }
 

@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-13 11:12:11
- * @LastEditTime: 2025-10-21 17:02:38
+ * @LastEditTime: 2025-10-29 15:16:19
  * @LastEditors: mulingyuer
  * @Description: 录音
  * @FilePath: \frontend\src\hooks\useWaveSurfer\record\index.ts

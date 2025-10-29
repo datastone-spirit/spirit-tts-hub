@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-14 16:26:13
- * @LastEditTime: 2025-10-28 15:18:37
+ * @LastEditTime: 2025-10-29 14:37:43
  * @LastEditors: mulingyuer
  * @Description: 音频播放组件
  * @FilePath: \frontend\src\components\Audio\AudioPlayer.vue
@@ -85,8 +85,11 @@ import { useAppStore } from "@/stores";
 import { useAudioUpload } from "@/hooks/useAudioUpload";
 import { generateUUID } from "@/utils/tools";
 import mime from "mime";
+import type { UploadRawFile, UploadUserFile } from "element-plus";
 
 export interface AudioPlayerProps {
+	/** 音频文件路径 */
+	audioPath: string;
 	/** 是否启用区域选择 */
 	regionEnabled?: boolean;
 	/** 是否显示控制按钮 */
@@ -101,8 +104,23 @@ export interface AudioPlayerProps {
 	waveSurferHeight?: number;
 }
 
-const audioPath = defineModel("audio-path", { type: String, required: true });
-const audioName = defineModel("audio-name", { type: String, required: true });
+export interface AudioPlayerEmits {
+	/** 开始裁剪 */
+	"region-start": [];
+	/** 裁剪结束 */
+	"region-complete": [blob: Blob];
+	/** 裁剪还原 */
+	"region-reset": [];
+	/** 裁剪文件上传完成 */
+	"region-uploaded": [file: UploadUserFile];
+	/** 裁剪文件上传失败 */
+	"region-upload-error": [error: any];
+	/** 清除 */
+	clear: [];
+}
+
+// const audioPath = defineModel("audio-path", { type: String, required: true });
+// const audioName = defineModel("audio-name", { type: String, required: true });
 const props = withDefaults(defineProps<AudioPlayerProps>(), {
 	regionEnabled: false,
 	showControls: true,
@@ -111,14 +129,7 @@ const props = withDefaults(defineProps<AudioPlayerProps>(), {
 	enableRegion: true,
 	waveSurferHeight: 74
 });
-const emit = defineEmits<{
-	/** 裁剪完成 */
-	"cut-complete": [{ fileName: string; filePath: string }];
-	/** 裁剪结束 */
-	"region-complete": [blob: Blob];
-	/** 清除 */
-	clear: [];
-}>();
+const emit = defineEmits<AudioPlayerEmits>();
 
 // icon
 const RiCloseFill = useIcon({ name: "ri-close-fill", size: 14 });
@@ -128,7 +139,6 @@ const RiCheckLine = useIcon({ name: "ri-check-line", size: 14 });
 
 const appStore = useAppStore();
 const waveformRef = useTemplateRef("waveformRef");
-const originAudioPath = ref<string>();
 let playerInstance: WaveSurferInstance | undefined;
 const {
 	loading,
@@ -154,8 +164,6 @@ const isPlaying = computed(() => state.value === "playing");
 function onAudioPlayerClear() {
 	playerControls.stop();
 	regionControls.clear();
-	audioPath.value = "";
-	audioName.value = "";
 
 	// 事件
 	emit("clear");
@@ -185,38 +193,46 @@ function onResetRegion() {
 	// 清空选区
 	regionControls.clear();
 	// 还原原文件
-	if (originAudioPath.value) {
-		audioPath.value = originAudioPath.value;
-		originAudioPath.value = void 0;
-	}
+	emit("region-reset");
 }
 /** 确认裁剪 */
 async function onConfirmRegion() {
-	// 裁剪前记录原始数据
-	if (!originAudioPath.value) {
-		originAudioPath.value = audioPath.value;
-	}
-	const audioBlob = regionControls.cut();
-	if (!audioBlob) {
-		ElMessage.warning("裁剪失败，请重新裁剪。");
-		return;
-	}
+	try {
+		// 事件
+		emit("region-start");
 
-	// 上传
-	const fileName = `${generateUUID()}.${mime.getExtension(audioBlob.type)}`;
-	const file = new File([audioBlob], fileName, { type: audioBlob.type });
-	const result = await uploadFile({ file: file });
+		// 裁剪
+		const audioBlob = regionControls.cut();
+		if (!audioBlob) {
+			ElMessage.warning("裁剪失败，请重新裁剪。");
+			return;
+		}
 
-	if (!result.success) {
-		ElMessage.error(result.message);
-		return;
+		// 创建文件对象
+		const uuid = generateUUID();
+		const fileName = `${uuid}.${mime.getExtension(audioBlob.type)}`;
+		const file = new File([audioBlob], fileName, { type: audioBlob.type });
+		// @ts-expect-error fuck ts type
+		file.uid = uuid;
+		// @ts-expect-error fuck ts type
+		file.isDirectory = false;
+
+		// 上传文件
+		const result = await uploadFile({ file: file as UploadRawFile, showErrorMessage: false });
+
+		if (!result.success) {
+			ElMessage.error(result.message);
+			return;
+		}
+
+		// 上传完成
+		emit("region-uploaded", result.data);
+	} catch (error) {
+		emit("region-upload-error", error);
+
+		ElMessage.error("裁剪文件上传失败");
+		console.error("裁剪文件上传失败:", error);
 	}
-
-	// 上传完成
-	audioPath.value = result.filePath;
-	audioName.value = result.fileName;
-	// 发送裁剪完成事件
-	emit("cut-complete", { fileName: result.fileName, filePath: result.filePath });
 }
 
 /** 监听主题变化 */
@@ -228,8 +244,8 @@ watchEffect(() => {
 
 /** 监听音频路径变化 */
 watchEffect(() => {
-	if (audioPath.value && playerInstance) {
-		playerControls.loadAudio(getPreviewPath(audioPath.value));
+	if (props.audioPath && playerInstance) {
+		playerControls.loadAudio(getPreviewPath(props.audioPath));
 	}
 });
 
@@ -241,8 +257,8 @@ playerEmitter.on("region-complete", (blob: Blob) => {
 onMounted(() => {
 	if (!waveformRef.value) return;
 	let url = "";
-	if (typeof audioPath.value === "string" && audioPath.value.trim() !== "") {
-		url = getPreviewPath(audioPath.value);
+	if (typeof props.audioPath === "string" && props.audioPath.trim() !== "") {
+		url = getPreviewPath(props.audioPath);
 	}
 
 	playerInstance = initPlayer({
@@ -257,6 +273,14 @@ onMounted(() => {
 
 onUnmounted(() => {
 	destroyPlayer();
+});
+
+defineExpose({
+	/** 重置 */
+	reset() {
+		regionControls.clear();
+		playerControls.stop();
+	}
 });
 </script>
 

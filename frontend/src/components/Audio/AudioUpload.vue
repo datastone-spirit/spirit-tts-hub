@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 09:10:30
- * @LastEditTime: 2025-10-28 14:29:42
+ * @LastEditTime: 2025-10-29 14:35:18
  * @LastEditors: mulingyuer
  * @Description: 音频上传
  * @FilePath: \frontend\src\components\Audio\AudioUpload.vue
@@ -51,7 +51,12 @@ import {
 	type AudioUploadConfig,
 	type UploadFileResult
 } from "@/hooks/useAudioUpload";
-import { genFileId, type UploadInstance, type UploadRawFile } from "element-plus";
+import {
+	genFileId,
+	type UploadInstance,
+	type UploadRawFile,
+	type UploadUserFile
+} from "element-plus";
 
 export interface AudioUploaderProps {
 	/** 拖拽提示文字 */
@@ -65,13 +70,19 @@ export interface AudioUploaderProps {
 	/** 高度 */
 	height?: number;
 }
+export interface AudioUploaderEmits {
+	/** 音频上传完成 */
+	"audio-uploaded": [data: UploadUserFile];
+	/** 音频上传失败 */
+	"audio-upload-error": [error: any];
+}
 
-const filePath = defineModel("file-path", { type: String, required: true });
-const fileName = defineModel("file-name", { type: String, required: true });
+const modelValue = defineModel({ type: Object as PropType<UploadUserFile> });
 const props = withDefaults(defineProps<AudioUploaderProps>(), {
 	progressSize: 80,
 	height: 165
 });
+const emit = defineEmits<AudioUploaderEmits>();
 
 const uploadRef = useTemplateRef<UploadInstance>("uploadRef");
 const { uploadState, handleUpload: _handleUpload } = useAudioUpload(props.config);
@@ -91,20 +102,27 @@ const handleUpload = _handleUpload;
 const handleSuccess = (response: UploadFileResult) => {
 	if (!response || !response.success) return;
 
-	filePath.value = response.filePath;
-	fileName.value = response.fileName;
+	modelValue.value = response.data;
+	emit("audio-uploaded", response.data);
+
 	uploadRef.value?.clearFiles();
 };
 
 /** 上传失败 */
-const handleError = (_error: any) => {
+const handleError = (error: any) => {
+	emit("audio-upload-error", error);
+
 	uploadRef.value?.clearFiles();
 };
 
 /** 对外暴露上传状态 */
 defineExpose({
 	uploadState,
-	clearFiles: () => uploadRef.value?.clearFiles()
+	clearFiles: () => uploadRef.value?.clearFiles(),
+	/** 重置 */
+	reset: () => {
+		uploadRef.value?.clearFiles();
+	}
 });
 </script>
 

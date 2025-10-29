@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 10:48:30
- * @LastEditTime: 2025-10-28 11:43:16
+ * @LastEditTime: 2025-10-29 14:46:45
  * @LastEditors: mulingyuer
  * @Description: 文件选择器
  * @FilePath: \frontend\src\components\Form\FilePicker.vue
@@ -14,7 +14,7 @@
 				class="file-picker-input"
 				v-model="modelValue"
 				:placeholder="placeholder"
-				:size="size"
+				:size="componentSize"
 				:disabled="loading"
 				@keydown.enter="onKeydownEnter"
 			>
@@ -22,7 +22,7 @@
 					<el-button
 						:icon="RiFileLine"
 						title="请选择"
-						:size="size"
+						:size="componentSize"
 						:loading="loading"
 						@click="onShowSelector"
 					/>
@@ -43,6 +43,7 @@ import { useSettingsStore } from "@/stores";
 import type { ComponentSize } from "element-plus";
 import { getFileInfo } from "@/api/common";
 import { validateMimeType } from "@/utils/tools";
+import { formContextKey } from "element-plus";
 
 export interface FilePickerProps {
 	/** 占位符 */
@@ -57,17 +58,18 @@ export interface FilePickerProps {
 
 const props = withDefaults(defineProps<FilePickerProps>(), {
 	placeholder: "请输入或选择文件",
-	size: "default",
 	confirmOnEnter: false
 });
 const emit = defineEmits<{
 	/** 确认选择 */
-	confirm: [{ name: string; path: string }];
+	confirm: [file: FileResult];
 }>();
+const formContext = inject(formContextKey, undefined);
+const componentSize = computed<ComponentSize>(() => props.size ?? formContext?.size ?? "default");
 
 // icon
 const iconSize = computed(() => {
-	switch (props.size) {
+	switch (componentSize.value) {
 		case "default":
 			return "16px";
 		case "small":
@@ -98,7 +100,7 @@ function onShowSelector() {
 	})
 		.then((item: FileResult) => {
 			modelValue.value = item.path;
-			emit("confirm", { name: item.basename, path: item.path });
+			emit("confirm", item);
 		})
 		.catch(() => {});
 }
@@ -135,7 +137,7 @@ async function onKeydownEnter() {
 			}
 		}
 
-		emit("confirm", { name: findFile.basename, path: findFile.path });
+		emit("confirm", findFile);
 		loading.value = false;
 	} catch (error) {
 		loading.value = false;
