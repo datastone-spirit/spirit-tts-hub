@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-16 11:40:33
- * @LastEditTime: 2025-10-29 16:30:07
+ * @LastEditTime: 2025-10-30 14:58:01
  * @LastEditors: mulingyuer
  * @Description: index tts2 类型
  * @FilePath: \frontend\src\views\index-tts2\types.ts
@@ -10,7 +10,7 @@
 import type { TextToSpeechData } from "@/api/index-tts2";
 
 /** 表单 */
-export type RuleForm = TextToSpeechData;
+export type RuleForm = Omit<TextToSpeechData, "raw_data">;
 
 // export interface RuleForm {
 // 	/** 参考音频文件名称 */

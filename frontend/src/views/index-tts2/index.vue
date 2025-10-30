@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-30 11:54:15
+ * @LastEditTime: 2025-10-30 15:03:31
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -107,7 +107,6 @@ import HistoryDrawer from "./components/HistoryDrawer.vue";
 import Settings from "./components/Settings/index.vue";
 import TextSegSettings from "./components/TextSegSettings.vue";
 import VoiceReference from "./components/VoiceReference.vue";
-import { useHistory } from "./composables/useHistory";
 import { usePageForm } from "./composables/usePageForm";
 import type { ExampleItem, HistoryItem } from "./types";
 
@@ -137,7 +136,6 @@ const generateLoading = ref(false);
 const generateAudioPath = ref("");
 const showExampleDrawer = ref(false);
 const showHistoryDrawer = ref(false);
-const { addHistory } = useHistory();
 
 /** 查看示例 */
 function onViewExample() {
@@ -197,9 +195,6 @@ async function onSubmitForm() {
 
 	generateAudioPath.value = result.audio_path;
 	generateLoading.value = false;
-
-	// 添加历史记录
-	addHistory(ruleForm.value);
 
 	ElMessage.success("合成成功");
 }

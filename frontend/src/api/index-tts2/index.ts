@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-28 15:53:59
- * @LastEditTime: 2025-10-30 11:16:12
+ * @LastEditTime: 2025-10-30 15:50:02
  * @LastEditors: mulingyuer
  * @Description: index-tts2 接口
  * @FilePath: \frontend\src\api\index-tts2\index.ts
@@ -12,7 +12,10 @@ import type {
 	PreviewTextSegmentsData,
 	PreviewTextSegmentsResult,
 	TextToSpeechData,
-	TextToSpeechResult
+	TextToSpeechResult,
+	TTSHistoryDeleteParams,
+	TTSHistoryDeleteResult,
+	TTSHistoryResult
 } from "./types";
 export type * from "./types";
 export * from "./constants";
@@ -32,6 +35,24 @@ export function textToSpeech(data: TextToSpeechData) {
 	return request<TextToSpeechResult>({
 		url: "/tts/synthesize",
 		method: "POST",
-		data
+		data,
+		timeout: 0 // 永不超时
+	});
+}
+
+/** 历史记录 */
+export function ttsHistory() {
+	return request<TTSHistoryResult>({
+		url: "/tts/history",
+		method: "GET"
+	});
+}
+
+/** 删除历史记录 */
+export function ttsHistoryDelete(params: TTSHistoryDeleteParams) {
+	return request<TTSHistoryDeleteResult>({
+		url: "/tts/history/delete",
+		method: "DELETE",
+		params
 	});
 }

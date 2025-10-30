@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-28 15:55:31
- * @LastEditTime: 2025-10-30 11:15:39
+ * @LastEditTime: 2025-10-30 15:50:23
  * @LastEditors: mulingyuer
  * @Description: index-tts2 接口类型
  * @FilePath: \frontend\src\api\index-tts2\types.ts
@@ -80,10 +80,45 @@ export interface TextToSpeechData {
 	vec7: number;
 	/** 情绪向量8：平静（0-1）, 默认：0 */
 	vec8: number;
+	/** 历史数据 */
+	raw_data: string;
 }
 
 /** 文本转语音结果 */
 export interface TextToSpeechResult {
 	/** 音频文件路径 */
 	audio_path: string;
+}
+
+/** 历史记录结果 */
+export interface TTSHistoryResult {
+	/** 记录列表 */
+	records: Array<{
+		/** 文件路径 */
+		history_path: string;
+		/** id */
+		id: string;
+		/** 记录的数据，json字符串 */
+		input_config_raw: string;
+		/** 状态 */
+		status: string;
+	}>;
+	/** 总数量 */
+	total: number;
+}
+
+/** 删除历史记录参数 */
+export interface TTSHistoryDeleteParams {
+	/** 是否删除全部 */
+	all?: boolean;
+	/** 指定要删除的路径 */
+	path?: string;
+}
+
+/** 删除历史记录结果 */
+export interface TTSHistoryDeleteResult {
+	/** 删除的数量 */
+	count: number;
+	/** 删除文件名数组 */
+	deleted: string[];
 }

@@ -1,66 +1,70 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-10-30 11:39:13
+ * @LastEditTime: 2025-10-30 15:51:03
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-drawer class="history-drawer" v-model="show" direction="ltr" size="75%">
+	<el-drawer class="history-drawer" v-model="show" direction="ltr" size="75%" @open="onDrawerOpen">
 		<template #header>
 			<div class="history-drawer-header">
 				<Icon class="history-drawer-header-icon" name="ri-history-line" size="20" />
 				<h2 class="history-drawer-header-title">历史记录</h2>
 			</div>
 		</template>
-		<div class="history-drawer-content">
-			<el-empty v-if="!Boolean(historyData.length)" />
-			<table v-else class="history-drawer-table">
-				<colgroup>
-					<col class="col-1" />
-					<col class="col-2" />
-					<col class="col-3" />
-					<col class="col-4" />
-					<col class="col-5" />
-					<col class="col-6" />
-					<col class="col-7" />
-				</colgroup>
-				<thead>
-					<tr>
-						<th>参考音频</th>
-						<th>情感控制方式</th>
-						<th>生成内容</th>
-						<th>情感参考音频</th>
-						<th>专家模式</th>
-						<th>创建时间</th>
-						<th>控制</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="item in historyData" :key="item.id">
-						<td>{{ getFileNameFromPath(item?.spk_audio_prompt) }}</td>
-						<td>{{ getEmoControlMethodLabel(item.emo_control_method) }}</td>
-						<td>{{ item.text }}</td>
-						<td>{{ getFileNameFromPath(item?.emo_ref_path) }}</td>
-						<td>
-							<el-tag v-if="item.isExpert" type="success">是</el-tag>
-							<el-tag v-else type="info">否</el-tag>
-						</td>
-						<td>{{ formatDate(item.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
-						<td>
-							<ElSpacePro>
-								<el-button @click="onView(item)">查看</el-button>
-								<el-button @click="onApply(item)">应用</el-button>
-								<el-button type="danger" plain @click="onDelete(item)">删除</el-button>
-							</ElSpacePro>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="history-drawer-content" v-loading="loading">
+			<template v-if="!loading">
+				<el-empty v-if="!Boolean(historyData.length)" />
+				<table v-else class="history-drawer-table">
+					<colgroup>
+						<col class="col-1" />
+						<col class="col-2" />
+						<col class="col-3" />
+						<col class="col-4" />
+						<col class="col-5" />
+						<col class="col-6" />
+						<col class="col-7" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th>参考音频</th>
+							<th>情感控制方式</th>
+							<th>生成内容</th>
+							<th>情感参考音频</th>
+							<th>专家模式</th>
+							<th>创建时间</th>
+							<th>控制</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="item in historyData" :key="item.id">
+							<td>{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}</td>
+							<td>{{ getEmoControlMethodLabel(item.input_config_raw.emo_control_method) }}</td>
+							<td>{{ item.input_config_raw.text }}</td>
+							<td>{{ getFileNameFromPath(item?.input_config_raw.emo_ref_path) }}</td>
+							<td>
+								<el-tag v-if="item.input_config_raw.isExpert" type="success">是</el-tag>
+								<el-tag v-else type="info">否</el-tag>
+							</td>
+							<td>{{ formatDate(item.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
+							<td>
+								<ElSpacePro>
+									<el-button @click="onView(item.input_config_raw)">查看</el-button>
+									<el-button @click="onApply(item.input_config_raw)">应用</el-button>
+									<el-button type="danger" plain @click="onDelete(item)">删除</el-button>
+								</ElSpacePro>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</template>
 		</div>
-		<template #footer> <el-button @click="onClear">清空</el-button> </template>
+		<template #footer>
+			<el-button :disabled="loading" @click="onClear">清空</el-button>
+		</template>
 	</el-drawer>
 	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
 		<el-descriptions :column="2" border label-width="170">
@@ -144,9 +148,16 @@
 
 <script setup lang="ts">
 import { getEmoControlMethodLabel, getFileNameFromPath } from "../helper";
-import { useHistory } from "../composables/useHistory";
 import type { HistoryItem } from "../types";
 import { formatDate } from "@/utils/dayjs";
+import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
+import type { TTSHistoryResult } from "@/api/index-tts2";
+import type { Simplify } from "type-fest";
+
+type TTSHistoryItem = Simplify<
+	Omit<TTSHistoryResult["records"][number], "input_config_raw"> & { input_config_raw: HistoryItem }
+>;
+type HistoryData = Array<TTSHistoryItem>;
 
 const emit = defineEmits<{
 	/** 应用历史记录 */
@@ -154,9 +165,41 @@ const emit = defineEmits<{
 }>();
 
 const show = defineModel({ type: Boolean, required: true });
-const { historyData, deleteHistory, clearHistory } = useHistory();
+const loading = ref(false);
+const historyData = ref<HistoryData>([]);
 const openDialog = ref(false);
 const viewData = ref<HistoryItem>();
+
+// api 获取历史记录
+const getHistory = async () => {
+	try {
+		loading.value = true;
+
+		const result = await ttsHistory();
+		historyData.value = result.records.map((item) => {
+			let input_config_raw: HistoryItem;
+			try {
+				input_config_raw = JSON.parse(item.input_config_raw);
+			} catch {
+				// @ts-expect-error fuck ts type
+				input_config_raw = {};
+			}
+
+			return {
+				id: item.id,
+				history_path: item.history_path,
+				status: item.status,
+				input_config_raw: input_config_raw
+			};
+		});
+
+		loading.value = false;
+	} catch (error) {
+		loading.value = false;
+
+		console.error("获取历史记录失败", error);
+	}
+};
 
 /** 查看 */
 function onView(item: HistoryItem) {
@@ -169,17 +212,43 @@ function onApply(item: HistoryItem) {
 	emit("apply-history", toRaw(item));
 }
 /** 删除 */
-function onDelete(item: HistoryItem) {
-	deleteHistory(item.id);
+async function onDelete(item: TTSHistoryItem) {
+	try {
+		loading.value = true;
+		await ttsHistoryDelete({ path: item.history_path });
 
-	ElMessage.success("删除成功");
+		// api
+		getHistory();
+
+		ElMessage.success("删除成功");
+	} catch (error) {
+		loading.value = false;
+
+		console.error("删除历史记录失败", error);
+	}
 }
+
 /** 清空 */
-function onClear() {
-	clearHistory();
+async function onClear() {
+	try {
+		loading.value = true;
+		await ttsHistoryDelete({ all: true });
 
-	ElMessage.success("历史记录已清空");
+		// api
+		getHistory();
+
+		ElMessage.success("历史记录已清空");
+	} catch (error) {
+		loading.value = false;
+
+		console.error("清空历史记录失败", error);
+	}
 }
+
+/** 打开弹窗 */
+const onDrawerOpen = () => {
+	getHistory();
+};
 </script>
 
 <style lang="scss">
@@ -211,6 +280,9 @@ function onClear() {
 	font-size: 16px;
 	font-weight: bold;
 	color: var(--el-text-color-primary);
+}
+.history-drawer-content {
+	height: 100%;
 }
 .history-drawer-table {
 	width: 100%;

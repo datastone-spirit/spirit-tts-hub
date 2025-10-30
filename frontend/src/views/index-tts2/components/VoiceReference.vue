@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-30 11:40:08
+ * @LastEditTime: 2025-10-30 14:39:12
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -51,7 +51,10 @@
 					size="large"
 				>
 					<el-form-item prop="audioPath">
-						<AudioFileSelect v-model="localRuleForm.audioPath" />
+						<AudioFileSelect
+							v-model="localRuleForm.audioPath"
+							@file-picker-confirm="onFilePickerConfirm"
+						/>
 					</el-form-item>
 				</el-form>
 			</el-tab-pane>
@@ -71,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
+import type { FileResult } from "@/api/common";
 import { useSettingsStore } from "@/stores";
-import { getEnv } from "@/utils/env";
 import type { FormRules, TabPaneName, UploadUserFile } from "element-plus";
 
 /** 音频类型 */
@@ -85,7 +88,6 @@ export interface LocalRuleForm {
 	audioPath: string;
 }
 
-const env = getEnv();
 const settingsStore = useSettingsStore();
 
 const audioPath = defineModel("audio-path", { type: String, required: true });
@@ -97,7 +99,7 @@ const audioRecorderRef = useTemplateRef("audioRecorderRef");
 const originalAudioPath = ref<string>(); // 还原用的数据
 const localRuleFormRef = useTemplateRef("localRuleFormRef");
 const localRuleForm = ref<LocalRuleForm>({
-	audioPath: settingsStore.whiteCheck ? env.VITE_APP_OUTPUT_PARENT_PATH : ""
+	audioPath: settingsStore.whiteCheck ? settingsStore.appSettings.uploadPath : ""
 });
 const localRules = reactive<FormRules<LocalRuleForm>>({});
 
@@ -144,6 +146,10 @@ const onRegionReset = () => {
 	audioPath.value = originalAudioPath.value;
 
 	originalAudioPath.value = void 0;
+};
+/** 文件选择完成 */
+const onFilePickerConfirm = (data: FileResult) => {
+	audioPath.value = data.path;
 };
 
 /** 清理播放 */

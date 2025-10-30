@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-30 11:53:04
+ * @LastEditTime: 2025-10-30 15:03:06
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -9,10 +9,11 @@
  */
 import { useEnhancedStorage } from "@/hooks/useEnhancedStorage";
 import { useFormValidator } from "@/hooks/useFormValidator";
-import { joinPrefixKey } from "@/utils/tools";
+import { generateUUID, joinPrefixKey } from "@/utils/tools";
 import type { FormRules } from "element-plus";
-import type { RuleForm } from "../types";
+import type { HistoryItem, RuleForm } from "../types";
 import { EMO_CONTROL_METHOD, type TextToSpeechData } from "@/api/index-tts2";
+import { useSettingsStore } from "@/stores";
 
 const { useEnhancedLocalStorage } = useEnhancedStorage();
 const { registerResetterWithCleanup, registerValidatorWithCleanup, validateAll, resetAll } =
@@ -97,39 +98,9 @@ const rules = reactive<FormRules<RuleForm>>({
 	]
 });
 
-/** 格式化表单数据 */
-const formatFormData = (ruleForm: RuleForm) => {
-	const data: TextToSpeechData = {
-		do_sample: ruleForm.do_sample,
-		emo_control_method: ruleForm.emo_control_method,
-		emo_random: ruleForm.emo_random,
-		emo_ref_path: ruleForm.emo_ref_path,
-		emo_weight: ruleForm.emo_weight,
-		length_penalty: ruleForm.length_penalty,
-		max_mel_tokens: ruleForm.max_mel_tokens,
-		max_text_tokens_per_segment: ruleForm.max_text_tokens_per_segment,
-		num_beams: ruleForm.num_beams,
-		prompt: ruleForm.prompt,
-		repetition_penalty: ruleForm.repetition_penalty,
-		spk_audio_prompt: ruleForm.spk_audio_prompt,
-		temperature: ruleForm.temperature,
-		text: ruleForm.text,
-		top_k: ruleForm.top_k,
-		top_p: ruleForm.top_p,
-		vec1: ruleForm.vec1,
-		vec2: ruleForm.vec2,
-		vec3: ruleForm.vec3,
-		vec4: ruleForm.vec4,
-		vec5: ruleForm.vec5,
-		vec6: ruleForm.vec6,
-		vec7: ruleForm.vec7,
-		vec8: ruleForm.vec8
-	};
-
-	return data;
-};
-
 export function usePageForm() {
+	const settingsStore = useSettingsStore();
+
 	/** 重置表单成功后重置表单数据
 	 * 由于 ElForm 的 resetFields 方法只能重置被双向绑定的表单数据，未绑定的无法重置
 	 * 所以这里手动复写表单数据
@@ -138,6 +109,56 @@ export function usePageForm() {
 		ruleForm.value = structuredClone(toRaw(defaultForm));
 		return resetAll();
 	}
+
+	/** 生成历史数据 */
+	function generateHistoryData(ruleForm: RuleForm): string {
+		try {
+			const item: HistoryItem = {
+				id: generateUUID(),
+				isExpert: settingsStore.isExpert,
+				createTime: Date.now(),
+				...structuredClone(toRaw(ruleForm))
+			};
+
+			return JSON.stringify(item);
+		} catch (error) {
+			console.log("🚀 ~ generateHistoryData ~ error:", error);
+			return "";
+		}
+	}
+
+	/** 格式化表单数据 */
+	const formatFormData = (ruleForm: RuleForm) => {
+		const data: TextToSpeechData = {
+			do_sample: ruleForm.do_sample,
+			emo_control_method: ruleForm.emo_control_method,
+			emo_random: ruleForm.emo_random,
+			emo_ref_path: ruleForm.emo_ref_path,
+			emo_weight: ruleForm.emo_weight,
+			length_penalty: ruleForm.length_penalty,
+			max_mel_tokens: ruleForm.max_mel_tokens,
+			max_text_tokens_per_segment: ruleForm.max_text_tokens_per_segment,
+			num_beams: ruleForm.num_beams,
+			prompt: ruleForm.prompt,
+			repetition_penalty: ruleForm.repetition_penalty,
+			spk_audio_prompt: ruleForm.spk_audio_prompt,
+			temperature: ruleForm.temperature,
+			text: ruleForm.text,
+			top_k: ruleForm.top_k,
+			top_p: ruleForm.top_p,
+			vec1: ruleForm.vec1,
+			vec2: ruleForm.vec2,
+			vec3: ruleForm.vec3,
+			vec4: ruleForm.vec4,
+			vec5: ruleForm.vec5,
+			vec6: ruleForm.vec6,
+			vec7: ruleForm.vec7,
+			vec8: ruleForm.vec8,
+			raw_data: generateHistoryData(ruleForm)
+		};
+
+		return data;
+	};
 
 	return {
 		ruleForm,
