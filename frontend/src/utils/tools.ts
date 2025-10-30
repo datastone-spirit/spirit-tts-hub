@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-29 10:25:17
+ * @LastEditTime: 2025-10-30 16:07:24
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -379,4 +379,16 @@ export function validateMimeType(
 		// 精确匹配 'image/png'
 		return actual === expected;
 	});
+}
+
+/** 生成指定区间的随机数 */
+export function randomInRange(min: number, max: number, digits?: number): number {
+	if (min > max) [min, max] = [max, min]; // 可选：自动交换顺序
+	const random = Math.random() * (max - min) + min;
+	if (typeof digits !== "number") return random;
+
+	if (!Number.isInteger(digits) || digits < 0) {
+		throw new Error("digits must be a non-negative integer");
+	}
+	return Number(random.toFixed(digits));
 }

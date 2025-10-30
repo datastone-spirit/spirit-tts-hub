@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 09:13:42
- * @LastEditTime: 2025-10-29 16:59:42
+ * @LastEditTime: 2025-10-30 16:08:25
  * @LastEditors: mulingyuer
  * @Description: 情绪雷达图
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar.vue
@@ -9,6 +9,15 @@
 -->
 <template>
 	<div class="emotion-radar-wrapper">
+		<el-tooltip content="随机情绪" placement="top-end">
+			<el-button
+				class="emotion-radar-random-btn"
+				:icon="RiShuffleLine"
+				size="default"
+				circle
+				@click="onRandomEmotion"
+			></el-button>
+		</el-tooltip>
 		<div class="emotion-radar-content">
 			<div class="emotion-radar">
 				<canvas ref="canvasRef"></canvas>
@@ -23,6 +32,8 @@ import { useAppStore } from "@/stores";
 import type { EmotionChangeType } from "./types";
 import type { ThemeColor } from "./types";
 import type { RuleForm } from "../../types";
+import { useIcon } from "@/hooks/useIcon";
+import { randomInRange } from "@/utils/tools";
 
 export interface EmotionRadarProps {
 	/** 情绪权重变化来源 */
@@ -67,6 +78,9 @@ const emit = defineEmits<{
 	change: [key: keyof RuleForm, value: number];
 }>();
 const appStore = useAppStore();
+
+// icon
+const RiShuffleLine = useIcon({ name: "ri-shuffle-line", size: "16px" });
 
 const canvasRef = useTemplateRef("canvasRef");
 let chartInstance: Chart | undefined = void 0;
@@ -255,6 +269,13 @@ const handleMouseUp = () => {
 	dragIndex.value = -1;
 };
 
+/** 随机情绪 */
+const onRandomEmotion = () => {
+	labels.forEach(({ value }) => {
+		ruleForm.value[value] = randomInRange(0, 1, 2);
+	});
+};
+
 /** 监听数据 */
 const emotion = computed(() => {
 	return {
@@ -320,6 +341,7 @@ onBeforeUnmount(() => {
 	width: 100%;
 	text-align: center;
 	margin-bottom: $zl-padding * 2;
+	position: relative;
 }
 .emotion-radar-content {
 	display: inline-block;
@@ -334,6 +356,12 @@ onBeforeUnmount(() => {
 		opacity: 0;
 		z-index: -1;
 	}
+}
+.emotion-radar-random-btn {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 999;
 }
 .emotion-radar {
 	position: absolute;

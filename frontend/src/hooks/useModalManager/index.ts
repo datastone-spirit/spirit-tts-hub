@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:25:51
- * @LastEditTime: 2025-10-28 11:36:00
+ * @LastEditTime: 2025-10-30 16:55:14
  * @LastEditors: mulingyuer
  * @Description: 全局弹窗管理 hooks，存放弹窗状态数据等其他逻辑
  * @FilePath: \frontend\src\hooks\useModalManager\index.ts
@@ -16,7 +16,7 @@ export type * from "./types";
 import { resettableRef } from "@/utils/ref";
 
 /** 文件/目录选择弹窗 */
-const [pathPickerDialogData, resetPathPickerDialogData] = resettableRef<PathPickerDialogData>({
+const [pathPickerDialogData, _resetPathPickerDialogData] = resettableRef<PathPickerDialogData>({
 	show: false,
 	path: "",
 	type: "both",
@@ -49,7 +49,7 @@ export function useModalManager() {
 				pathPickerDialogController.resolve(data);
 				pathPickerDialogController.resolve = null;
 				pathPickerDialogController.reject = null;
-				resetPathPickerDialogData();
+				pathPickerDialogData.value.show = false;
 			}
 		},
 		rejectPathPickerDialog: (reason?: any) => {
@@ -57,7 +57,7 @@ export function useModalManager() {
 				pathPickerDialogController.reject(reason);
 				pathPickerDialogController.resolve = null;
 				pathPickerDialogController.reject = null;
-				resetPathPickerDialogData();
+				pathPickerDialogData.value.show = false;
 			}
 		}
 	};

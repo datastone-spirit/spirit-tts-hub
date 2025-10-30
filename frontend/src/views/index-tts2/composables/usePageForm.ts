@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-30 15:03:06
+ * @LastEditTime: 2025-10-30 16:39:11
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -122,7 +122,7 @@ export function usePageForm() {
 
 			return JSON.stringify(item);
 		} catch (error) {
-			console.log("🚀 ~ generateHistoryData ~ error:", error);
+			console.error("生成历史数据失败", error);
 			return "";
 		}
 	}
@@ -154,7 +154,8 @@ export function usePageForm() {
 			vec6: ruleForm.vec6,
 			vec7: ruleForm.vec7,
 			vec8: ruleForm.vec8,
-			raw_data: generateHistoryData(ruleForm)
+			raw_data: generateHistoryData(ruleForm),
+			output_path: settingsStore.appSettings.outputPath
 		};
 
 		return data;

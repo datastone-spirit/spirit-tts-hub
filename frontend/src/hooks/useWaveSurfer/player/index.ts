@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-10 15:29:57
- * @LastEditTime: 2025-10-28 14:54:17
+ * @LastEditTime: 2025-10-30 16:17:41
  * @LastEditors: mulingyuer
  * @Description: WaveSurfer hooks
  * @FilePath: \frontend\src\hooks\useWaveSurfer\player\index.ts
@@ -316,7 +316,7 @@ export function useWaveSurferPlayer(config?: UseWaveSurferOptions) {
 
 	/** 拼接可读取的音频路径 */
 	const getPreviewPath = (path: string) => {
-		return `${env.VITE_APP_API_BASE_URL}/audio/preview/${path.replace(/^\//, "")}`;
+		return `${env.VITE_APP_API_BASE_URL}/audio/preview?filename=${encodeURIComponent(path)}`;
 	};
 
 	return {

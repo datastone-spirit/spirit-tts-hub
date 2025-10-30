@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-28 15:53:59
- * @LastEditTime: 2025-10-30 15:50:02
+ * @LastEditTime: 2025-10-30 16:28:04
  * @LastEditors: mulingyuer
  * @Description: index-tts2 接口
  * @FilePath: \frontend\src\api\index-tts2\index.ts
@@ -36,7 +36,7 @@ export function textToSpeech(data: TextToSpeechData) {
 		url: "/tts/synthesize",
 		method: "POST",
 		data,
-		timeout: 0 // 永不超时
+		timeout: 10 * 60 * 1000 * 1000 // 10m
 	});
 }
 

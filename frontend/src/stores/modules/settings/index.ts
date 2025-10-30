@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-04 16:14:16
- * @LastEditTime: 2025-10-27 14:35:23
+ * @LastEditTime: 2025-10-30 16:46:14
  * @LastEditors: mulingyuer
  * @Description: 设置数据仓库
  * @FilePath: \frontend\src\stores\modules\settings\index.ts
@@ -33,8 +33,8 @@ export const useSettingsStore = defineStore(
 
 		/** 应用设置 */
 		const [appSettings, restoreAppSettings] = resettableRef<AppSettings>({
-			uploadPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}/upload` : "",
-			outputPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}/output` : ""
+			uploadPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}` : "",
+			outputPath: whiteCheck.value ? `${getEnv().VITE_APP_OUTPUT_PARENT_PATH}` : ""
 		});
 		function resetAppSettings() {
 			restoreAppSettings();
