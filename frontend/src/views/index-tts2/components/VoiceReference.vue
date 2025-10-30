@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-29 15:18:29
+ * @LastEditTime: 2025-10-30 11:40:08
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -71,20 +71,15 @@
 </template>
 
 <script setup lang="ts">
-import type { FormRules, TabPaneName, UploadUserFile } from "element-plus";
 import { useSettingsStore } from "@/stores";
 import { getEnv } from "@/utils/env";
+import type { FormRules, TabPaneName, UploadUserFile } from "element-plus";
 
 /** 音频类型 */
 export type VoiceType =
 	| "upload" // 上传
 	| "record" // 录音
 	| "select-file"; // 选择文件
-
-export interface OriginalData {
-	audioPath: string;
-	audioName: string;
-}
 
 export interface LocalRuleForm {
 	audioPath: string;
@@ -94,13 +89,12 @@ const env = getEnv();
 const settingsStore = useSettingsStore();
 
 const audioPath = defineModel("audio-path", { type: String, required: true });
-const audioName = defineModel("audio-name", { type: String, required: true });
 
 const voiceType = ref<VoiceType>("upload");
 const audioUploadRef = useTemplateRef("audioUploadRef");
 const audioPlayerRef = useTemplateRef("audioPlayerRef");
 const audioRecorderRef = useTemplateRef("audioRecorderRef");
-const originalData = ref<OriginalData>(); // 还原用的数据
+const originalAudioPath = ref<string>(); // 还原用的数据
 const localRuleFormRef = useTemplateRef("localRuleFormRef");
 const localRuleForm = ref<LocalRuleForm>({
 	audioPath: settingsStore.whiteCheck ? env.VITE_APP_OUTPUT_PARENT_PATH : ""
@@ -126,49 +120,42 @@ function onTabChange(name: TabPaneName) {
 		audioRecorderRef.value?.cancelRecord(); // 取消正在进行的录音
 	}
 	audioPath.value = "";
-	audioName.value = "";
 }
 /** 音频上传完成 */
 const onAudioUploaded = (file: UploadUserFile) => {
 	audioPath.value = file.url!;
-	audioName.value = file.name;
 };
 /** 音频录制完成 */
 const onAudioRecorded = (data: UploadUserFile) => {
 	audioPath.value = data.url!;
-	audioName.value = data.name;
 };
 /** 开始裁剪 */
 const onRegionStart = () => {
-	if (originalData.value) return;
-	originalData.value = { audioPath: audioPath.value, audioName: audioName.value };
+	if (originalAudioPath.value) return;
+	originalAudioPath.value = audioPath.value;
 };
 /** 裁剪完成 */
 const onRegionUploaded = (data: UploadUserFile) => {
 	audioPath.value = data.url!;
-	audioName.value = data.name;
 };
 /** 裁剪还原 */
 const onRegionReset = () => {
-	if (!originalData.value) return;
-	audioPath.value = originalData.value.audioPath;
-	audioName.value = originalData.value.audioName;
+	if (!originalAudioPath.value) return;
+	audioPath.value = originalAudioPath.value;
 
-	originalData.value = void 0;
+	originalAudioPath.value = void 0;
 };
 
 /** 清理播放 */
 function onAudioPlayerClear() {
 	audioPath.value = "";
-	audioName.value = "";
 }
 
 defineExpose({
 	/** 重置数据 */
 	reset() {
 		audioPath.value = "";
-		audioName.value = "";
-		originalData.value = void 0;
+		originalAudioPath.value = void 0;
 
 		audioUploadRef.value?.reset();
 		audioPlayerRef.value?.reset();

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-29 14:54:47
+ * @LastEditTime: 2025-10-30 11:54:15
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -24,11 +24,10 @@
 								<BodyCard title="参考音频" icon-name="ri-music-2-fill">
 									<VoiceReference
 										ref="voiceReferenceRef"
-										v-model:audio-path="ruleForm.referenceAudioPath"
-										v-model:audio-name="ruleForm.referenceAudioName"
+										v-model:audio-path="ruleForm.spk_audio_prompt"
 									/>
-									<el-form-item prop="referenceAudioPath">
-										<el-input v-show="false" v-model="ruleForm.referenceAudioPath" />
+									<el-form-item prop="spk_audio_prompt">
+										<el-input v-show="false" v-model="ruleForm.spk_audio_prompt" />
 									</el-form-item>
 								</BodyCard>
 								<el-divider class="tts-divider" />
@@ -45,7 +44,7 @@
 								</BodyCard>
 								<el-divider class="tts-divider" />
 								<BodyCard title="文本分段设置" icon-name="ri-scissors-cut-fill">
-									<el-form-item prop="maxTokensPerSegment">
+									<el-form-item prop="max_text_tokens_per_segment">
 										<TextSegSettings />
 									</el-form-item>
 								</BodyCard>
@@ -93,24 +92,24 @@
 </template>
 
 <script setup lang="ts">
+import { textToSpeech } from "@/api/index-tts2";
 import { SPLITTER_KEY } from "@/constants/config-keys";
-import FooterAudio from "./components/FooterAudio.vue";
-import VoiceReference from "./components/VoiceReference.vue";
-import { useIcon } from "@/hooks/useIcon";
-import TextSegSettings from "./components/TextSegSettings.vue";
-import { sleep, validateForm } from "@/utils/tools";
-import templateAudio from "@/assets/audio/j816336nczz00zb3kqzxxnuve3ub5w2.ogg";
-import Advanced from "./components/Advanced/index.vue";
-import Settings from "./components/Settings/index.vue";
-import BodyCard from "./components/BodyCard.vue";
-import { usePageForm } from "./composables/usePageForm";
-import type { FormInstance } from "element-plus";
-import ExampleDrawer from "./components/ExampleDrawer/index.vue";
-import type { ExampleItem, HistoryItem } from "./types";
-import { useSettingsStore } from "@/stores";
 import { ComplexityEnum } from "@/enums/complexity.enum";
+import { useIcon } from "@/hooks/useIcon";
+import { useSettingsStore } from "@/stores";
+import { validateForm } from "@/utils/tools";
+import type { FormInstance } from "element-plus";
+import Advanced from "./components/Advanced/index.vue";
+import BodyCard from "./components/BodyCard.vue";
+import ExampleDrawer from "./components/ExampleDrawer/index.vue";
+import FooterAudio from "./components/FooterAudio.vue";
 import HistoryDrawer from "./components/HistoryDrawer.vue";
+import Settings from "./components/Settings/index.vue";
+import TextSegSettings from "./components/TextSegSettings.vue";
+import VoiceReference from "./components/VoiceReference.vue";
 import { useHistory } from "./composables/useHistory";
+import { usePageForm } from "./composables/usePageForm";
+import type { ExampleItem, HistoryItem } from "./types";
 
 export type TabsName = "settings" | "advanced";
 
@@ -125,8 +124,15 @@ const rightSize = useLocalStorage(SPLITTER_KEY.INDEX_TTS2_RIGHT_SIZE, 600);
 const activeName = ref<TabsName>("settings");
 const voiceReferenceRef = useTemplateRef("voiceReferenceRef");
 const ruleFormRef = useTemplateRef<FormInstance>("ruleFormRef");
-const { ruleForm, rules, registerValidator, registerResetter, validateAll, resetAll } =
-	usePageForm();
+const {
+	ruleForm,
+	rules,
+	registerValidator,
+	registerResetter,
+	validateAll,
+	resetAll,
+	formatFormData
+} = usePageForm();
 const generateLoading = ref(false);
 const generateAudioPath = ref("");
 const showExampleDrawer = ref(false);
@@ -174,23 +180,28 @@ registerResetter(() => {
 
 /** 重置表单 */
 function onResetForm() {
-	resetAll();
+	resetAll().then(() => {
+		ElMessage.success("重置表单成功");
+	});
 }
 /** 提交表单 */
 async function onSubmitForm() {
 	const { isValid } = await validateAll();
 	if (!isValid) return;
 
-	// 生成中
 	generateLoading.value = true;
-	await sleep(2000);
-	ElMessage.success("合成成功");
-	generateLoading.value = false;
 
-	generateAudioPath.value = templateAudio;
+	// api
+	const data = formatFormData(ruleForm.value);
+	const result = await textToSpeech(data);
+
+	generateAudioPath.value = result.audio_path;
+	generateLoading.value = false;
 
 	// 添加历史记录
 	addHistory(ruleForm.value);
+
+	ElMessage.success("合成成功");
 }
 </script>
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-28 17:23:31
+ * @LastEditTime: 2025-10-30 11:50:44
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -13,7 +13,7 @@
 			<div class="seg-settings-label">最大Token</div>
 			<div class="seg-settings-content">
 				<NumericRangeControl
-					v-model="ruleForm.maxTokensPerSegment"
+					v-model="ruleForm.max_text_tokens_per_segment"
 					:min="minTokenCount"
 					:max="maxTokenCount"
 					:disabled="loading"
@@ -91,10 +91,13 @@ const previewData = ref<PreviewTextSegmentsResult>({
 /** api */
 async function getTextSeg() {
 	try {
+		const text = ruleForm.value.text;
+		if (typeof text !== "string" || text.trim() === "") return;
+
 		loading.value = true;
 
 		const result = await previewTextSegments({
-			max_text_tokens_per_segment: ruleForm.value.maxTokensPerSegment,
+			max_text_tokens_per_segment: ruleForm.value.max_text_tokens_per_segment,
 			text: ruleForm.value.text
 		});
 

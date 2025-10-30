@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 10:35:54
- * @LastEditTime: 2025-10-27 10:57:51
+ * @LastEditTime: 2025-10-30 11:37:00
  * @LastEditors: mulingyuer
  * @Description: 示例抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\index.vue
@@ -38,10 +38,10 @@
 				</thead>
 				<tbody>
 					<tr v-for="(item, index) in data" :key="index">
-						<td>{{ item.referenceAudioName }}</td>
-						<td>{{ getEmotionControlStrategyName(item.emotionControlStrategy) }}</td>
+						<td>{{ getFileNameFromPath(item?.spk_audio_prompt) }}</td>
+						<td>{{ getEmoControlMethodLabel(item.emo_control_method) }}</td>
 						<td>{{ item.text }}</td>
-						<td>{{ item.emotionReferenceAudioName }}</td>
+						<td>{{ getFileNameFromPath(item.emo_ref_path) }}</td>
 						<td>
 							<el-tag v-if="item.isExpert" type="success">是</el-tag>
 							<el-tag v-else type="info">否</el-tag>
@@ -60,56 +60,56 @@
 	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
 		<el-descriptions :column="2" border label-width="170">
 			<el-descriptions-item label="参考音频" :span="2">
-				{{ viewData?.referenceAudioName }}
+				{{ getFileNameFromPath(viewData?.spk_audio_prompt) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频路径" :span="2">
-				{{ viewData?.referenceAudioPath }}
+				{{ viewData?.spk_audio_prompt }}
 			</el-descriptions-item>
 			<el-descriptions-item label="生成内容" :span="2"> {{ viewData?.text }} </el-descriptions-item>
 			<el-descriptions-item label="情感控制方式" :span="2">
-				{{ getEmotionControlStrategyName(viewData?.emotionControlStrategy) }}
+				{{ getEmoControlMethodLabel(viewData?.emo_control_method) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频" :span="2">
-				{{ viewData?.emotionReferenceAudioName }}
+				{{ getFileNameFromPath(viewData?.emo_ref_path) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频路径" :span="2">
-				{{ viewData?.emotionReferenceAudioPath }}
+				{{ viewData?.emo_ref_path }}
 			</el-descriptions-item>
 			<el-descriptions-item label="文本分段最大Token">
-				{{ viewData?.maxTokensPerSegment }}
+				{{ viewData?.max_text_tokens_per_segment }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感控制权重">
-				{{ viewData?.externalEmotionStrength }}
+				{{ viewData?.emo_weight }}
 			</el-descriptions-item>
 			<el-descriptions-item label="随机情绪采样">
-				{{ viewData?.enableRandomEmotion }}
+				{{ viewData?.emo_random }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-快乐">
-				{{ viewData?.emotionStrengths.happy }}
+				{{ viewData?.vec1 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-生气">
-				{{ viewData?.emotionStrengths.angry }}
+				{{ viewData?.vec2 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-难过">
-				{{ viewData?.emotionStrengths.sad }}
+				{{ viewData?.vec3 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-害怕">
-				{{ viewData?.emotionStrengths.afraid }}
+				{{ viewData?.vec4 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-厌恶">
-				{{ viewData?.emotionStrengths.disgusted }}
+				{{ viewData?.vec5 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-忧郁">
-				{{ viewData?.emotionStrengths.melancholic }}
+				{{ viewData?.vec6 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-惊讶">
-				{{ viewData?.emotionStrengths.surprised }}
+				{{ viewData?.vec7 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-平静">
-				{{ viewData?.emotionStrengths.calm }}
+				{{ viewData?.vec8 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感描述">
-				{{ viewData?.emotionDescription }}
+				{{ viewData?.prompt }}
 			</el-descriptions-item>
 			<el-descriptions-item label="启用 GPT-2 样本抽取">
 				{{ viewData?.do_sample }}
@@ -134,14 +134,12 @@
 <script setup lang="ts">
 import type { ExampleData, ExampleItem } from "../../types";
 import { EXAMPLE_DATA } from "./example-data";
-import { useEmotionControlStrategy } from "../../composables/useEmotionControlStrategy";
+import { getEmoControlMethodLabel, getFileNameFromPath } from "../../helper";
 
 const emit = defineEmits<{
 	/** 应用示例配置 */
 	"apply-example": [item: ExampleItem];
 }>();
-
-const { getEmotionControlStrategyName } = useEmotionControlStrategy();
 
 const show = defineModel({ type: Boolean, required: true });
 const data = reactive<ExampleData>(EXAMPLE_DATA);

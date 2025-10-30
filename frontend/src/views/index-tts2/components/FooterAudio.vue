@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-22 10:31:57
+ * @LastEditTime: 2025-10-30 14:30:37
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -68,6 +68,8 @@
 import { useIcon } from "@/hooks/useIcon";
 import AudioProgress from "./AudioProgress.vue";
 import { useWaveSurferPlayer, AudioHelper, type WaveSurferInstance } from "@/hooks/useWaveSurfer";
+import { downloadFile } from "@/utils/tools";
+import { getEnv } from "@/utils/env";
 
 export interface FooterAudioProps {
 	/** 音频路径 */
@@ -76,6 +78,7 @@ export interface FooterAudioProps {
 	loading: boolean;
 }
 
+const env = getEnv();
 const props = defineProps<FooterAudioProps>();
 const _emit = defineEmits<{
 	/** 重置表单 */
@@ -90,7 +93,8 @@ const RiMusicAiFill = useIcon({ name: "ri-music-ai-fill", size: 16 });
 
 const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
 let playerInstance: WaveSurferInstance | undefined;
-const { initPlayer, destroyPlayer, playerControls, playerData, state } = useWaveSurferPlayer();
+const { initPlayer, destroyPlayer, playerControls, playerData, state, getPreviewPath } =
+	useWaveSurferPlayer();
 const isPlaying = computed(() => state.value === "playing");
 const isAudioPath = computed(() => {
 	return typeof props.audioPath === "string" && props.audioPath.trim() !== "";
@@ -108,22 +112,29 @@ function onFastForward() {
 }
 /** 下载音频 */
 function onDownloadAudio() {
-	// TODO: 需要实现下载功能
-	console.log("下载音频");
+	if (!isAudioPath.value) return;
+	const url = `${env.VITE_APP_API_BASE_URL}/tts/download?filepath=${encodeURIComponent(props.audioPath)}`;
+	downloadFile(url);
 }
 
 /** 监听音频路径变化 */
 watchEffect(() => {
 	if (props.audioPath && playerInstance) {
-		playerControls.loadAudio(props.audioPath);
+		playerControls.loadAudio(getPreviewPath(props.audioPath));
 	}
 });
 
 onMounted(() => {
 	if (!audioRef.value) return;
+
+	let url = "";
+	if (typeof props.audioPath === "string" && props.audioPath.trim() !== "") {
+		url = getPreviewPath(props.audioPath);
+	}
+
 	playerInstance = initPlayer({
 		container: audioRef.value,
-		url: props.audioPath
+		url
 	});
 });
 

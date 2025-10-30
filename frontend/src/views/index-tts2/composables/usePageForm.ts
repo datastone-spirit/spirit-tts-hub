@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-29 15:19:08
+ * @LastEditTime: 2025-10-30 11:53:04
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -12,6 +12,7 @@ import { useFormValidator } from "@/hooks/useFormValidator";
 import { joinPrefixKey } from "@/utils/tools";
 import type { FormRules } from "element-plus";
 import type { RuleForm } from "../types";
+import { EMO_CONTROL_METHOD, type TextToSpeechData } from "@/api/index-tts2";
 
 const { useEnhancedLocalStorage } = useEnhancedStorage();
 const { registerResetterWithCleanup, registerValidatorWithCleanup, validateAll, resetAll } =
@@ -19,45 +20,41 @@ const { registerResetterWithCleanup, registerValidatorWithCleanup, validateAll, 
 
 /** 表单数据 */
 const defaultForm = readonly<RuleForm>({
-	referenceAudioName: "",
-	referenceAudioPath: "",
-	text: "",
-	maxTokensPerSegment: 120,
-	emotionControlStrategy: "same_as_voice",
-	externalEmotionStrength: 0.8,
-	enableRandomEmotion: false,
-	emotionReferenceAudioName: "",
-	emotionReferenceAudioPath: "",
-	emotionStrengths: {
-		happy: 0,
-		angry: 0,
-		sad: 0,
-		afraid: 0,
-		disgusted: 0,
-		melancholic: 0,
-		surprised: 0,
-		calm: 0
-	},
-	emotionDescription: "",
 	do_sample: true,
-	temperature: 0.8,
-	top_p: 0.8,
-	top_k: 30,
-	num_beams: 3,
-	repetition_penalty: 10,
+	emo_control_method: EMO_CONTROL_METHOD.SAME_AS_VOICE,
+	emo_random: false,
+	emo_ref_path: "",
+	emo_weight: 0.8,
 	length_penalty: 0,
-	max_mel_tokens: 1500
+	max_mel_tokens: 1500,
+	max_text_tokens_per_segment: 120,
+	num_beams: 3,
+	prompt: "",
+	repetition_penalty: 10,
+	spk_audio_prompt: "",
+	temperature: 0.8,
+	text: "",
+	top_k: 30,
+	top_p: 0.8,
+	vec1: 0,
+	vec2: 0,
+	vec3: 0,
+	vec4: 0,
+	vec5: 0,
+	vec6: 0,
+	vec7: 0,
+	vec8: 0
 });
 const ruleForm = useEnhancedLocalStorage<RuleForm>({
 	localKey: joinPrefixKey("index-tts2"),
 	version: "1.0.0",
 	defaultValue: structuredClone(toRaw(defaultForm)),
-	blacklist: ["referenceAudioPath", "emotionReferenceAudioPath", "emotionStrengths.test[0]"]
+	blacklist: ["emo_ref_path", "spk_audio_prompt"]
 });
 
 /** 表单校验规则 */
 const rules = reactive<FormRules<RuleForm>>({
-	referenceAudioPath: [
+	spk_audio_prompt: [
 		{
 			trigger: "change",
 			validator: (_rule, value, callback) => {
@@ -82,11 +79,12 @@ const rules = reactive<FormRules<RuleForm>>({
 			}
 		}
 	],
-	emotionReferenceAudioPath: [
+	emo_ref_path: [
 		{
 			trigger: "change",
 			validator: (_rule, value, callback) => {
-				const useEmotionAudio = ruleForm.value.emotionControlStrategy === "use_emotion_audio";
+				const useEmotionAudio =
+					ruleForm.value.emo_control_method === EMO_CONTROL_METHOD.USE_EMOTION_AUDIO;
 				if (!useEmotionAudio) return callback();
 
 				if (typeof value !== "string" || value.trim() === "") {
@@ -98,6 +96,38 @@ const rules = reactive<FormRules<RuleForm>>({
 		}
 	]
 });
+
+/** 格式化表单数据 */
+const formatFormData = (ruleForm: RuleForm) => {
+	const data: TextToSpeechData = {
+		do_sample: ruleForm.do_sample,
+		emo_control_method: ruleForm.emo_control_method,
+		emo_random: ruleForm.emo_random,
+		emo_ref_path: ruleForm.emo_ref_path,
+		emo_weight: ruleForm.emo_weight,
+		length_penalty: ruleForm.length_penalty,
+		max_mel_tokens: ruleForm.max_mel_tokens,
+		max_text_tokens_per_segment: ruleForm.max_text_tokens_per_segment,
+		num_beams: ruleForm.num_beams,
+		prompt: ruleForm.prompt,
+		repetition_penalty: ruleForm.repetition_penalty,
+		spk_audio_prompt: ruleForm.spk_audio_prompt,
+		temperature: ruleForm.temperature,
+		text: ruleForm.text,
+		top_k: ruleForm.top_k,
+		top_p: ruleForm.top_p,
+		vec1: ruleForm.vec1,
+		vec2: ruleForm.vec2,
+		vec3: ruleForm.vec3,
+		vec4: ruleForm.vec4,
+		vec5: ruleForm.vec5,
+		vec6: ruleForm.vec6,
+		vec7: ruleForm.vec7,
+		vec8: ruleForm.vec8
+	};
+
+	return data;
+};
 
 export function usePageForm() {
 	/** 重置表单成功后重置表单数据
@@ -115,6 +145,7 @@ export function usePageForm() {
 		registerValidator: registerValidatorWithCleanup,
 		registerResetter: registerResetterWithCleanup,
 		validateAll,
-		resetAll: resetAllPro
+		resetAll: resetAllPro,
+		formatFormData
 	};
 }

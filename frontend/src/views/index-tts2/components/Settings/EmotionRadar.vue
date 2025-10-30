@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-17 09:13:42
- * @LastEditTime: 2025-10-20 14:38:08
+ * @LastEditTime: 2025-10-29 16:59:42
  * @LastEditors: mulingyuer
  * @Description: 情绪雷达图
  * @FilePath: \frontend\src\views\index-tts2\components\Settings\EmotionRadar.vue
@@ -20,8 +20,9 @@
 <script setup lang="ts">
 import Chart, { type ChartConfiguration } from "chart.js/auto";
 import { useAppStore } from "@/stores";
-import type { Emotion, EmotionChangeType } from "./types";
+import type { EmotionChangeType } from "./types";
 import type { ThemeColor } from "./types";
+import type { RuleForm } from "../../types";
 
 export interface EmotionRadarProps {
 	/** 情绪权重变化来源 */
@@ -58,12 +59,12 @@ const THEME: Record<"dark" | "light", ThemeColor> = {
 	}
 };
 
-const emotion = defineModel({ type: Object as PropType<Emotion>, required: true });
+const ruleForm = defineModel({ type: Object as PropType<RuleForm>, required: true });
 
 const props = defineProps<EmotionRadarProps>();
 const emit = defineEmits<{
 	/** 数值变动 */
-	change: [key: keyof Emotion, value: number];
+	change: [key: keyof RuleForm, value: number];
 }>();
 const appStore = useAppStore();
 
@@ -73,35 +74,35 @@ let chartInstance: Chart | undefined = void 0;
 const labels = [
 	{
 		name: "快乐",
-		value: "happy"
+		value: "vec1"
 	},
 	{
 		name: "生气",
-		value: "angry"
+		value: "vec2"
 	},
 	{
 		name: "难过",
-		value: "sad"
+		value: "vec3"
 	},
 	{
 		name: "害怕",
-		value: "afraid"
+		value: "vec4"
 	},
 	{
 		name: "厌恶",
-		value: "disgusted"
+		value: "vec5"
 	},
 	{
 		name: "忧郁",
-		value: "melancholic"
+		value: "vec6"
 	},
 	{
 		name: "惊讶",
-		value: "surprised"
+		value: "vec7"
 	},
 	{
 		name: "平静",
-		value: "calm"
+		value: "vec8"
 	}
 ] as const;
 // 拖拽状态
@@ -119,7 +120,7 @@ const generateChartConfig = (): ChartConfiguration => {
 			datasets: [
 				{
 					label: "权重",
-					data: labels.map((item) => emotion.value[item.value]),
+					data: labels.map((item) => ruleForm.value[item.value]),
 					fill: true,
 					backgroundColor: theme.backgroundColor,
 					borderColor: theme.borderColor,
@@ -241,7 +242,7 @@ const handleMouseMove = (e: MouseEvent) => {
 	let value = Math.round((proj / maxRadius) * 100) / 100;
 	value = Math.max(0, Math.min(1, value)); // 限制在0-1范围内
 
-	emotion.value[activeLabel.value] = value;
+	ruleForm.value[activeLabel.value] = value;
 	updateChart();
 
 	// 事件
@@ -255,6 +256,18 @@ const handleMouseUp = () => {
 };
 
 /** 监听数据 */
+const emotion = computed(() => {
+	return {
+		vec1: ruleForm.value.vec1,
+		vec2: ruleForm.value.vec2,
+		vec3: ruleForm.value.vec3,
+		vec4: ruleForm.value.vec4,
+		vec5: ruleForm.value.vec5,
+		vec6: ruleForm.value.vec6,
+		vec7: ruleForm.value.vec7,
+		vec8: ruleForm.value.vec8
+	};
+});
 watch(
 	[() => emotion.value, () => props.changeType],
 	() => {
