@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-30 15:03:31
+ * @LastEditTime: 2025-10-30 17:24:04
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -145,7 +145,7 @@ function onViewExample() {
 function onApplyExample(item: ExampleItem) {
 	const { isExpert, ...data } = item;
 	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
-	ruleForm.value = data;
+	Object.assign(ruleForm.value, data);
 
 	ElMessage.success("应用示例配置成功");
 }

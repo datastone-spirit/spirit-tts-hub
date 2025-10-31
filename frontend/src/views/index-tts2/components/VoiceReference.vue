@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-30 14:39:12
+ * @LastEditTime: 2025-10-30 17:03:38
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -98,9 +98,10 @@ const audioPlayerRef = useTemplateRef("audioPlayerRef");
 const audioRecorderRef = useTemplateRef("audioRecorderRef");
 const originalAudioPath = ref<string>(); // 还原用的数据
 const localRuleFormRef = useTemplateRef("localRuleFormRef");
-const localRuleForm = ref<LocalRuleForm>({
+const defaultLocalRuleForm = readonly<LocalRuleForm>({
 	audioPath: settingsStore.whiteCheck ? settingsStore.appSettings.uploadPath : ""
 });
+const localRuleForm = ref<LocalRuleForm>(structuredClone(toRaw(defaultLocalRuleForm)));
 const localRules = reactive<FormRules<LocalRuleForm>>({});
 
 const showAudioUpload = computed(() => {
@@ -166,6 +167,7 @@ defineExpose({
 		audioUploadRef.value?.reset();
 		audioPlayerRef.value?.reset();
 		audioRecorderRef.value?.reset();
+		localRuleForm.value = structuredClone(toRaw(defaultLocalRuleForm));
 		localRuleFormRef.value?.resetFields();
 	}
 });
