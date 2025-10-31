@@ -39,3 +39,9 @@ CLAUDE.md
 /frontend/.vscode/*
 !/frontend/.vscode/extensions.json
 /frontend/.codebuddy
+/backend/uploads/*
+/backend/index-tts
+/backend/index-tts/.venv
+/backend/checkpoints/
+/backend/outputs/*
+/backend/history/*
