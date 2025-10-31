@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-30 17:24:04
+ * @LastEditTime: 2025-10-31 16:31:14
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -82,6 +82,8 @@
 			<FooterAudio
 				:audio-path="generateAudioPath"
 				:loading="generateLoading"
+				:show-progress="showProgress"
+				:progress="progress"
 				@reset-form="onResetForm"
 				@submit-form="onSubmitForm"
 			/>
@@ -109,6 +111,7 @@ import TextSegSettings from "./components/TextSegSettings.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { usePageForm } from "./composables/usePageForm";
 import type { ExampleItem, HistoryItem } from "./types";
+import { useProgress } from "@/hooks/useProgress";
 
 export type TabsName = "settings" | "advanced";
 
@@ -136,6 +139,12 @@ const generateLoading = ref(false);
 const generateAudioPath = ref("");
 const showExampleDrawer = ref(false);
 const showHistoryDrawer = ref(false);
+const showProgress = ref(false);
+const { progress, progressControl } = useProgress({
+	onFinish: () => {
+		showProgress.value = false;
+	}
+});
 
 /** 查看示例 */
 function onViewExample() {
@@ -184,19 +193,31 @@ function onResetForm() {
 }
 /** 提交表单 */
 async function onSubmitForm() {
-	const { isValid } = await validateAll();
-	if (!isValid) return;
+	try {
+		const { isValid } = await validateAll();
+		if (!isValid) return;
 
-	generateLoading.value = true;
+		generateLoading.value = true;
+		showProgress.value = true;
+		progressControl.start(ruleForm.value.text.length);
 
-	// api
-	const data = formatFormData(ruleForm.value);
-	const result = await textToSpeech(data);
+		// api
+		const data = formatFormData(ruleForm.value);
+		const result = await textToSpeech(data);
 
-	generateAudioPath.value = result.audio_path;
-	generateLoading.value = false;
+		generateAudioPath.value = result.audio_path;
+		generateLoading.value = false;
+		progressControl.done();
 
-	ElMessage.success("合成成功");
+		ElMessage.success("合成成功");
+	} catch (error) {
+		generateLoading.value = false;
+		progressControl.done();
+
+		const message = (error as Error)?.message ?? "合成失败";
+		ElMessage.error(message);
+		console.error(message, error);
+	}
 }
 </script>
 

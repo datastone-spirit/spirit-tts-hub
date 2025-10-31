@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-30 14:30:37
+ * @LastEditTime: 2025-10-31 11:28:31
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -61,6 +61,12 @@
 				生成语音
 			</el-button>
 		</div>
+
+		<div
+			v-show="showProgress"
+			class="footer-audio-progress"
+			:style="{ width: `${progress}%` }"
+		></div>
 	</div>
 </template>
 
@@ -76,10 +82,17 @@ export interface FooterAudioProps {
 	audioPath: string;
 	/** loading */
 	loading: boolean;
+	/** 是否显示进度条 */
+	showProgress?: boolean;
+	/** 进度值 0-100 */
+	progress?: number;
 }
 
 const env = getEnv();
-const props = defineProps<FooterAudioProps>();
+const props = withDefaults(defineProps<FooterAudioProps>(), {
+	showProgress: false,
+	progress: 30
+});
 const _emit = defineEmits<{
 	/** 重置表单 */
 	"reset-form": [];
@@ -149,6 +162,8 @@ onUnmounted(() => {
 	padding: $zl-padding;
 	display: flex;
 	gap: $zl-padding;
+	position: relative;
+	z-index: 1;
 }
 .footer-audio-left {
 	flex-shrink: 0;
@@ -223,5 +238,21 @@ onUnmounted(() => {
 }
 .footer-button {
 	height: 100%;
+}
+.footer-audio-progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 200px;
+	background-color: var(--zl-footer-audio-progress-bg);
+	transition: width 0.6s ease;
+	animation: van-skeleton-blink 1.2s ease-in-out infinite;
+	z-index: -1;
+}
+@keyframes van-skeleton-blink {
+	50% {
+		opacity: 0.6;
+	}
 }
 </style>
