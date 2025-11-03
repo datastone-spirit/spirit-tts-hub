@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-10-30 11:50:44
+ * @LastEditTime: 2025-11-03 14:48:03
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -171,7 +171,6 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000), { immediate: t
 	padding: 8px;
 	border-right: 1px solid var(--el-border-color);
 	border-bottom: 1px solid var(--el-border-color);
-	color: var(--el-text-color-primary);
 }
 .text-seg-preview-table th:last-child,
 .text-seg-preview-table td:last-child {
@@ -190,6 +189,8 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000), { immediate: t
 	}
 }
 .text-seg-preview-table thead th {
+	font-size: var(--el-font-size-base);
+	color: var(--el-text-color-primary);
 	background-color: var(--zl-tts2-table-th-bg);
 	text-align: left;
 	font-weight: normal;
@@ -202,6 +203,8 @@ watch(() => ruleForm.value.text, useDebounceFn(getTextSeg, 1000), { immediate: t
 	}
 }
 .text-seg-preview-table tbody td {
+	font-size: var(--el-font-size-base);
+	color: var(--el-text-color-regular);
 	background-color: var(--zl-tts2-table-td-bg);
 	word-break: break-all;
 	transition: background-color 0.25s ease;

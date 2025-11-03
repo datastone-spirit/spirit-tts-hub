@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-31 09:58:58
- * @LastEditTime: 2025-10-31 16:31:10
+ * @LastEditTime: 2025-10-31 17:13:30
  * @LastEditors: mulingyuer
  * @Description: 假进度条
  * @FilePath: \frontend\src\hooks\useProgress.ts
@@ -10,7 +10,7 @@
 
 export interface Options {
 	/** 进度最小增量（默认 0.02）  */
-	minimun?: number;
+	minimum?: number;
 	/** 自动递增的时间间隔（毫秒，默认 300） */
 	speed?: number;
 	/** 自定义格式化函数，默认格式化为 0-100 的整数 */
@@ -23,13 +23,13 @@ export interface Options {
 
 /** 进度条状态 */
 export type ProgressState =
-	| "ide" // 初始状态
+	| "idle" // 初始状态
 	| "pending" // 运行中
 	| "done" // 完成
 	| "stop"; // 停止
 
 const DEFAULT_OPTIONS: Required<Omit<Options, "onProgress" | "onFinish">> = {
-	minimun: 0.02,
+	minimum: 0.02,
 	speed: 300,
 	formatter: (progress: number) => {
 		if (typeof progress !== "number") return 0;
@@ -39,7 +39,7 @@ const DEFAULT_OPTIONS: Required<Omit<Options, "onProgress" | "onFinish">> = {
 
 export function useProgress(options?: Options) {
 	const {
-		minimun = DEFAULT_OPTIONS.minimun,
+		minimum = DEFAULT_OPTIONS.minimum,
 		speed = DEFAULT_OPTIONS.speed,
 		formatter = DEFAULT_OPTIONS.formatter,
 		onProgress,
@@ -47,8 +47,9 @@ export function useProgress(options?: Options) {
 	} = options ?? {};
 	const progressRef = ref(0);
 	const formatProgress = computed(() => formatter(progressRef.value));
-	const progressState = ref<ProgressState>("ide");
+	const progressState = ref<ProgressState>("idle");
 	const timeoutSpeed = ref(speed);
+	const timerRef = ref<ReturnType<typeof setTimeout>>();
 
 	/** 开始 */
 	function start(seed: number = 1) {
@@ -56,13 +57,13 @@ export function useProgress(options?: Options) {
 		if (progressState.value === "pending") return;
 
 		// 重置状态和进度
+		clearTimer();
 		progressRef.value = 0;
 		progressState.value = "pending";
 
 		// 根据种子数动态调整速度
 		// 种子数越大，时间间隔越长，进度条就越慢
-		// 这里的乘数因子 `(1 + seed / 100)` 是一个示例，你可以根据实际需求调整其计算逻辑
-		if (seed && seed > 0) {
+		if (typeof seed === "number" && seed > 0) {
 			timeoutSpeed.value = speed * (1 + seed / 100);
 		} else {
 			timeoutSpeed.value = speed;
@@ -70,9 +71,12 @@ export function useProgress(options?: Options) {
 
 		// 自循环
 		const work = () => {
-			setTimeout(() => {
+			timerRef.value = setTimeout(() => {
 				// 停止或结束
-				if (["done", "stop"].includes(progressState.value)) return;
+				if (["done", "stop"].includes(progressState.value)) {
+					timerRef.value = void 0;
+					return;
+				}
 
 				// 往前推进
 				trickle();
@@ -87,11 +91,13 @@ export function useProgress(options?: Options) {
 
 	/** 停止 */
 	function stop() {
+		clearTimer();
 		progressState.value = "stop";
 	}
 
 	/** 结束 */
 	function done() {
+		clearTimer();
 		progressState.value = "done";
 		setProgress(1);
 	}
@@ -104,16 +110,16 @@ export function useProgress(options?: Options) {
 		// 前进量
 		let amount: number;
 		if (n >= 0 && n < 0.25) {
-			// 初始阶段，从原来的 0.1 (10%) 大幅降为 0.03 (3%)
+			// 初始阶段
 			amount = 0.03;
 		} else if (n >= 0.25 && n < 0.55) {
-			// 中间阶段，从原来的 0.04 (4%) 降为 0.015 (1.5%)
+			// 中间阶段
 			amount = 0.015;
 		} else if (n >= 0.55 && n < 0.85) {
-			// 后半段，从原来的 0.02 (2%) 降为 0.008 (0.8%)
+			// 后半段
 			amount = 0.008;
 		} else if (n >= 0.85 && n < 0.99) {
-			// 接近完成时，从原来的 0.005 (0.5%) 降为 0.002 (0.2%)
+			// 接近完成时
 			amount = 0.002;
 		} else {
 			// 接近 100% 时不再自动推进
@@ -133,7 +139,7 @@ export function useProgress(options?: Options) {
 
 	/** 设置进度条值 */
 	function setProgress(value: number) {
-		value = clamp(value, minimun, 1);
+		value = clamp(value, minimum, 1);
 		progressRef.value = value;
 
 		// 钩子
@@ -147,6 +153,22 @@ export function useProgress(options?: Options) {
 		}
 	}
 
+	/** 清理定时器 */
+	function clearTimer() {
+		if (timerRef.value) {
+			clearTimeout(timerRef.value);
+			timerRef.value = void 0;
+		}
+	}
+
+	/** 重置 */
+	function reset() {
+		clearTimer();
+		progressRef.value = 0;
+		progressState.value = "idle";
+		timeoutSpeed.value = speed;
+	}
+
 	return {
 		progress: formatProgress,
 		rawProgress: readonly(progressRef),
@@ -154,7 +176,9 @@ export function useProgress(options?: Options) {
 		progressControl: {
 			start,
 			stop,
-			done
+			done,
+			reset,
+			clearTimer
 		}
 	};
 }

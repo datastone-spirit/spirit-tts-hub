@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-10-30 15:51:03
+ * @LastEditTime: 2025-11-03 15:02:23
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
@@ -43,7 +43,11 @@
 						<tr v-for="item in historyData" :key="item.id">
 							<td>{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}</td>
 							<td>{{ getEmoControlMethodLabel(item.input_config_raw.emo_control_method) }}</td>
-							<td>{{ item.input_config_raw.text }}</td>
+							<td>
+								<el-text line-clamp="3">
+									{{ item.input_config_raw.text }}
+								</el-text>
+							</td>
 							<td>{{ getFileNameFromPath(item?.input_config_raw.emo_ref_path) }}</td>
 							<td>
 								<el-tag v-if="item.input_config_raw.isExpert" type="success">是</el-tag>
@@ -67,7 +71,7 @@
 		</template>
 	</el-drawer>
 	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
-		<el-descriptions :column="2" border label-width="170">
+		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
 			<el-descriptions-item label="ID" :span="2">
 				{{ viewData?.id }}
 			</el-descriptions-item>
@@ -80,7 +84,6 @@
 			<el-descriptions-item label="参考音频路径" :span="2">
 				{{ viewData?.spk_audio_prompt }}
 			</el-descriptions-item>
-			<el-descriptions-item label="生成内容" :span="2"> {{ viewData?.text }} </el-descriptions-item>
 			<el-descriptions-item label="情感控制方式" :span="2">
 				{{ getEmoControlMethodLabel(viewData?.emo_control_method) }}
 			</el-descriptions-item>
@@ -141,6 +144,11 @@
 			<el-descriptions-item label="长度惩罚"> {{ viewData?.length_penalty }} </el-descriptions-item>
 			<el-descriptions-item label="最大生成令牌数">
 				{{ viewData?.max_mel_tokens }}
+			</el-descriptions-item>
+			<el-descriptions-item label="生成内容" :span="2">
+				<div class="descriptions-text">
+					{{ viewData?.text }}
+				</div>
 			</el-descriptions-item>
 		</el-descriptions>
 	</el-dialog>
@@ -297,7 +305,6 @@ const onDrawerOpen = () => {
 	padding: 8px;
 	border-right: 1px solid var(--el-border-color);
 	border-bottom: 1px solid var(--el-border-color);
-	color: var(--el-text-color-primary);
 }
 .history-drawer-table th:last-child,
 .history-drawer-table td:last-child {
@@ -316,6 +323,8 @@ const onDrawerOpen = () => {
 	}
 }
 .history-drawer-table thead th {
+	font-size: var(--el-font-size-base);
+	color: var(--el-text-color-primary);
 	background-color: var(--zl-tts2-table-th-bg);
 	text-align: left;
 	height: 40px;
@@ -327,6 +336,8 @@ const onDrawerOpen = () => {
 	}
 }
 .history-drawer-table tbody td {
+	font-size: var(--el-font-size-base);
+	color: var(--el-text-color-regular);
 	background-color: var(--zl-tts2-table-td-bg);
 	word-break: break-all;
 	transition: background-color 0.25s ease;
@@ -349,5 +360,10 @@ const onDrawerOpen = () => {
 }
 .history-drawer-table .col-7 {
 	width: 220px;
+}
+.descriptions-text {
+	white-space: pre-wrap;
+	max-height: 300px;
+	overflow: auto;
 }
 </style>

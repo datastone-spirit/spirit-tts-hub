@@ -204,3 +204,10 @@
 .el-alert--info.is-light .el-alert__description {
 	color: var(--zl-el-alert-info-color) !important;
 }
+
+// 定制el-descriptions
+.el-descriptions-vertical-top {
+	td.el-descriptions__cell {
+		vertical-align: top;
+	}
+}

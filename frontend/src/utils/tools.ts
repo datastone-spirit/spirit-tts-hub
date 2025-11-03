@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-10-30 16:07:24
+ * @LastEditTime: 2025-11-03 14:20:10
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -391,4 +391,18 @@ export function randomInRange(min: number, max: number, digits?: number): number
 		throw new Error("digits must be a non-negative integer");
 	}
 	return Number(random.toFixed(digits));
+}
+
+/** 准确获取字符串长度 */
+export function getStringLength(str: string): number {
+	if (typeof str !== "string") return 0;
+
+	if (typeof Intl.Segmenter !== "undefined") {
+		const segmenter = new Intl.Segmenter();
+		const segments = segmenter.segment(str);
+		return Array.from(segments).length;
+	}
+
+	// 降级方案
+	return [...str].length;
 }

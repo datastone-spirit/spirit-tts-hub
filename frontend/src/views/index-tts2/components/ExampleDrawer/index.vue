@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 10:35:54
- * @LastEditTime: 2025-10-30 11:37:00
+ * @LastEditTime: 2025-11-03 15:05:07
  * @LastEditors: mulingyuer
  * @Description: 示例抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\index.vue
@@ -58,14 +58,13 @@
 		</div>
 	</el-drawer>
 	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
-		<el-descriptions :column="2" border label-width="170">
+		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
 			<el-descriptions-item label="参考音频" :span="2">
 				{{ getFileNameFromPath(viewData?.spk_audio_prompt) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频路径" :span="2">
 				{{ viewData?.spk_audio_prompt }}
 			</el-descriptions-item>
-			<el-descriptions-item label="生成内容" :span="2"> {{ viewData?.text }} </el-descriptions-item>
 			<el-descriptions-item label="情感控制方式" :span="2">
 				{{ getEmoControlMethodLabel(viewData?.emo_control_method) }}
 			</el-descriptions-item>
@@ -126,6 +125,11 @@
 			<el-descriptions-item label="长度惩罚"> {{ viewData?.length_penalty }} </el-descriptions-item>
 			<el-descriptions-item label="最大生成令牌数">
 				{{ viewData?.max_mel_tokens }}
+			</el-descriptions-item>
+			<el-descriptions-item label="生成内容" :span="2">
+				<div class="descriptions-text">
+					{{ viewData?.text }}
+				</div>
 			</el-descriptions-item>
 		</el-descriptions>
 	</el-dialog>
@@ -247,5 +251,10 @@ function onApply(item: ExampleItem) {
 }
 .example-drawer-table .col-6 {
 	width: 160px;
+}
+.descriptions-text {
+	white-space: pre-wrap;
+	max-height: 300px;
+	overflow: auto;
 }
 </style>

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-10-31 16:31:14
+ * @LastEditTime: 2025-11-03 14:20:35
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -31,7 +31,7 @@
 									</el-form-item>
 								</BodyCard>
 								<el-divider class="tts-divider" />
-								<BodyCard title="文本转语音" icon-name="ri-text">
+								<BodyCard title="文本转语音" icon-name="ri-text" :description="textLength">
 									<el-form-item prop="text">
 										<el-input
 											class="tts-text-input"
@@ -99,7 +99,7 @@ import { SPLITTER_KEY } from "@/constants/config-keys";
 import { ComplexityEnum } from "@/enums/complexity.enum";
 import { useIcon } from "@/hooks/useIcon";
 import { useSettingsStore } from "@/stores";
-import { validateForm } from "@/utils/tools";
+import { validateForm, getStringLength } from "@/utils/tools";
 import type { FormInstance } from "element-plus";
 import Advanced from "./components/Advanced/index.vue";
 import BodyCard from "./components/BodyCard.vue";
@@ -144,6 +144,9 @@ const { progress, progressControl } = useProgress({
 	onFinish: () => {
 		showProgress.value = false;
 	}
+});
+const textLength = computed(() => {
+	return `${getStringLength(ruleForm.value.text)}字符数`;
 });
 
 /** 查看示例 */
@@ -219,6 +222,10 @@ async function onSubmitForm() {
 		console.error(message, error);
 	}
 }
+
+onUnmounted(() => {
+	progressControl.clearTimer();
+});
 </script>
 
 <style lang="scss" scoped>
