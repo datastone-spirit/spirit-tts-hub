@@ -10,5 +10,4 @@ requests==2.31.0
 numpy==1.26.2
 pydub==0.25.1
 gunicorn==21.2.0
-modelscope==1.27.0
 flasgger == 0.9.7.1
