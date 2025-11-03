@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory, abort
 from flask_cors import CORS
 from flasgger import Swagger
 import os
@@ -49,6 +49,10 @@ _normalize_hf_cache_envs()
 from config import config
 from routes import register_routes
 
+def _get_frontend_dist_dir():
+    dist_dir = os.path.abspath(os.path.join(current_dir, "..", "dist"))
+    return dist_dir
+
 def create_app(config_name='default'):
     """创建Flask应用实例"""
     app = Flask(__name__)
@@ -83,6 +87,26 @@ def create_app(config_name='default'):
         'specs_route': '/apidocs/'
     })
     
+    # 设置前端静态目录
+    app.static_folder = _get_frontend_dist_dir()
+
+    # 静态资源（assets）
+    @app.route('/admin/assets/<path:filename>')
+    def serve_assets(filename):
+        assets_dir = os.path.join(app.static_folder, 'assets')
+        if not os.path.isdir(assets_dir):
+            abort(404)
+        return send_from_directory(assets_dir, filename)
+
+    # SPA 入口与路由回退
+    @app.route('/', defaults={'path': ''})
+    @app.route('/admin/<path:path>')
+    def serve_admin(path):
+        index_path = os.path.join(app.static_folder, 'index.html')
+        if not os.path.exists(index_path):
+            abort(404)
+        return send_from_directory(app.static_folder, 'index.html')
+
     # 注册路由
     register_routes(app)
     
@@ -90,4 +114,4 @@ def create_app(config_name='default'):
 
 if __name__ == '__main__':
     app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=os.getenv('FLASK_DEBUG', 'False').lower() == 'true')
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5005)), debug=os.getenv('FLASK_DEBUG', 'False').lower() == 'true')
