@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-11-03 14:20:35
+ * @LastEditTime: 2025-11-04 10:37:51
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -84,6 +84,7 @@
 				:loading="generateLoading"
 				:show-progress="showProgress"
 				:progress="progress"
+				:generate-time="generateTime"
 				@reset-form="onResetForm"
 				@submit-form="onSubmitForm"
 			/>
@@ -112,6 +113,7 @@ import VoiceReference from "./components/VoiceReference.vue";
 import { usePageForm } from "./composables/usePageForm";
 import type { ExampleItem, HistoryItem } from "./types";
 import { useProgress } from "@/hooks/useProgress";
+import { useTimer } from "@/hooks/useTimer";
 
 export type TabsName = "settings" | "advanced";
 
@@ -148,6 +150,7 @@ const { progress, progressControl } = useProgress({
 const textLength = computed(() => {
 	return `${getStringLength(ruleForm.value.text)}字符数`;
 });
+const { elapsedTime: generateTime, start, pause } = useTimer();
 
 /** 查看示例 */
 function onViewExample() {
@@ -200,6 +203,7 @@ async function onSubmitForm() {
 		const { isValid } = await validateAll();
 		if (!isValid) return;
 
+		start();
 		generateLoading.value = true;
 		showProgress.value = true;
 		progressControl.start(ruleForm.value.text.length);
@@ -212,6 +216,7 @@ async function onSubmitForm() {
 		generateLoading.value = false;
 		progressControl.done();
 
+		pause();
 		ElMessage.success("合成成功");
 	} catch (error) {
 		generateLoading.value = false;

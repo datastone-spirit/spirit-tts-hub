@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-03 15:02:23
+ * @LastEditTime: 2025-11-04 11:04:33
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
@@ -289,9 +289,8 @@ const onDrawerOpen = () => {
 	font-weight: bold;
 	color: var(--el-text-color-primary);
 }
-.history-drawer-content {
-	height: 100%;
-}
+// .history-drawer-content {
+// }
 .history-drawer-table {
 	width: 100%;
 	table-layout: fixed;

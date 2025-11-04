@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-10-31 11:28:31
+ * @LastEditTime: 2025-11-04 10:45:45
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -12,6 +12,9 @@
 		<div class="footer-audio-left">
 			<Icon class="audio-icon" name="ri-music-ai-line" :size="22" />
 			<h3 class="audio-title">生成音频</h3>
+			<div class="audio-generated-time">
+				<Icon name="ri-time-line" />生成耗时：{{ formatDuration(generateTime) }}
+			</div>
 		</div>
 
 		<div class="footer-audio-center">
@@ -72,10 +75,10 @@
 
 <script setup lang="ts">
 import { useIcon } from "@/hooks/useIcon";
-import AudioProgress from "./AudioProgress.vue";
-import { useWaveSurferPlayer, AudioHelper, type WaveSurferInstance } from "@/hooks/useWaveSurfer";
-import { downloadFile } from "@/utils/tools";
+import { AudioHelper, useWaveSurferPlayer, type WaveSurferInstance } from "@/hooks/useWaveSurfer";
 import { getEnv } from "@/utils/env";
+import { downloadFile } from "@/utils/tools";
+import AudioProgress from "./AudioProgress.vue";
 
 export interface FooterAudioProps {
 	/** 音频路径 */
@@ -86,6 +89,8 @@ export interface FooterAudioProps {
 	showProgress?: boolean;
 	/** 进度值 0-100 */
 	progress?: number;
+	/** 生成耗时 */
+	generateTime: number;
 }
 
 const env = getEnv();
@@ -112,6 +117,23 @@ const isPlaying = computed(() => state.value === "playing");
 const isAudioPath = computed(() => {
 	return typeof props.audioPath === "string" && props.audioPath.trim() !== "";
 });
+
+// 格式化时间
+// 如果不足1分钟只显示秒
+// 最大单位为分钟
+function formatDuration(millisecond: number) {
+	if (typeof millisecond !== "number" || millisecond <= 0) return `0s`;
+
+	const totalSeconds = Math.floor(millisecond / 1000);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+
+	if (minutes === 0) {
+		return `${seconds}s`;
+	} else {
+		return `${minutes}m${seconds}s`;
+	}
+}
 
 // 音频控制
 function onRewind() {
@@ -167,6 +189,7 @@ onUnmounted(() => {
 }
 .footer-audio-left {
 	flex-shrink: 0;
+	min-width: 150px;
 	.audio-icon {
 		color: var(--el-color-primary);
 		margin-bottom: 10px;
@@ -175,6 +198,14 @@ onUnmounted(() => {
 		font-size: 16px;
 		font-weight: bold;
 		color: var(--el-text-color-primary);
+	}
+	.audio-generated-time {
+		margin-top: 3px;
+		font-size: 14px;
+		color: var(--el-text-color-secondary);
+		display: flex;
+		align-items: center;
+		gap: 2px;
 	}
 }
 .footer-audio-center {
