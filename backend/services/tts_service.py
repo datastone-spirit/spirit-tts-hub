@@ -124,10 +124,94 @@ class TtsService:
         if isinstance(val, bool):
             return val
         return str(val).lower() == 'true'
+
+    def _offline_precheck(self, cache_path: str) -> None:
+        """
+        在严格离线模式下，初始化前检查必须的 HuggingFace 缓存文件是否存在。
+        若缺失，抛出明确错误，避免进入任何可能的联网分支。
+
+        Checks:
+        - amphion/MaskGCT: semantic_codec/model.safetensors
+        - funasr/campplus: campplus_cn_common.bin
+        - facebook/w2v-bert-2.0: 预处理配置（preprocessor_config.json 或 config.json）
+        """
+        try:
+            missing: list[str] = []
+
+            def _exists_in_snapshots(root: str, rel_parts: list[str]) -> bool:
+                snaps = os.path.join(root, 'snapshots')
+                if not os.path.isdir(snaps):
+                    return False
+                for rev in os.listdir(snaps):
+                    cand = os.path.join(snaps, rev, *rel_parts)
+                    if os.path.exists(cand):
+                        return True
+                return False
+
+            # amphion/MaskGCT
+            maskgct_root = os.path.join(cache_path, 'models--amphion--MaskGCT')
+            if not _exists_in_snapshots(maskgct_root, ['semantic_codec', 'model.safetensors']):
+                missing.append('amphion/MaskGCT: semantic_codec/model.safetensors')
+
+            # funasr/campplus
+            campplus_root = os.path.join(cache_path, 'models--funasr--campplus')
+            if not _exists_in_snapshots(campplus_root, ['campplus_cn_common.bin']):
+                missing.append('funasr/campplus: campplus_cn_common.bin')
+
+            # facebook/w2v-bert-2.0（特征提取器需要预处理配置）
+            w2v_root = os.path.join(cache_path, 'models--facebook--w2v-bert-2.0')
+            has_w2v = (
+                _exists_in_snapshots(w2v_root, ['preprocessor_config.json']) or
+                _exists_in_snapshots(w2v_root, ['config.json'])
+            )
+            if not has_w2v:
+                missing.append('facebook/w2v-bert-2.0: preprocessor_config.json 或 config.json')
+
+            if missing:
+                raise RuntimeError(
+                    '离线缓存缺失，无法初始化 TTS。请先在联网环境预取后复制缓存：\n- ' + '\n- '.join(missing)
+                )
+        except Exception as e:
+            # 若预检过程本身异常，抛出明确错误以避免继续初始化
+            raise RuntimeError(f'离线预检失败: {str(e)}')
     
     def get_tts(self):
         """获取 TTS 实例（懒加载）"""
         if self._tts_instance is None:
+            # 强制离线与本地缓存，仅在首次初始化前设置
+            try:
+                # 统一并强制离线开关（infer_v2.py 会读取这些环境变量）
+                os.environ["HF_LOCAL_ONLY"] = os.getenv("HF_LOCAL_ONLY", "1")
+                os.environ["HF_HUB_OFFLINE"] = os.getenv("HF_HUB_OFFLINE", "1")
+                os.environ["TRANSFORMERS_OFFLINE"] = os.getenv("TRANSFORMERS_OFFLINE", "1")
+
+                # 统一 HuggingFace/Transformers 缓存目录到同一个路径
+                cache_val = (
+                    current_app.config.get("HF_HUB_CACHE")
+                    or current_app.config.get("HUGGINGFACE_HUB_CACHE")
+                    or current_app.config.get("HF_HOME")
+                    or current_app.config.get("TRANSFORMERS_CACHE")
+                )
+                if cache_val:
+                    cache_path = cache_val if os.path.isabs(cache_val) else os.path.abspath(os.path.join(self.base_dir, cache_val))
+                else:
+                    # 回退到默认缓存目录
+                    cache_path = os.path.abspath(os.path.join(self.base_dir, 'checkpoints', 'hf_cache'))
+                os.environ["HF_HUB_CACHE"] = cache_path
+                os.environ["HUGGINGFACE_HUB_CACHE"] = cache_path
+                os.environ["HF_HOME"] = cache_path
+                os.environ["TRANSFORMERS_CACHE"] = cache_path
+
+                # 取消可能存在的镜像端点，避免任何线上尝试
+                if os.getenv("HF_ENDPOINT"):
+                    os.environ.pop("HF_ENDPOINT", None)
+
+                # 初始化前进行严格离线预检，避免触发任何网络请求
+                logger.info(f"[TTS] Offline precheck in cache: {cache_path}")
+                self._offline_precheck(cache_path)
+            except Exception:
+                pass
+
             from indextts.infer_v2 import IndexTTS2
             
             # 解析模型目录：优先使用环境/配置的 INDEX_TTS_MODEL_DIR；否则使用 DEFAULT_TTS_MODEL；再否则使用默认相对路径

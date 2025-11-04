@@ -46,7 +46,7 @@ uv pip install -e ./backend/index-tts
 # 进入到index-tts目录 下载tts模型  也可以加（export HF_ENDPOINT="https://hf-mirror.com"），方便下载模型
 modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 # 启动服务前，先执行这个，把模型权重预下载到缓存目录，避免项目启动后下载
-python scripts/prefetch_index_tts.py --hf-cache ./checkpoints/hf_cache --full-init 
+python backend/scripts/prefetch_index_tts.py --hf-cache ./checkpoints/hf_cache --full-init 
 # 启动backend 
 python app.py
 # 测试环境，固定显卡
@@ -93,10 +93,10 @@ gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app('production')"
 - 全量初始化预下载（会尝试加载本地 checkpoint）
   ```bash
   cd /path/to/spirit-tts-hub/backend
-  python scripts/prefetch_index_tts.py --full-init --device cpu \
-    --cfg ./index-tts/checkpoints/config.yaml \
-    --model-dir ./index-tts/checkpoints \
-    --hf-cache ./checkpoints/hf_cache
+    python scripts/prefetch_index_tts.py --full-init --device cpu \
+      --cfg ./index-tts/checkpoints/config.yaml \
+      --model-dir ./index-tts/checkpoints \
+      --hf-cache ./checkpoints/hf_cache
   ```
   说明：
   - 使用 `IndexTTS2` 在 CPU 上进行一次完整初始化，触发全部远端下载并尝试加载本地文件：
@@ -122,8 +122,8 @@ gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app('production')"
 
 pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.8.0+cu128 torchaudio==2.8.0+cu128 torchvision==0.23.0+cu128
 
-在backend目录中安装index-tts依赖：uv pip install -e ./backend/index-tts
+在backend目录中安装index-tts依赖：uv pip install --system -e ./index-tts
 
 如需单独装 torchvision ，同样指定 cu128 索引
-uv pip install --index-url https://download.pytorch.org/whl/cu128 torchvision==0.23.0+cu128
+uv pip install --index-url https://download.pytorch.org/whl/cu126 torchvision==0.23.0+cu126
 ```
