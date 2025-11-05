@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-10-28 15:52:31
+ * @LastEditTime: 2025-11-05 15:36:55
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
  * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
@@ -14,6 +14,7 @@
 		width="700"
 		v-model="pathPickerDialogData.show"
 		align-center
+		@open="onOpen"
 		@close="onClose"
 	>
 		<vue-finder
@@ -33,6 +34,7 @@ import { validateMimeType } from "@/utils/tools";
 
 const env = getEnv();
 const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
+const isInit = ref(false);
 
 const features = ["select", "preview", "newfolder"];
 const handleSelectButton = {
@@ -86,7 +88,9 @@ const request = computed(() => {
 				req.params.vf = "1";
 			}
 			if (req.method === "post") {
-				refresh();
+				setTimeout(() => {
+					refresh();
+				}, 500);
 			}
 			return req;
 		},
@@ -97,13 +101,21 @@ const request = computed(() => {
 
 /** 刷新文件管理器 */
 function refresh() {
-	setTimeout(() => {
-		const refreshSvg = document.querySelector(`#file-dialog-vuefinder span[title='Refresh'] svg`);
-		if (refreshSvg) {
-			(refreshSvg as HTMLElement).style.pointerEvents = "all";
-			refreshSvg?.dispatchEvent(new Event("click", { bubbles: true }));
-		}
-	}, 500);
+	const refreshSvg = document.querySelector(`#file-dialog-vuefinder span[title='Refresh'] svg`);
+	if (refreshSvg) {
+		(refreshSvg as HTMLElement).style.pointerEvents = "all";
+		refreshSvg?.dispatchEvent(new Event("click", { bubbles: true }));
+	}
+}
+
+/** 弹窗打开 */
+function onOpen() {
+	if (!isInit.value) {
+		isInit.value = true;
+		return;
+	}
+
+	refresh();
 }
 
 /** 弹窗关闭 */
