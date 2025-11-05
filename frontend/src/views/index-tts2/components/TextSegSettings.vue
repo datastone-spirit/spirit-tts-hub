@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 17:00:27
- * @LastEditTime: 2025-11-03 14:48:03
+ * @LastEditTime: 2025-11-05 15:19:37
  * @LastEditors: mulingyuer
  * @Description: 文本分段设置
  * @FilePath: \frontend\src\views\index-tts2\components\TextSegSettings.vue
@@ -69,6 +69,7 @@
 <script setup lang="ts">
 import { usePageForm } from "../composables/usePageForm";
 import { previewTextSegments, type PreviewTextSegmentsResult } from "@/api/index-tts2";
+import axios from "axios";
 
 export interface TextSegSettingsProps {
 	/** 每生成段最小令牌数 */
@@ -89,22 +90,31 @@ const previewData = ref<PreviewTextSegmentsResult>({
 });
 
 /** api */
+let controller: AbortController | null = null;
 async function getTextSeg() {
 	try {
 		const text = ruleForm.value.text;
 		if (typeof text !== "string" || text.trim() === "") return;
+		// 取消上次请求
+		if (controller) controller.abort();
+		controller = new AbortController();
 
 		loading.value = true;
 
-		const result = await previewTextSegments({
-			max_text_tokens_per_segment: ruleForm.value.max_text_tokens_per_segment,
-			text: ruleForm.value.text
-		});
+		const result = await previewTextSegments(
+			{
+				max_text_tokens_per_segment: ruleForm.value.max_text_tokens_per_segment,
+				text: ruleForm.value.text
+			},
+			controller.signal
+		);
 
 		previewData.value = result;
 
 		loading.value = false;
 	} catch (error) {
+		if (axios.isCancel(error)) return;
+
 		loading.value = false;
 
 		console.error("获取文本分段失败：", error);

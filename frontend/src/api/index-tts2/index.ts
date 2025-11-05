@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-28 15:53:59
- * @LastEditTime: 2025-10-30 16:28:04
+ * @LastEditTime: 2025-11-05 15:18:10
  * @LastEditors: mulingyuer
  * @Description: index-tts2 接口
  * @FilePath: \frontend\src\api\index-tts2\index.ts
@@ -21,12 +21,17 @@ export type * from "./types";
 export * from "./constants";
 
 /** 文本分段预览 */
-export function previewTextSegments(data: PreviewTextSegmentsData) {
+export function previewTextSegments(
+	data: PreviewTextSegmentsData,
+	signal?: AbortController["signal"]
+) {
 	return request<PreviewTextSegmentsResult>({
 		url: "/tts/parse-tokens",
 		method: "POST",
 		data,
-		timeout: 30 * 1000 * 1000 // 30s
+		timeout: 30 * 1000 * 1000, // 30s
+		signal,
+		showCancelErrorMessage: false
 	});
 }
 

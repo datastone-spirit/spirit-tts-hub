@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-01-21 09:12:05
- * @LastEditTime: 2025-10-27 16:33:13
+ * @LastEditTime: 2025-11-05 15:14:11
  * @LastEditors: mulingyuer
  * @Description: 请求辅助函数
  * @FilePath: \frontend\src\request\helper.ts
@@ -40,7 +40,7 @@ export function showRequestErrorMessage(error: any) {
 			dangerouslyUseHTMLString: true,
 			customClass: "login-401-message",
 			message:
-				"<p>尊敬的用户，您好！</p><p>当前登录会话已失效，虽然页面可能无法正常显示训练状态，但训练过程仍将继续正常运行。</p><p>如需继续观察训练情况，请按照以下步骤操作：</p><ol><li>重新登录智灵平台</li><li>选择用于训练的GPU实例</li><li>重新打开智灵训练器</li></ol><p>感谢您的理解与配合。</p>"
+				"<p>尊敬的用户，您好！</p><p>当前登录会话已失效，页面可能无法正常显示语音合成状态，但语音合成过程仍将继续正常运行。</p><p>如需继续观察合成情况，请按照以下步骤操作：</p><ol><li>重新登录智灵平台</li><li>选择用于合成语音的GPU实例</li><li>重新打开智灵 TTS HUB</li><li>查看生成历史记录是否存在，如果已经存在说明合成成功，可以前往保存目录查看或下载</li></ol><p>感谢您的理解与配合。</p>"
 		}).finally(() => {
 			messageStatus.showUnauthorizedErrorMessage = false;
 		});
