@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-15 15:35:41
- * @LastEditTime: 2025-10-30 17:03:38
+ * @LastEditTime: 2025-11-05 15:42:10
  * @LastEditors: mulingyuer
  * @Description: 参考语音
  * @FilePath: \frontend\src\views\index-tts2\components\VoiceReference.vue
@@ -156,6 +156,7 @@ const onFilePickerConfirm = (data: FileResult) => {
 /** 清理播放 */
 function onAudioPlayerClear() {
 	audioPath.value = "";
+	audioRecorderRef.value?.reset();
 }
 
 defineExpose({
