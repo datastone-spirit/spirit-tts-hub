@@ -55,7 +55,8 @@ def _get_frontend_dist_dir():
 
 def create_app(config_name='default'):
     """创建Flask应用实例"""
-    app = Flask(__name__)
+    # 使用 Flask 内置静态路由，将 dist 目录映射到 /admin
+    app = Flask(__name__, static_folder=_get_frontend_dist_dir(), static_url_path='/admin')
     
     # 加载配置
     app.config.from_object(config[config_name])
