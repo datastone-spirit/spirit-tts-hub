@@ -19,22 +19,16 @@ pip install -r requirements.txt
 
 ### 2. 环境变量配置
 
-创建 `.env` 文件在 backend 目录下：
+```sh
+# 如果在本地跑，路径换成 ./checkpoints/hf_cache
+HF_HUB_CACHE=/workspace/spirit-tts-hub/backend/checkpoints/hf_cache
+HUGGINGFACE_HUB_CACHE=/workspace/spirit-tts-hub/backend/checkpoints/hf_cache
+HF_HOME=/workspace/spirit-tts-hub/backend/checkpoints/hf_cache
+TRANSFORMERS_CACHE=/workspace/spirit-tts-hub/backend/checkpoints/hf_cache
 
 ```
-FLASK_APP=app.py
-FLASK_ENV=development
-FLASK_DEBUG=True
-DEFAULT_TTS_MODEL=index-tts
-# 统一 HuggingFace/Transformers 缓存目录（建议使用绝对路径）
-HF_HUB_CACHE=/home/dev/spirit-tts-hub/backend/checkpoints/hf_cache
-HUGGINGFACE_HUB_CACHE=/home/dev/spirit-tts-hub/backend/checkpoints/hf_cache
-HF_HOME=/home/dev/spirit-tts-hub/backend/checkpoints/hf_cache
-TRANSFORMERS_CACHE=/home/dev/spirit-tts-hub/backend/checkpoints/hf_cache
-# 如需离线运行（不触发网络下载），可开启：
-# HF_HUB_OFFLINE=1
-# TRANSFORMERS_OFFLINE=1
-```
+
+
 
 ## 启动服务
 
@@ -127,3 +121,5 @@ pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.8.0+cu12
 如需单独装 torchvision ，同样指定 cu128 索引
 uv pip install --index-url https://download.pytorch.org/whl/cu126 torchvision==0.23.0+cu126
 ```
+
+接口文档地址：/apidocs
