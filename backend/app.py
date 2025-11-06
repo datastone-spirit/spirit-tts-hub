@@ -11,8 +11,19 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 index_tts_root = os.path.join(current_dir, "index-tts")
 sys.path.append(index_tts_root)
 
-# 加载环境变量
-load_dotenv()
+def _load_env_vars():
+    """Load env file depending on FLASK_ENV/FLASK_CONFIG.
+    Prefer backend/.env.<env>, fallback to backend/.env.
+    """
+    env_name = os.getenv('FLASK_ENV') or os.getenv('FLASK_CONFIG') or 'development'
+    candidate = os.path.join(current_dir, f".env.{env_name}")
+    if os.path.isfile(candidate):
+        load_dotenv(candidate)
+    else:
+        load_dotenv(os.path.join(current_dir, ".env"))
+
+# 加载环境变量（优先按环境选择特定 .env 文件）
+_load_env_vars()
 
 def _normalize_hf_cache_envs():
     """Unify HF/Transformers cache env vars, resolving relative paths
@@ -59,6 +70,14 @@ def create_app(config_name='default'):
     """创建Flask应用实例"""
     # 使用 Flask 内置静态路由，将 dist 目录映射到 /admin
     app = Flask(__name__, static_folder=_get_frontend_dist_dir(), static_url_path='/admin')
+
+    # 根据传入的 config_name 覆盖加载对应环境的 .env 文件（如果存在）
+    try:
+        env_file = os.path.join(current_dir, f".env.{config_name}")
+        if os.path.isfile(env_file):
+            load_dotenv(env_file, override=True)
+    except Exception:
+        pass
     
     # 加载配置
     app.config.from_object(config[config_name])
@@ -113,8 +132,14 @@ def create_app(config_name='default'):
     # 注册路由
     register_routes(app)
 
-    # 启动阶段预加载同进程 TTS，确保显存常驻
-    TtsService().ensure_tts_preloaded(app)
+    # 启动阶段预加载同进程 TTS，避免 Flask reloader 重复加载
+    try:
+        debug_enabled = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+        # 当启用调试模式时，仅在 reloader 子进程执行预加载
+        if not debug_enabled or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+            TtsService().ensure_tts_preloaded(app)
+    except Exception:
+        pass
     
     return app
 

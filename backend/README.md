@@ -44,7 +44,7 @@ python backend/scripts/prefetch_index_tts.py --hf-cache ./checkpoints/hf_cache -
 # 启动backend 
 python app.py
 # 测试环境，固定显卡
-CUDA_VISIBLE_DEVICES=7 INDEX_TTS_DEVICE=cuda:0 python backend/app.py
+CUDA_VISIBLE_DEVICES=7 INDEX_TTS_DEVICE=cuda:0 FLASK_ENV=development python backend/app.py
 # 接口文档地址 /apidocs/#/
 ```
 
