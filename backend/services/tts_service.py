@@ -365,6 +365,7 @@ class TtsService:
                     record_id=record_id,
                     input_config_raw=data.get("raw_data"),
                     status=("success" if isinstance(infer_result, str) else "error"),
+                    filepath=output_path
                 )
             except Exception:
                 # 历史记录写入失败不影响主流程
@@ -538,7 +539,7 @@ class TtsService:
 
     def save_synthesis_history(self, record_id: str,
                            input_config_raw: Dict[str, Any],
-                           status: str) -> str:
+                           status: str, filepath: str) -> str:
         """
         保存一次合成的历史记录到本地 JSON 文件。
 
@@ -546,6 +547,7 @@ class TtsService:
             record_id: 唯一ID
             input_config_raw: 前端传入的原始配置（原样保留）
             status: "success" 或 "error"
+            file_path: 合成后的音频文件路径
 
         Returns:
             str: 保存的历史记录文件路径
@@ -556,7 +558,8 @@ class TtsService:
             "id": record_id,
             "input_config_raw": input_config_raw,
             "status": status,
-            "history_path": history_path
+            "history_path": history_path,
+            "file_path": filepath
         }
         with open(history_path, 'w', encoding='utf-8') as f:
             json.dump(history_record, f, ensure_ascii=False, indent=2)
