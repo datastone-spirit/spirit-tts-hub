@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-04 11:04:33
+ * @LastEditTime: 2025-11-06 16:18:51
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
@@ -56,8 +56,8 @@
 							<td>{{ formatDate(item.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
 							<td>
 								<ElSpacePro>
-									<el-button @click="onView(item.input_config_raw)">查看</el-button>
-									<el-button @click="onApply(item.input_config_raw)">应用</el-button>
+									<el-button @click="onView(item)">查看</el-button>
+									<el-button @click="onApply(item)">应用</el-button>
 									<el-button type="danger" plain @click="onDelete(item)">删除</el-button>
 								</ElSpacePro>
 							</td>
@@ -73,81 +73,95 @@
 	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
 		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
 			<el-descriptions-item label="ID" :span="2">
-				{{ viewData?.id }}
+				{{ viewData?.input_config_raw.id }}
 			</el-descriptions-item>
 			<el-descriptions-item label="创建时间" :span="2">
-				{{ formatDate(viewData!.createTime, "YYYY-MM-DD HH:mm:ss") }}
+				{{ formatDate(viewData!.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.spk_audio_prompt) }}
+				{{ getFileNameFromPath(viewData?.input_config_raw.spk_audio_prompt) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频路径" :span="2">
-				{{ viewData?.spk_audio_prompt }}
+				{{ viewData?.input_config_raw.spk_audio_prompt }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感控制方式" :span="2">
-				{{ getEmoControlMethodLabel(viewData?.emo_control_method) }}
+				{{ getEmoControlMethodLabel(viewData?.input_config_raw.emo_control_method) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.emo_ref_path) }}
+				{{ getFileNameFromPath(viewData?.input_config_raw.emo_ref_path) }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频路径" :span="2">
-				{{ viewData?.emo_ref_path }}
+				{{ viewData?.input_config_raw.emo_ref_path }}
 			</el-descriptions-item>
 			<el-descriptions-item label="文本分段最大Token">
-				{{ viewData?.max_text_tokens_per_segment }}
+				{{ viewData?.input_config_raw.max_text_tokens_per_segment }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感控制权重">
-				{{ viewData?.emo_weight }}
+				{{ viewData?.input_config_raw.emo_weight }}
 			</el-descriptions-item>
 			<el-descriptions-item label="随机情绪采样">
-				{{ viewData?.emo_random }}
+				{{ viewData?.input_config_raw.emo_random }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-快乐">
-				{{ viewData?.vec1 }}
+				{{ viewData?.input_config_raw.vec1 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-生气">
-				{{ viewData?.vec2 }}
+				{{ viewData?.input_config_raw.vec2 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-难过">
-				{{ viewData?.vec3 }}
+				{{ viewData?.input_config_raw.vec3 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-害怕">
-				{{ viewData?.vec4 }}
+				{{ viewData?.input_config_raw.vec4 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-厌恶">
-				{{ viewData?.vec5 }}
+				{{ viewData?.input_config_raw.vec5 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-忧郁">
-				{{ viewData?.vec6 }}
+				{{ viewData?.input_config_raw.vec6 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-惊讶">
-				{{ viewData?.vec7 }}
+				{{ viewData?.input_config_raw.vec7 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情绪权重-平静">
-				{{ viewData?.vec8 }}
+				{{ viewData?.input_config_raw.vec8 }}
 			</el-descriptions-item>
 			<el-descriptions-item label="情感描述">
-				{{ viewData?.prompt }}
+				{{ viewData?.input_config_raw.prompt }}
 			</el-descriptions-item>
 			<el-descriptions-item label="启用 GPT-2 样本抽取">
-				{{ viewData?.do_sample }}
+				{{ viewData?.input_config_raw.do_sample }}
 			</el-descriptions-item>
 			<el-descriptions-item label="GPT-2 采样温度">
-				{{ viewData?.temperature }}
+				{{ viewData?.input_config_raw.temperature }}
 			</el-descriptions-item>
-			<el-descriptions-item label="top_p"> {{ viewData?.top_p }} </el-descriptions-item>
-			<el-descriptions-item label="top_k"> {{ viewData?.top_k }} </el-descriptions-item>
-			<el-descriptions-item label="num_beams"> {{ viewData?.num_beams }} </el-descriptions-item>
+			<el-descriptions-item label="top_p">
+				{{ viewData?.input_config_raw.top_p }}
+			</el-descriptions-item>
+			<el-descriptions-item label="top_k">
+				{{ viewData?.input_config_raw.top_k }}
+			</el-descriptions-item>
+			<el-descriptions-item label="num_beams">
+				{{ viewData?.input_config_raw.num_beams }}
+			</el-descriptions-item>
 			<el-descriptions-item label="重复惩罚">
-				{{ viewData?.repetition_penalty }}
+				{{ viewData?.input_config_raw.repetition_penalty }}
 			</el-descriptions-item>
-			<el-descriptions-item label="长度惩罚"> {{ viewData?.length_penalty }} </el-descriptions-item>
+			<el-descriptions-item label="长度惩罚">
+				{{ viewData?.input_config_raw.length_penalty }}
+			</el-descriptions-item>
 			<el-descriptions-item label="最大生成令牌数">
-				{{ viewData?.max_mel_tokens }}
+				{{ viewData?.input_config_raw.max_mel_tokens }}
+			</el-descriptions-item>
+			<el-descriptions-item label="生成音频" :span="2">
+				{{ getFileNameFromPath(viewData?.file_path) }}
+			</el-descriptions-item>
+			<el-descriptions-item label="生成音频路径" :span="2">
+				{{ viewData?.file_path }}
 			</el-descriptions-item>
 			<el-descriptions-item label="生成内容" :span="2">
 				<div class="descriptions-text">
-					{{ viewData?.text }}
+					{{ viewData?.input_config_raw.text }}
 				</div>
 			</el-descriptions-item>
 		</el-descriptions>
@@ -162,21 +176,21 @@ import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
 import type { TTSHistoryResult } from "@/api/index-tts2";
 import type { Simplify } from "type-fest";
 
-type TTSHistoryItem = Simplify<
+export type TTSHistoryItem = Simplify<
 	Omit<TTSHistoryResult["records"][number], "input_config_raw"> & { input_config_raw: HistoryItem }
 >;
 type HistoryData = Array<TTSHistoryItem>;
 
 const emit = defineEmits<{
 	/** 应用历史记录 */
-	"apply-history": [item: HistoryItem];
+	"apply-history": [item: TTSHistoryItem];
 }>();
 
 const show = defineModel({ type: Boolean, required: true });
 const loading = ref(false);
 const historyData = ref<HistoryData>([]);
 const openDialog = ref(false);
-const viewData = ref<HistoryItem>();
+const viewData = ref<TTSHistoryItem>();
 
 // api 获取历史记录
 const getHistory = async () => {
@@ -197,7 +211,8 @@ const getHistory = async () => {
 				id: item.id,
 				history_path: item.history_path,
 				status: item.status,
-				input_config_raw: input_config_raw
+				input_config_raw: input_config_raw,
+				file_path: item.file_path
 			};
 		});
 
@@ -210,12 +225,12 @@ const getHistory = async () => {
 };
 
 /** 查看 */
-function onView(item: HistoryItem) {
+function onView(item: TTSHistoryItem) {
 	viewData.value = item;
 	openDialog.value = true;
 }
 /** 应用 */
-function onApply(item: HistoryItem) {
+function onApply(item: TTSHistoryItem) {
 	show.value = false;
 	emit("apply-history", toRaw(item));
 }

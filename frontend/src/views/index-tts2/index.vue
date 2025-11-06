@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-11-04 10:37:51
+ * @LastEditTime: 2025-11-06 16:15:06
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -99,21 +99,21 @@ import { textToSpeech } from "@/api/index-tts2";
 import { SPLITTER_KEY } from "@/constants/config-keys";
 import { ComplexityEnum } from "@/enums/complexity.enum";
 import { useIcon } from "@/hooks/useIcon";
+import { useProgress } from "@/hooks/useProgress";
+import { useTimer } from "@/hooks/useTimer";
 import { useSettingsStore } from "@/stores";
-import { validateForm, getStringLength } from "@/utils/tools";
+import { getStringLength, validateForm } from "@/utils/tools";
 import type { FormInstance } from "element-plus";
 import Advanced from "./components/Advanced/index.vue";
 import BodyCard from "./components/BodyCard.vue";
 import ExampleDrawer from "./components/ExampleDrawer/index.vue";
 import FooterAudio from "./components/FooterAudio.vue";
-import HistoryDrawer from "./components/HistoryDrawer.vue";
+import HistoryDrawer, { type TTSHistoryItem } from "./components/HistoryDrawer.vue";
 import Settings from "./components/Settings/index.vue";
 import TextSegSettings from "./components/TextSegSettings.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { usePageForm } from "./composables/usePageForm";
-import type { ExampleItem, HistoryItem } from "./types";
-import { useProgress } from "@/hooks/useProgress";
-import { useTimer } from "@/hooks/useTimer";
+import type { ExampleItem } from "./types";
 
 export type TabsName = "settings" | "advanced";
 
@@ -170,10 +170,11 @@ function onViewHistory() {
 	showHistoryDrawer.value = true;
 }
 /** 应用历史记录 */
-function onApplyHistory(item: HistoryItem) {
-	const { isExpert, createTime, id, ...data } = item;
+function onApplyHistory(item: TTSHistoryItem) {
+	const { isExpert, createTime, id, ...data } = item.input_config_raw;
 	settingsStore.setComplexity(isExpert ? ComplexityEnum.EXPERT : ComplexityEnum.BEGINNER);
 	ruleForm.value = data;
+	generateAudioPath.value = item.file_path ?? generateAudioPath.value;
 
 	ElMessage.success("应用历史记录配置成功");
 }
@@ -217,12 +218,12 @@ async function onSubmitForm() {
 		progressControl.done();
 
 		pause();
-		ElMessage.success("合成成功");
+		ElMessage.success("生成成功");
 	} catch (error) {
 		generateLoading.value = false;
 		progressControl.done();
 
-		const message = (error as Error)?.message ?? "合成失败";
+		const message = (error as Error)?.message ?? "生成失败";
 		ElMessage.error(message);
 		console.error(message, error);
 	}

@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-28 15:55:31
- * @LastEditTime: 2025-10-30 16:38:27
+ * @LastEditTime: 2025-11-06 16:09:05
  * @LastEditors: mulingyuer
  * @Description: index-tts2 接口类型
  * @FilePath: \frontend\src\api\index-tts2\types.ts
@@ -104,6 +104,8 @@ export interface TTSHistoryResult {
 		input_config_raw: string;
 		/** 状态 */
 		status: string;
+		/** 生成的音频文件路径 */
+		file_path: string;
 	}>;
 	/** 总数量 */
 	total: number;
