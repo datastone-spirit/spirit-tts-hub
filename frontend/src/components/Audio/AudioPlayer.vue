@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-14 16:26:13
- * @LastEditTime: 2025-10-29 16:06:43
+ * @LastEditTime: 2025-11-06 16:25:06
  * @LastEditors: mulingyuer
  * @Description: 音频播放组件
  * @FilePath: \frontend\src\components\Audio\AudioPlayer.vue
@@ -64,7 +64,13 @@
 					<el-button v-show="isRegion" :icon="RiCheckLine" size="default" @click="onConfirmRegion">
 						确认
 					</el-button>
-					<el-button v-show="isRegion" class="cancel" size="default" :icon="RiCloseFill">
+					<el-button
+						v-show="isRegion"
+						class="cancel"
+						size="default"
+						:icon="RiCloseFill"
+						@click="onCancelRegion"
+					>
 						取消
 					</el-button>
 				</ElSpacePro>
@@ -236,6 +242,10 @@ async function onConfirmRegion() {
 		ElMessage.error("裁剪文件上传失败");
 		console.error("裁剪文件上传失败:", error);
 	}
+}
+/** 取消裁剪 */
+function onCancelRegion() {
+	regionControls.deleteRegion();
 }
 
 /** 监听主题变化 */
