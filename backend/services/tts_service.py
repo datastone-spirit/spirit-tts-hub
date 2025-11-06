@@ -13,6 +13,9 @@ from flask import current_app
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 进程级全局 TTS 实例，确保只初始化一次并保持显存常驻
+_GLOBAL_TTS_INSTANCE = None
+
 # =========================
 # 历史记录保存/查询工具函数
 # =========================
@@ -177,7 +180,8 @@ class TtsService:
     
     def get_tts(self):
         """获取 TTS 实例（懒加载）"""
-        if self._tts_instance is None:
+        global _GLOBAL_TTS_INSTANCE
+        if _GLOBAL_TTS_INSTANCE is None:
             # 强制离线与本地缓存，仅在首次初始化前设置
             try:
                 # 统一并强制离线开关（infer_v2.py 会读取这些环境变量）
@@ -223,15 +227,36 @@ class TtsService:
             # 将相对路径解析为相对于 backend 目录的绝对路径，确保 model_dir 与 cfg_path 一致
             model_dir_path = cfg_val if os.path.isabs(cfg_val) else os.path.abspath(os.path.join(self.base_dir, cfg_val))
 
-            self._tts_instance = IndexTTS2(
+            device_val = (
+                current_app.config.get('INDEX_TTS_DEVICE')
+                or os.getenv('INDEX_TTS_DEVICE')
+                or 'cuda:0'
+            )
+
+            _GLOBAL_TTS_INSTANCE = IndexTTS2(
                 model_dir=model_dir_path,
                 cfg_path=os.path.join(model_dir_path, 'config.yaml'),
-                device=current_app.config.get('INDEX_TTS_DEVICE') or None,
+                device=device_val,
                 use_fp16=self._as_bool(current_app.config.get('INDEX_TTS_FP16'), False),
                 use_deepspeed=self._as_bool(current_app.config.get('INDEX_TTS_DEEPSPEED'), False),
                 use_cuda_kernel=self._as_bool(current_app.config.get('INDEX_TTS_CUDA_KERNEL'), False),
             )
-        return self._tts_instance
+            try:
+                _ = getattr(_GLOBAL_TTS_INSTANCE, 'vocoder', None)
+            except Exception:
+                pass
+
+        self._tts_instance = _GLOBAL_TTS_INSTANCE
+        return _GLOBAL_TTS_INSTANCE
+
+    def ensure_tts_preloaded(app) -> None:
+        """在应用启动阶段预加载全局 TTS（同进程，保持显存常驻）。"""
+        try:
+            with app.app_context():
+                TtsService().get_tts()
+            logger.info("[TTS] Preloaded on startup; GPU memory will remain resident.")
+        except Exception as e:
+            logger.warning(f"[TTS] Preload failed: {e}")
     
     def synthesize_speech(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """

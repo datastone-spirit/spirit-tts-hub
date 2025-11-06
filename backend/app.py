@@ -48,6 +48,8 @@ _normalize_hf_cache_envs()
 
 from config import config
 from routes import register_routes
+# from services.tts_service import ensure_tts_preloaded
+from services.tts_service import TtsService
 
 def _get_frontend_dist_dir():
     dist_dir = os.path.abspath(os.path.join(current_dir, "..", "dist"))
@@ -110,6 +112,9 @@ def create_app(config_name='default'):
 
     # 注册路由
     register_routes(app)
+
+    # 启动阶段预加载同进程 TTS，确保显存常驻
+    TtsService().ensure_tts_preloaded(app)
     
     return app
 
