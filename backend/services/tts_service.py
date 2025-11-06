@@ -249,11 +249,11 @@ class TtsService:
         self._tts_instance = _GLOBAL_TTS_INSTANCE
         return _GLOBAL_TTS_INSTANCE
 
-    def ensure_tts_preloaded(app) -> None:
+    def ensure_tts_preloaded(self, app) -> None:
         """在应用启动阶段预加载全局 TTS（同进程，保持显存常驻）。"""
         try:
             with app.app_context():
-                TtsService().get_tts()
+                self.get_tts()
             logger.info("[TTS] Preloaded on startup; GPU memory will remain resident.")
         except Exception as e:
             logger.warning(f"[TTS] Preload failed: {e}")
