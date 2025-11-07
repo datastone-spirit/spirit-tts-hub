@@ -22,7 +22,14 @@ _GLOBAL_TTS_INSTANCE = None
 
 # 历史记录目录（统一定义）
 _BACKEND_DIR = os.path.dirname(os.path.dirname(__file__))
-_HISTORY_DIR = os.path.join(_BACKEND_DIR, 'history', 'synthesize')
+# 根据运行环境决定历史记录目录：
+# - development: 保持现状，使用 backend/history/synthesize
+# - production: 将 _BACKEND_DIR 替换为 /root，即 /root/history/synthesize
+_ENV_NAME = (os.getenv('FLASK_ENV') or os.getenv('FLASK_CONFIG') or 'development').lower()
+if _ENV_NAME == 'production':
+    _HISTORY_DIR = os.path.join('/root', 'history', 'synthesize')
+else:
+    _HISTORY_DIR = os.path.join(_BACKEND_DIR, 'history', 'synthesize')
 
 
 
@@ -481,7 +488,7 @@ class TtsService:
         """
         try:
             delete_all = self._as_bool(all_flag, False)
-            history_dir = os.path.join(self.base_dir, 'history', 'synthesize')
+            history_dir = _HISTORY_DIR
             os.makedirs(history_dir, exist_ok=True)
 
             deleted = []
