@@ -136,7 +136,7 @@ def create_app(config_name='default'):
     try:
         debug_enabled = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
         # 当启用调试模式时，仅在 reloader 子进程执行预加载
-        if not debug_enabled or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        if not debug_enabled:
             TtsService().ensure_tts_preloaded(app)
     except Exception:
         pass

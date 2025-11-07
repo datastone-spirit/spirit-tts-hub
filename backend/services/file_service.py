@@ -1,4 +1,5 @@
 import os
+import json
 import uuid
 import logging
 from typing import Dict, List, Any, Optional, Tuple
@@ -186,6 +187,132 @@ class FileService:
             return {"exists": exists, "has_data": has_data}, None, 200
         except Exception as e:
             return {}, f"路径检测失败: {str(e)}", 500
+    
+    # ---------------------- 配置读取 ----------------------
+    # ---------------------- 配置读取 ----------------------
+    def _ensure_conf_file(self, conf_path: str) -> Tuple[Dict[str, Any], Optional[str], int]:
+        """
+        确保配置文件存在并可读，返回 (data, error, code)
+        """
+        parent_dir = os.path.dirname(conf_path)
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+
+        if not os.path.isfile(conf_path):
+            with open(conf_path, 'w', encoding='utf-8') as f:
+                json.dump({}, f, ensure_ascii=False, indent=2)
+            return {}, None, 200
+
+        try:
+            with open(conf_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if not isinstance(data, dict):
+                    data = {}
+            return data, None, 200
+        except json.JSONDecodeError:
+            return {}, None, 200
+        except Exception as e:
+            return None, str(e), 500
+
+    def _write_conf_file(self, conf_path: str, data: Dict[str, Any]) -> Optional[str]:
+        """
+        将 data 写回配置文件，返回错误信息或 None
+        """
+        try:
+            parent_dir = os.path.dirname(conf_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+            with open(conf_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return None
+        except Exception as e:
+            return str(e)
+
+    def get_config_json(self) -> Tuple[Optional[Dict[str, Any]], Optional[str], int]:
+        """
+        读取配置 JSON 内容。
+        优先读取环境变量 `FLASK_CONF_DIR` 指定的完整文件路径（包含文件名），
+        如果配置文件不存在，则读取环境变量中的 upload_path、history_path、output_path 并返回默认格式。
+        如果 FLASK_CONF_DIR 不存在，则创建该文件并将环境变量中的值写入。
+
+        Returns: (data_dict, error_message, http_code)
+        """
+        try:
+            conf_path = os.getenv('FLASK_CONF_DIR')
+            if not conf_path:
+                data = {
+                    "upload_path": os.getenv('upload_path', ''),
+                    "history_path": os.getenv('history_path', ''),
+                    "output_path": os.getenv('output_path', '')
+                }
+                return data, None, 200
+
+            if os.path.isfile(conf_path):
+                with open(conf_path, 'r', encoding='utf-8') as f:
+                    try:
+                        data = json.load(f)
+                    except json.JSONDecodeError as je:
+                        return None, f"配置文件解析失败: {str(je)}", 400
+                return data, None, 200
+
+            data = {
+                "upload_path": os.getenv('upload_path', ''),
+                "history_path": os.getenv('history_path', ''),
+                "output_path": os.getenv('output_path', '')
+            }
+            err = self._write_conf_file(conf_path, data)
+            if err:
+                return None, err, 500
+            return data, None, 200
+
+        except Exception as e:
+            return None, str(e), 500
+
+    def update_config(self, upload_path: Optional[str], output_path: Optional[str]) -> Tuple[Optional[Dict[str, Any]], Optional[str], int]:
+        """
+        更新配置文件中的路径项：upload_path 和 output_path。
+        - 使用环境变量 `FLASK_CONF_DIR` 指定的完整文件路径（包含文件名）。
+        - 若文件不存在则创建，已存在则在原基础上更新对应字段。
+
+        Returns: (updated_data, error_message, http_code)
+        """
+        if not upload_path or not output_path:
+            return None, "缺少必要参数: upload_path 或 output_path", 400
+
+        conf_path = os.getenv('FLASK_CONF_DIR')
+        current_data, err, code = self._ensure_conf_file(conf_path)
+        if err:
+            return None, err, code
+
+        current_data['upload_path'] = upload_path
+        current_data['output_path'] = output_path
+
+        err = self._write_conf_file(conf_path, current_data)
+        if err:
+            return None, err, 500
+        return current_data, None, 200
+
+    # ---------------------- 配置重置（从环境变量） ----------------------
+    def reset_config_from_env(self) -> Tuple[Optional[Dict[str, Any]], Optional[str], int]:
+        """
+        读取 .env/.环境中的 变量，重置 upload_path、history_path、output_path 三个字段。
+        若 FLASK_CONF_DIR 指定的文件不存在则先创建。
+
+        Returns: (updated_data, error_message, http_code)
+        """
+        conf_path = os.getenv('FLASK_CONF_DIR')
+        current_data, err, code = self._ensure_conf_file(conf_path)
+        if err:
+            return None, err, code
+
+        current_data['upload_path'] = os.getenv('upload_path')
+        current_data['history_path'] = os.getenv('history_path')
+        current_data['output_path'] = os.getenv('output_path')
+
+        err = self._write_conf_file(conf_path, current_data)
+        if err:
+            return None, err, 500
+        return current_data, None, 200
     
     
     

@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify, current_app
 import os
+import json
 
 from services.file_service import FileService
 from utils.common import success_res, error_res
 from flasgger import swag_from
-from swagger.file_routes_swagger import file_upload_spec, file_list_spec, file_get_spec, file_makedir_spec, path_check_spec
+from swagger.file_routes_swagger import file_upload_spec, file_list_spec, file_get_spec, file_makedir_spec, path_check_spec, file_config_spec, file_config_update_spec, file_config_reset_spec
 
 file_bp = Blueprint('file', __name__)
 file_service = FileService()
@@ -87,5 +88,45 @@ def path_check():
     if err:
         return jsonify(error_res(message=err, code=code)), code
     return jsonify(success_res(data=result, message="路径检测完成"))
+    
+@file_bp.route('/config', methods=['GET'])
+@swag_from(file_config_spec)
+def get_config():
+    """获取配置文件内容"""
+    try:
+        data, err, code = file_service.get_config_json()
+        if err:
+            return jsonify(error_res(message=err, code=code)), code
+        return jsonify(data)
+    except Exception as e:
+        return jsonify(error_res(message=str(e), code=500)), 500
+
+@file_bp.route('/config', methods=['POST'])
+@swag_from(file_config_update_spec)
+def update_config():
+    """更新配置文件（upload_path, output_path）"""
+    try:
+        data = request.get_json() or {}
+        upload_path = data.get('upload_path')
+        output_path = data.get('output_path')
+
+        updated, err, code = file_service.update_config(upload_path=upload_path, output_path=output_path)
+        if err:
+            return jsonify(error_res(message=err, code=code)), code
+        return jsonify(success_res(data=updated, message="配置更新成功"))
+    except Exception as e:
+        return jsonify(error_res(message=str(e), code=500)), 500
+
+@file_bp.route('/config/reset', methods=['POST'])
+@swag_from(file_config_reset_spec)
+def reset_config():
+    """重置配置文件"""
+    try:
+        updated, err, code = file_service.reset_config_from_env()
+        if err:
+            return jsonify(error_res(message=err, code=code)), code
+        return jsonify(success_res(data=updated, message="配置已根据环境变量重置"))
+    except Exception as e:
+        return jsonify(error_res(message=str(e), code=500)), 500
     
     

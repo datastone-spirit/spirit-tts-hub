@@ -314,3 +314,184 @@ path_check_spec = {
         },
     },
 }
+
+
+file_config_spec = {
+    "tags": ["Files"],
+    "responses": {
+        "200": {
+            "description": "成功返回配置 JSON",
+            "schema": {"type": "object"},
+            "examples": {
+                "application/json": {
+                    "upload_path": "/home/dev/spirit-tts-hub/uploads",
+                    "history_path": "/home/dev/spirit-tts-hub/history/synthesize",
+                    "output_path": "/home/dev/spirit-tts-hub/outputs"
+                }
+            }
+        },
+        "400": {
+            "description": "配置解析失败",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {"type": "object"},
+                    "code": {"type": "integer"}
+                },
+                "required": ["success", "message", "code"]
+            }
+        },
+        "404": {
+            "description": "配置文件不存在",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {"type": "object"},
+                    "code": {"type": "integer"}
+                },
+                "required": ["success", "message", "code"]
+            }
+        },
+        "500": {"description": "服务器错误"},
+    },
+}
+
+file_config_update_spec = {
+    "tags": ["Files"],
+    "consumes": ["application/json"],
+    "summary": "更新配置文件",
+    "description": "",
+    "parameters": [
+        {
+            "in": "body",
+            "name": "body",
+            "required": True,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "upload_path": {"type": "string", "example": "/tmp/uploads"},
+                    "output_path": {"type": "string", "example": "/tmp/outputs"}
+                },
+                "required": ["upload_path", "output_path"]
+            }
+        }
+    ],
+    "responses": {
+        "200": {
+            "description": "更新成功",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "upload_path": {"type": "string", "example": "/tmp/uploads"},
+                            "output_path": {"type": "string", "example": "/tmp/outputs"},
+                            "history_path": {"type": "string", "example": "/home/dev/spirit-tts-hub/history/synthesize"}
+                        }
+                    },
+                    "message": {"type": "string"}
+                },
+                "required": ["success", "data"]
+            },
+            "examples": {
+                "application/json": {
+                    "success": True,
+                    "data": {
+                        "upload_path": "/tmp/uploads",
+                        "output_path": "/tmp/outputs",
+                        "history_path": "/home/dev/spirit-tts-hub/history/synthesize"
+                    },
+                    "message": "配置更新成功"
+                }
+            }
+        },
+        "400": {
+            "description": "请求参数错误",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {"type": "object"},
+                    "code": {"type": "integer"}
+                },
+                "required": ["success", "message", "code"]
+            },
+            "examples": {
+                "application/json": {
+                    "success": False,
+                    "message": "缺少必要参数: upload_path 或 output_path",
+                    "data": None,
+                    "code": 400
+                }
+            }
+        },
+        "500": {"description": "服务器错误"}
+    }
+}
+
+file_config_reset_spec = {
+    "tags": ["Files"],
+    "summary": "重置配置文件（从环境变量）",
+    "description": "读取环境变量 upload_path、history_path、output_path，",
+    "responses": {
+        "200": {
+            "description": "重置成功",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "upload_path": {"type": "string", "example": "/home/dev/spirit-tts-hub/uploads"},
+                            "history_path": {"type": "string", "example": "/home/dev/spirit-tts-hub/history/synthesize"},
+                            "output_path": {"type": "string", "example": "/home/dev/spirit-tts-hub/outputs"}
+                        }
+                    },
+                    "message": {"type": "string"}
+                },
+                "required": ["success", "data"]
+            },
+            "examples": {
+                "application/json": {
+                    "success": True,
+                    "data": {
+                        "upload_path": "/home/dev/spirit-tts-hub/uploads",
+                        "history_path": "/home/dev/spirit-tts-hub/history/synthesize",
+                        "output_path": "/home/dev/spirit-tts-hub/outputs"
+                    },
+                    "message": "配置已根据环境变量重置"
+                }
+            }
+        },
+        "400": {
+            "description": "缺少必要环境变量",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {"type": "object"},
+                    "code": {"type": "integer"}
+                },
+                "required": ["success", "message", "code"]
+            },
+            "examples": {
+                "application/json": {
+                    "success": False,
+                    "message": "缺少必要环境变量: upload_path, history_path, output_path",
+                    "data": None,
+                    "code": 400
+                }
+            }
+        },
+        "500": {"description": "服务器错误"}
+    }
+}

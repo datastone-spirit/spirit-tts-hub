@@ -45,3 +45,4 @@ CLAUDE.md
 /backend/checkpoints/
 /backend/outputs/*
 /backend/history/*
+/backend/conf
