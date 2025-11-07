@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-10-30 16:39:11
+ * @LastEditTime: 2025-11-07 12:53:34
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -155,7 +155,7 @@ export function usePageForm() {
 			vec7: ruleForm.vec7,
 			vec8: ruleForm.vec8,
 			raw_data: generateHistoryData(ruleForm),
-			output_path: settingsStore.appSettings.outputPath
+			output_path: settingsStore.appSettings.output_path
 		};
 
 		return data;

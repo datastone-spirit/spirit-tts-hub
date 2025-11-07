@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 10:35:54
- * @LastEditTime: 2025-11-03 15:05:07
+ * @LastEditTime: 2025-11-07 11:56:50
  * @LastEditors: mulingyuer
  * @Description: 示例抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\index.vue
@@ -74,6 +74,11 @@
 			<el-descriptions-item label="情感参考音频路径" :span="2">
 				{{ viewData?.emo_ref_path }}
 			</el-descriptions-item>
+			<el-descriptions-item label="生成内容" :span="2">
+				<div class="descriptions-text">
+					{{ viewData?.text }}
+				</div>
+			</el-descriptions-item>
 			<el-descriptions-item label="文本分段最大Token">
 				{{ viewData?.max_text_tokens_per_segment }}
 			</el-descriptions-item>
@@ -125,11 +130,6 @@
 			<el-descriptions-item label="长度惩罚"> {{ viewData?.length_penalty }} </el-descriptions-item>
 			<el-descriptions-item label="最大生成令牌数">
 				{{ viewData?.max_mel_tokens }}
-			</el-descriptions-item>
-			<el-descriptions-item label="生成内容" :span="2">
-				<div class="descriptions-text">
-					{{ viewData?.text }}
-				</div>
 			</el-descriptions-item>
 		</el-descriptions>
 	</el-dialog>

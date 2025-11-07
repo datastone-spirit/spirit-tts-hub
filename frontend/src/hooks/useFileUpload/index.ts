@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-29 15:56:35
- * @LastEditTime: 2025-10-29 15:59:32
+ * @LastEditTime: 2025-11-07 12:53:00
  * @LastEditors: mulingyuer
  * @Description: 通用文件上传 Hook
  * @FilePath: \frontend\src\hooks\useFileUpload\index.ts
@@ -106,7 +106,7 @@ export function useFileUpload(config: FileUploadConfig = {}) {
 		// 数据
 		const formData = new FormData();
 		formData.append("file", file);
-		formData.append("path", uploadPath ?? settingsStore.appSettings.uploadPath);
+		formData.append("path", uploadPath ?? settingsStore.appSettings.upload_path);
 
 		// api
 		const result = await uploadFileApi(formData, (progressEvent) => {
@@ -142,7 +142,7 @@ export function useFileUpload(config: FileUploadConfig = {}) {
 					name: "UploadError",
 					status: 500,
 					method: "POST",
-					url: uploadPath ?? settingsStore.appSettings.uploadPath
+					url: uploadPath ?? settingsStore.appSettings.upload_path
 				});
 				return;
 			}
@@ -156,7 +156,7 @@ export function useFileUpload(config: FileUploadConfig = {}) {
 				name: (error as Error).name || "UploadError",
 				status: 500,
 				method: "POST",
-				url: uploadPath ?? settingsStore.appSettings.uploadPath
+				url: uploadPath ?? settingsStore.appSettings.upload_path
 			});
 		}
 	};
