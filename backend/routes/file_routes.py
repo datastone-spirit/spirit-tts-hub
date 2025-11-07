@@ -19,13 +19,13 @@ def upload_file():
         return jsonify(error_res(message="No file part", code=400))
 
     file = request.files['file']
-    path_param = (request.form.get('path') or request.args.get('path', '') or '').strip()
     max_size = current_app.config.get('MAX_CONTENT_LENGTH')
-    base_upload_dir = current_app.config['UPLOAD_FOLDER']
-
+    
+    # 优先读取 conf/conf.json 中的 upload_path，没有则使用环境变量中的 upload_path
+    config_data, err, code = file_service.get_config_json()
+    base_upload_dir = config_data['upload_path']
     result, err, code = file_service.upload_audio(
         file=file,
-        path_param=path_param,
         base_upload_dir=base_upload_dir,
         max_size=max_size,
         request_content_length=request.content_length,
@@ -41,9 +41,11 @@ def list_files():
     """列出已上传的音频文件（支持子路径）"""
     try:
         path_param = (request.args.get('path', '') or '').strip('/')
+        config_data, err, code = file_service.get_config_json()
+        base_upload_dir = config_data['upload_path']
         files, err, code = file_service.list_files(
             path_param=path_param,
-            base_upload_dir=current_app.config['UPLOAD_FOLDER'],
+            base_upload_dir=base_upload_dir,
             allowed_extensions=list(current_app.config['ALLOWED_EXTENSIONS']),
         )
         if err:

@@ -20,7 +20,6 @@ class FileService:
     def upload_audio(
         self,
         file: FileStorage,
-        path_param: str,
         base_upload_dir: str,
         max_size: int,
         request_content_length: Optional[int] = None,
@@ -62,14 +61,8 @@ class FileService:
             if file_size and file_size > max_size_int:
                 return None, f"File too large, limit {max_size_int} bytes", 413
 
-        # 目标目录解析
-        path_param = (path_param or '').strip()
-        if os.path.isabs(path_param):
-            dest_dir = os.path.abspath(path_param)
-        else:
-            base_dir = os.path.abspath(base_upload_dir)
-            dest_dir = os.path.abspath(os.path.join(base_dir, path_param)) if path_param else base_dir
-
+        # 目标目录解析：直接使用 base_upload_dir 作为上传根目录
+        dest_dir = os.path.abspath(base_upload_dir)
         os.makedirs(dest_dir, exist_ok=True)
 
         # 生成唯一文件名并保存
@@ -88,13 +81,13 @@ class FileService:
             return None, f"Failed to upload file: {str(e)}", 500
 
         # 生成预览 URL（沿用原逻辑，与现有路由保持兼容）
-        preview_url = f"/api/audio/preview/{path_param}/{unique_filename}" if path_param else f"/api/audio/preview/{unique_filename}"
+        preview_url = f"/api/audio/preview/{unique_filename}"
 
         result = {
             "filename": unique_filename,
             "original_filename": filename,
             "file_path": file_path,
-            "path": path_param,
+            "path": base_upload_dir,
             "preview_url": preview_url,
         }
         return result, None, 200

@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass, field
 from flask import current_app
+from .file_service import FileService
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -22,16 +23,35 @@ _GLOBAL_TTS_INSTANCE = None
 
 # 历史记录目录（统一定义）
 _BACKEND_DIR = os.path.dirname(os.path.dirname(__file__))
-# 根据运行环境决定历史记录目录：
-# - development: 保持现状，使用 backend/history/synthesize
-# - production: 将 _BACKEND_DIR 替换为 /root，即 /root/history/synthesize
-_ENV_NAME = (os.getenv('FLASK_ENV') or os.getenv('FLASK_CONFIG') or 'development').lower()
-if _ENV_NAME == 'production':
-    _HISTORY_DIR = os.path.join('/root', 'history', 'synthesize')
-else:
-    _HISTORY_DIR = os.path.join(_BACKEND_DIR, 'history', 'synthesize')
+
+# 通过 FileService 的配置获取路径的辅助函数
+def _get_config_data() -> Dict[str, Any]:
+    try:
+        fs = FileService()
+        data, err, code = fs.get_config_json()
+        if err or not isinstance(data, dict):
+            raise RuntimeError(err or 'invalid config')
+        return data
+    except Exception:
+        # 兜底空配置
+        return {
+            "upload_path": "",
+            "history_path": "",
+            "output_path": ""
+        }
 
 
+def _resolve_dir_path(path_val: Optional[str], default_rel: str) -> str:
+    """解析目录路径：绝对路径直接返回；相对路径相对 backend 解析；空则使用默认相对目录。"""
+    if path_val:
+        if os.path.isabs(path_val):
+            return path_val
+        return os.path.abspath(os.path.join(_BACKEND_DIR, path_val))
+    return os.path.abspath(os.path.join(_BACKEND_DIR, default_rel))
+
+
+def _get_history_dir() -> str:
+    return _get_config_data().get('history_path')
 
 def query_synthesis_history(start: Optional[str] = None,
                             end: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -45,11 +65,12 @@ def query_synthesis_history(start: Optional[str] = None,
     Returns:
         List[Dict]: 满足条件的历史记录列表（按时间降序）
     """
-    if not os.path.isdir(_HISTORY_DIR):
+    history_dir = _get_history_dir()
+    if not os.path.isdir(history_dir):
         return []
 
     records: List[Dict[str, Any]] = []
-    for name in os.listdir(_HISTORY_DIR):
+    for name in os.listdir(history_dir):
         # 只处理 spk_*.json 形式的文件
         if not name.startswith('spk_') or not name.endswith('.json'):
             continue
@@ -68,7 +89,7 @@ def query_synthesis_history(start: Optional[str] = None,
             continue
 
         # 读取并加载 JSON 内容
-        path = os.path.join(_HISTORY_DIR, name)
+        path = os.path.join(history_dir, name)
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 rec = json.load(f)
@@ -284,8 +305,10 @@ class TtsService:
             
             # 生成唯一文件名
             filename = f"spk_{int(datetime.now().timestamp())}.wav"
-            output_path = data.get('output_path') or 'outputs'
-            output_path = os.path.join(self.base_dir, output_path, filename)
+            # 使用配置中的 output_path（支持绝对或相对 backend）
+            cfg = _get_config_data()
+            output_dir = _resolve_dir_path(cfg.get('output_path'), 'outputs')
+            output_path = os.path.join(output_dir, filename)
             # 若目录不存在则创建
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
@@ -488,7 +511,7 @@ class TtsService:
         """
         try:
             delete_all = self._as_bool(all_flag, False)
-            history_dir = _HISTORY_DIR
+            history_dir = _get_history_dir()
             os.makedirs(history_dir, exist_ok=True)
 
             deleted = []
@@ -559,8 +582,9 @@ class TtsService:
         Returns:
             str: 保存的历史记录文件路径
         """
-        os.makedirs(_HISTORY_DIR, exist_ok=True)
-        history_path = os.path.join(_HISTORY_DIR, f"{record_id}.json")
+        history_dir = _get_history_dir()
+        os.makedirs(history_dir, exist_ok=True)
+        history_path = os.path.join(history_dir, f"{record_id}.json")
         history_record = {
             "id": record_id,
             "input_config_raw": input_config_raw,

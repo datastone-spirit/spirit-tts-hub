@@ -3,7 +3,6 @@ file_upload_spec = {
     "consumes": ["multipart/form-data"],
     "parameters": [
         {"in": "formData", "name": "file", "type": "file", "required": True, "description": "要上传的文件"},
-        {"in": "formData", "name": "path", "type": "string", "required": False, "description": "上传路径"},
     ],
     "responses": {
         "200": {
