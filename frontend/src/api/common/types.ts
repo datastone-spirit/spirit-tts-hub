@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-28 15:22:03
- * @LastEditTime: 2025-10-28 11:42:36
+ * @LastEditTime: 2025-11-10 14:37:46
  * @LastEditors: mulingyuer
  * @Description: 公共接口类型
  * @FilePath: \frontend\src\api\common\types.ts
@@ -98,3 +98,17 @@ export type FileInfoResult =
 			/** 文件列表 */
 			files: Array<DirectoryResult | FileResult>;
 	  };
+
+/** 检测目录是否存在参数 */
+export interface CheckDirectoryExistsParams {
+	/** 目标路径 */
+	path: string;
+}
+
+/** 检测目录是否存在结果 */
+export interface CheckDirectoryExistsResult {
+	/** 是否存在 */
+	exists: boolean;
+	/** 是否有数据 */
+	has_data: boolean;
+}

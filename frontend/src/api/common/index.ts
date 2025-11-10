@@ -1,14 +1,21 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-09-28 15:21:45
- * @LastEditTime: 2025-10-28 15:16:29
+ * @LastEditTime: 2025-11-10 14:38:40
  * @LastEditors: mulingyuer
  * @Description: 公共接口
  * @FilePath: \frontend\src\api\common\index.ts
  * 怎么可能会有bug！！！
  */
 import { request } from "@/request";
-import type { FileInfoResult, UploadFileResult, UploadFilesData, UploadFilesResult } from "./types";
+import type {
+	CheckDirectoryExistsParams,
+	CheckDirectoryExistsResult,
+	FileInfoResult,
+	UploadFileResult,
+	UploadFilesData,
+	UploadFilesResult
+} from "./types";
 import type { AxiosProgressEvent } from "axios";
 export type * from "./types";
 
@@ -54,5 +61,14 @@ export function getFileInfo(path: string) {
 		headers: {
 			"X-ADDITIONAL-HEADER": "yes"
 		}
+	});
+}
+
+/** 检测目录是否存在 */
+export function checkDirectoryExists(params: CheckDirectoryExistsParams) {
+	return request<CheckDirectoryExistsResult>({
+		url: "/files/path_check",
+		method: "GET",
+		params
 	});
 }

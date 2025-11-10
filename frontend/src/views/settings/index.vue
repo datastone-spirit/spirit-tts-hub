@@ -1,14 +1,14 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-27 11:06:39
- * @LastEditTime: 2025-11-07 12:51:23
+ * @LastEditTime: 2025-11-10 14:49:25
  * @LastEditors: mulingyuer
  * @Description: 设置页面
  * @FilePath: \frontend\src\views\settings\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<BasePage class="settings" title="设置">
+	<BasePage class="settings" title="设置" v-loading="loading">
 		<BaseCard title="输入输出配置">
 			<el-form
 				class="rule-form"
@@ -27,23 +27,21 @@
 		</BaseCard>
 		<template #footer>
 			<div class="settings-footer">
-				<el-button :loading="resetLoading" :disabled="loading" @click="onReset">重置</el-button>
-				<el-button type="primary" :loading="loading" :disabled="resetLoading" @click="onSave">
-					保存
-				</el-button>
+				<el-button @click="onReset">重置</el-button>
+				<el-button type="primary" @click="onSave"> 保存 </el-button>
 			</div>
 		</template>
 	</BasePage>
 </template>
 
 <script setup lang="ts">
-import { useSettingsStore } from "@/stores";
-import type { FormInstance, FormRules } from "element-plus";
-import { getEnv } from "@/utils/env";
-import { getFileInfo, type DirectoryResult } from "@/api/common";
+import { checkDirectoryExists } from "@/api/common";
 import type { ConfigResult } from "@/api/config";
-import { updateConfig, getConfig, resetConfig } from "@/api/config";
+import { getConfig, resetConfig, updateConfig } from "@/api/config";
+import { useSettingsStore } from "@/stores";
+import { getEnv } from "@/utils/env";
 import { validateForm } from "@/utils/tools";
+import type { FormInstance, FormRules } from "element-plus";
 
 type DirExistResult = { valid: true } | { valid: false; message: string };
 
@@ -107,43 +105,42 @@ const rules = reactive<FormRules<ConfigResult>>({
 	]
 });
 const loading = ref(false);
-const resetLoading = ref(false);
 
 /** 判断目录是否存在 */
 async function isDirExist(path: string): Promise<DirExistResult> {
-	const result = await getFileInfo(path);
+	const result = await checkDirectoryExists({ path });
 
-	if (!result || (result as any).error) {
-		return { valid: false, message: "路径不正确，请输入正确的路径" };
-	}
-
-	if (result.dirname === path) {
-		return { valid: true };
-	}
-
-	const findFolder = result.files.find((item): item is DirectoryResult => {
-		return item.path === path && item.type === "dir";
-	});
-	if (!findFolder) {
-		return { valid: false, message: "目录不存在" };
+	if (!result || !result.exists) {
+		return { valid: false, message: "目录不存在，请输入正确的路径" };
 	}
 
 	return { valid: true };
+}
+
+/** 或者配置 */
+async function getSettings() {
+	try {
+		loading.value = true;
+		const result = await getConfig();
+		settingsStore.updateAppSettings(result);
+		loading.value = false;
+	} catch (error) {
+		loading.value = false;
+		console.error("获取配置失败：", error);
+	}
 }
 
 /** 保存 */
 async function onSave() {
 	try {
 		if (!ruleFormRef.value) return;
+		const validResult = await validateForm(ruleFormRef.value);
+		if (!validResult.isValid) return;
 
 		loading.value = true;
-		const validResult = await validateForm(ruleFormRef.value);
-		if (!validResult.isValid) {
-			loading.value = false;
-			return;
-		}
 
 		await updateConfig(ruleForm.value);
+		await getSettings();
 
 		loading.value = false;
 		ElMessage.success("保存成功");
@@ -157,22 +154,24 @@ async function onSave() {
 /** 重置设置 */
 async function onReset() {
 	try {
-		resetLoading.value = true;
+		loading.value = true;
 
 		await resetConfig();
-		const result = await getConfig();
-		settingsStore.updateAppSettings(result);
+		await getSettings();
 
-		resetLoading.value = false;
+		loading.value = false;
+
+		ElMessage.success("重置成功");
 	} catch (error) {
-		resetLoading.value = false;
+		loading.value = false;
 
-		console.error("重置设置失败：", error);
+		console.error("重置失败：", error);
 	}
-	// ruleFormRef.value?.resetFields();
-	// settingsStore.resetAppSettings();
-	// ElMessage.success("重置设置成功");
 }
+
+onMounted(() => {
+	getSettings();
+});
 </script>
 
 <style lang="scss" scoped>
