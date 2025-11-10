@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-04 16:14:16
- * @LastEditTime: 2025-11-07 12:56:33
+ * @LastEditTime: 2025-11-10 14:55:13
  * @LastEditors: mulingyuer
  * @Description: 设置数据仓库
  * @FilePath: \frontend\src\stores\modules\settings\index.ts
@@ -28,7 +28,7 @@ export const useSettingsStore = defineStore(
 		const isExpert = computed(() => complexity.value === ComplexityEnum.EXPERT);
 
 		/** 是否开启小白校验 */
-		const whiteCheck = readonly(computed(() => getEnv().VITE_APP_WHITE_CHECK === "true"));
+		const whiteCheck = computed(() => getEnv().VITE_APP_WHITE_CHECK === "true");
 
 		/** 应用设置 */
 		const appSettings = ref<ConfigResult>({

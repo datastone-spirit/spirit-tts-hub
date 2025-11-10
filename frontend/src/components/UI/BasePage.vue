@@ -1,14 +1,14 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-27 11:26:01
- * @LastEditTime: 2025-10-27 14:47:11
+ * @LastEditTime: 2025-11-10 14:31:39
  * @LastEditors: mulingyuer
  * @Description: 基础页面
  * @FilePath: \frontend\src\components\UI\BasePage.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<div class="base-page" :class="{ 'show-footer': $slots.footer }">
+	<div class="base-page" :class="{ 'show-footer': $slots.footer }" v-bind="$attrs">
 		<div class="base-page-head">
 			<h2 class="base-title">{{ title }}</h2>
 		</div>
