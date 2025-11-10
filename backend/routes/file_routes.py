@@ -87,8 +87,6 @@ def path_check():
     """检测目录是否存在"""
     path = request.args.get("path", "")
     result, err, code = file_service.check_path(path)
-    if err:
-        return jsonify(error_res(message=err, code=code)), code
     return jsonify(success_res(data=result, message="路径检测完成"))
     
 @file_bp.route('/config', methods=['GET'])

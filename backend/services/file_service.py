@@ -179,7 +179,7 @@ class FileService:
             has_data = exists and len(os.listdir(full_path)) > 0
             return {"exists": exists, "has_data": has_data}, None, 200
         except Exception as e:
-            return {}, f"路径检测失败: {str(e)}", 500
+            return {"exists": False, "has_data": False}, None, 200
     
     # ---------------------- 配置读取 ----------------------
     # ---------------------- 配置读取 ----------------------
