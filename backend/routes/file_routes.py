@@ -99,7 +99,7 @@ def get_config():
         data, err, code = file_service.get_config_json()
         if err:
             return jsonify(error_res(message=err, code=code)), code
-        return jsonify(data)
+        return jsonify(success_res(data=data, message="配置文件内容获取成功"))
     except Exception as e:
         return jsonify(error_res(message=str(e), code=500)), 500
 
