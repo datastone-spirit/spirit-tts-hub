@@ -31,7 +31,7 @@ export function updateConfig(data: UpdateConfigData) {
 /** 重置配置 */
 export function resetConfig() {
 	return request<ConfigResult>({
-		url: "/api/files/config/reset",
+		url: "/files/config/reset",
 		method: "POST"
 	});
 }
