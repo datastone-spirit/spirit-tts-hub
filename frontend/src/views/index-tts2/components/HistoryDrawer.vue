@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-07 11:52:01
+ * @LastEditTime: 2025-11-19 18:24:55
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
@@ -33,25 +33,31 @@
 							<th>参考音频</th>
 							<th>情感控制方式</th>
 							<th>生成内容</th>
-							<th>情感参考音频</th>
 							<th>专家模式</th>
+							<th>生成音频</th>
 							<th>创建时间</th>
 							<th>控制</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr v-for="item in historyData" :key="item.id">
-							<td>{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}</td>
+							<td>
+								{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}
+								<AudioPlayerDownloader :url="item?.input_config_raw.spk_audio_prompt" />
+							</td>
 							<td>{{ getEmoControlMethodLabel(item.input_config_raw.emo_control_method) }}</td>
 							<td>
 								<el-text line-clamp="3">
 									{{ item.input_config_raw.text }}
 								</el-text>
 							</td>
-							<td>{{ getFileNameFromPath(item?.input_config_raw.emo_ref_path) }}</td>
 							<td>
 								<el-tag v-if="item.input_config_raw.isExpert" type="success">是</el-tag>
 								<el-tag v-else type="info">否</el-tag>
+							</td>
+							<td>
+								{{ getFileNameFromPath(item?.file_path) }}
+								<AudioPlayerDownloader :url="item?.file_path" />
 							</td>
 							<td>{{ formatDate(item.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
 							<td>
@@ -70,7 +76,7 @@
 			<el-button :disabled="loading" @click="onClear">清空</el-button>
 		</template>
 	</el-drawer>
-	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center @close="onDialogClose">
+	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
 		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
 			<el-descriptions-item label="ID" :span="2">
 				{{ viewData?.input_config_raw.id }}
@@ -80,6 +86,7 @@
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频" :span="2">
 				{{ getFileNameFromPath(viewData?.input_config_raw.spk_audio_prompt) }}
+				<AudioPlayerDownloader :url="viewData?.input_config_raw.spk_audio_prompt" />
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频路径" :span="2">
 				{{ viewData?.input_config_raw.spk_audio_prompt }}
@@ -89,15 +96,17 @@
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频" :span="2">
 				{{ getFileNameFromPath(viewData?.input_config_raw.emo_ref_path) }}
+				<AudioPlayerDownloader
+					v-if="!isEmptyString(viewData?.input_config_raw.emo_ref_path)"
+					:url="viewData?.input_config_raw.emo_ref_path"
+				/>
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频路径" :span="2">
 				{{ viewData?.input_config_raw.emo_ref_path }}
 			</el-descriptions-item>
 			<el-descriptions-item label="生成音频" :span="2">
-				<div class="view-audio-wrapper">
-					<audio ref="audioRef" class="view-audio" controls :src="audioPath"></audio>
-					<el-button type="primary" @click="onDownloadAudio(viewData?.file_path)">下载</el-button>
-				</div>
+				{{ getFileNameFromPath(viewData?.file_path) }}
+				<AudioPlayerDownloader :url="viewData?.file_path" />
 			</el-descriptions-item>
 			<el-descriptions-item label="生成音频路径" :span="2">
 				{{ viewData?.file_path }}
@@ -172,14 +181,13 @@
 </template>
 
 <script setup lang="ts">
-import { getEmoControlMethodLabel, getFileNameFromPath } from "../helper";
-import type { HistoryItem } from "../types";
-import { formatDate } from "@/utils/dayjs";
-import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
 import type { TTSHistoryResult } from "@/api/index-tts2";
+import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
+import { formatDate } from "@/utils/dayjs";
+import { getFileNameFromPath, isEmptyString } from "@/utils/tools";
 import type { Simplify } from "type-fest";
-import { getEnv } from "@/utils/env";
-import { downloadFile } from "@/utils/tools";
+import { getEmoControlMethodLabel } from "../helper";
+import type { HistoryItem } from "../types";
 
 export type TTSHistoryItem = Simplify<
 	Omit<TTSHistoryResult["records"][number], "input_config_raw"> & { input_config_raw: HistoryItem }
@@ -191,18 +199,11 @@ const emit = defineEmits<{
 	"apply-history": [item: TTSHistoryItem];
 }>();
 
-const env = getEnv();
 const show = defineModel({ type: Boolean, required: true });
 const loading = ref(false);
 const historyData = ref<HistoryData>([]);
 const openDialog = ref(false);
 const viewData = ref<TTSHistoryItem>();
-const audioPath = computed(() => {
-	const filePath = viewData.value?.file_path;
-	if (typeof filePath !== "string" || filePath.trim() === "") return "";
-	return `${env.VITE_APP_API_BASE_URL}/audio/preview?filename=${encodeURIComponent(filePath)}`;
-});
-const audioRef = useTemplateRef("audioRef");
 
 // api 获取历史记录
 const getHistory = async () => {
@@ -280,22 +281,14 @@ async function onClear() {
 	}
 }
 
-/** 下载音频 */
-function onDownloadAudio(path?: string) {
-	if (typeof path !== "string" || path.trim() === "") return;
-	const url = `${env.VITE_APP_API_BASE_URL}/tts/download?filepath=${encodeURIComponent(path)}`;
-	downloadFile(url);
-}
-
 /** 打开弹窗 */
 const onDrawerOpen = () => {
 	getHistory();
 };
 
-/** 关闭dialog弹窗 */
-function onDialogClose() {
-	audioRef.value?.pause();
-}
+onMounted(() => {
+	if (show.value) onDrawerOpen();
+});
 </script>
 
 <style lang="scss">
@@ -380,8 +373,7 @@ function onDialogClose() {
 	word-break: break-all;
 	transition: background-color 0.25s ease;
 }
-.history-drawer-table .col-1,
-.history-drawer-table .col-4 {
+.history-drawer-table .col-1 {
 	width: 180px;
 }
 .history-drawer-table .col-2 {
@@ -390,8 +382,11 @@ function onDialogClose() {
 .history-drawer-table .col-3 {
 	width: 300px;
 }
-.history-drawer-table .col-5 {
+.history-drawer-table .col-4 {
 	width: 80px;
+}
+.history-drawer-table .col-5 {
+	width: 180px;
 }
 .history-drawer-table .col-6 {
 	width: 180px;

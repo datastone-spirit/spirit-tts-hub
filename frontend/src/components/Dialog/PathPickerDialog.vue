@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-11-05 15:36:55
+ * @LastEditTime: 2025-11-19 11:17:38
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
- * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog.vue
+ * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog2.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -12,7 +12,7 @@
 		id="file-dialog-vuefinder"
 		class="file-dialog"
 		width="700"
-		v-model="pathPickerDialogData.show"
+		v-model="show"
 		align-center
 		@open="onOpen"
 		@close="onClose"
@@ -20,7 +20,7 @@
 		<vue-finder
 			:features="features"
 			:request="request"
-			:path="pathPickerDialogData.path"
+			:path="basePath"
 			:select-button="handleSelectButton"
 			class="file-finder"
 		/>
@@ -28,12 +28,36 @@
 </template>
 
 <script setup lang="ts">
-import { useModalManager } from "@/hooks/useModalManager";
+// import { useModalManager } from "@/hooks/useModalManager";
 import { getEnv } from "@/utils/env";
 import { validateMimeType } from "@/utils/tools";
+import type { BaseModalProps, BaseModalEmit } from "@/hooks/useModal";
+
+/** 文件选择器类型 */
+export type PathPickerDialogType =
+	| "file" // 文件
+	| "directory" // 目录
+	| "both"; // 文件和目录
+
+export interface PathPickerDialogProps {
+	/** 弹窗类型 */
+	type: PathPickerDialogType;
+	/** mime type */
+	mimeType?: string;
+	/** 初始路径 */
+	basePath: string;
+}
+
+const show = defineModel({ type: Boolean, required: true });
+const props = withDefaults(defineProps<PathPickerDialogProps & BaseModalProps>(), {
+	type: "both",
+	mimeType: "",
+	basePath: "/"
+});
+const emit = defineEmits<BaseModalEmit>();
 
 const env = getEnv();
-const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
+// const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
 const isInit = ref(false);
 
 const features = ["select", "preview", "newfolder"];
@@ -45,7 +69,7 @@ const handleSelectButton = {
 		const item = items[0];
 
 		// 判断类型
-		switch (pathPickerDialogData.value.type) {
+		switch (props.type) {
 			case "file":
 				if (item.type !== "file") {
 					return ElMessage.error("请选择文件");
@@ -62,17 +86,16 @@ const handleSelectButton = {
 		}
 
 		// mime type 校验
-		const mimeType = pathPickerDialogData.value.mime_type;
-		if (typeof mimeType === "string" && mimeType.trim() !== "") {
-			const isValid = validateMimeType(item.mime_type, mimeType);
+		if (typeof props.mimeType === "string" && props.mimeType.trim() !== "") {
+			const isValid = validateMimeType(item.mime_type, props.mimeType);
 			if (!isValid) {
-				ElMessage.error(`请选择正确的 ${mimeType} 类型内容`);
+				ElMessage.error(`请选择正确的 ${props.mimeType} 类型内容`);
 				return;
 			}
 		}
 
 		// 用户选择成功，resolve Promise
-		resolvePathPickerDialog(item);
+		emit("confirm", item);
 	}
 };
 const request = computed(() => {
@@ -80,7 +103,7 @@ const request = computed(() => {
 		baseUrl: `${env.VITE_APP_API_BASE_URL}/files/file`,
 		params: {
 			additionalParam1: "yes",
-			path: computed(() => pathPickerDialogData.value.path)
+			path: computed(() => props.basePath)
 		},
 		body: { additionalBody1: ["yes"] },
 		transformRequest: (req: any) => {
@@ -121,7 +144,7 @@ function onOpen() {
 /** 弹窗关闭 */
 function onClose() {
 	// 用户点击右上角关闭或按 ESC，视为取消
-	rejectPathPickerDialog(new Error("用户取消选择"));
+	emit("cancel", new Error("用户取消选择"));
 }
 </script>
 

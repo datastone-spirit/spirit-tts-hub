@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 10:35:54
- * @LastEditTime: 2025-11-07 11:56:50
+ * @LastEditTime: 2025-11-19 18:27:48
  * @LastEditors: mulingyuer
  * @Description: 示例抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\ExampleDrawer\index.vue
@@ -38,10 +38,19 @@
 				</thead>
 				<tbody>
 					<tr v-for="(item, index) in data" :key="index">
-						<td>{{ getFileNameFromPath(item?.spk_audio_prompt) }}</td>
+						<td>
+							{{ getFileNameFromPath(item.spk_audio_prompt) }}
+							<AudioPlayerDownloader :url="item.spk_audio_prompt" />
+						</td>
 						<td>{{ getEmoControlMethodLabel(item.emo_control_method) }}</td>
 						<td>{{ item.text }}</td>
-						<td>{{ getFileNameFromPath(item.emo_ref_path) }}</td>
+						<td>
+							{{ getFileNameFromPath(item.emo_ref_path) }}
+							<AudioPlayerDownloader
+								v-if="!isEmptyString(item.emo_ref_path)"
+								:url="item.emo_ref_path"
+							/>
+						</td>
 						<td>
 							<el-tag v-if="item.isExpert" type="success">是</el-tag>
 							<el-tag v-else type="info">否</el-tag>
@@ -61,6 +70,7 @@
 		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
 			<el-descriptions-item label="参考音频" :span="2">
 				{{ getFileNameFromPath(viewData?.spk_audio_prompt) }}
+				<AudioPlayerDownloader :url="viewData?.spk_audio_prompt" />
 			</el-descriptions-item>
 			<el-descriptions-item label="参考音频路径" :span="2">
 				{{ viewData?.spk_audio_prompt }}
@@ -70,6 +80,10 @@
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频" :span="2">
 				{{ getFileNameFromPath(viewData?.emo_ref_path) }}
+				<AudioPlayerDownloader
+					v-if="!isEmptyString(viewData?.emo_ref_path)"
+					:url="viewData?.emo_ref_path"
+				/>
 			</el-descriptions-item>
 			<el-descriptions-item label="情感参考音频路径" :span="2">
 				{{ viewData?.emo_ref_path }}
@@ -136,9 +150,10 @@
 </template>
 
 <script setup lang="ts">
+import { getFileNameFromPath, isEmptyString } from "@/utils/tools";
+import { getEmoControlMethodLabel } from "../../helper";
 import type { ExampleData, ExampleItem } from "../../types";
 import { EXAMPLE_DATA } from "./example-data";
-import { getEmoControlMethodLabel, getFileNameFromPath } from "../../helper";
 
 const emit = defineEmits<{
 	/** 应用示例配置 */
