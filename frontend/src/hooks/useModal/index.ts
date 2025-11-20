@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-11-18 15:39:28
- * @LastEditTime: 2025-11-19 16:14:07
+ * @LastEditTime: 2025-11-20 10:39:47
  * @LastEditors: mulingyuer
  * @Description: 模态框管理
  * @FilePath: \frontend\src\hooks\useModal\index.ts
@@ -58,28 +58,33 @@ class ModalManager {
 
 	/** 确认关闭（resolve） */
 	public confirm<T>(modalId: symbol, value?: T) {
-		const model = this.modals.value.find((m) => m.modalId === modalId);
+		const model = this.getByModalId(modalId);
 		if (!model) return;
 
 		model.resolve(value as T);
 
-		if (model.persistent) {
-			model.visible = false;
-		} else {
-			this.removeByModalId(model.modalId);
-		}
+		// 关闭弹窗，不销毁
+		model.visible = false;
 	}
 
 	/** 取消关闭（reject） */
 	public cancel(modalId: symbol, reason?: any) {
-		const model = this.modals.value.find((m) => m.modalId === modalId);
+		const model = this.getByModalId(modalId);
 		if (!model) return;
 
 		model.reject(reason);
 
-		if (model.persistent) {
-			model.visible = false;
-		} else {
+		// 关闭弹窗，不销毁
+		model.visible = false;
+	}
+
+	/** 关闭弹窗的回调方法，用于销毁非常驻弹窗 */
+	public closed(modalId: symbol) {
+		const model = this.getByModalId(modalId);
+		if (!model) return;
+
+		// 非常驻弹窗，销毁
+		if (!model.persistent) {
 			this.removeByModalId(model.modalId);
 		}
 	}
@@ -113,7 +118,7 @@ class ModalManager {
 
 		// 情况1：全局单例模式
 		if (config.singleton) {
-			return `__singleton__${(component as any).name ?? component}`;
+			return `__singleton__${this.getComponentIdentifier(component)}`;
 		}
 
 		// 情况2：手动指定 key
@@ -135,6 +140,11 @@ class ModalManager {
 			(component as any).__file?.split("/").pop()?.replace(".vue", "") ||
 			"anonymous"
 		);
+	}
+
+	/** 通过modalId获取弹窗实例 */
+	private getByModalId(modalId: symbol): InternalModal | undefined {
+		return this.modals.value.find((m) => m.modalId === modalId);
 	}
 
 	/** 通过modalId删除弹窗实例 */

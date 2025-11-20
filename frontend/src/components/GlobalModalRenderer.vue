@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-18 16:01:54
- * @LastEditTime: 2025-11-20 09:46:00
+ * @LastEditTime: 2025-11-20 10:33:49
  * @LastEditors: mulingyuer
  * @Description: 全局弹窗渲染
  * @FilePath: \frontend\src\components\GlobalModalRenderer.vue
@@ -17,7 +17,7 @@
 				v-model="item.visible"
 				@confirm="(val: any) => modal.confirm(item.modalId, val)"
 				@cancel="(reason?: any) => modal.cancel(item.modalId, reason)"
-				@closed="(reason?: any) => modal.cancel(item.modalId, reason)"
+				@closed="() => modal.closed(item.modalId)"
 			/>
 		</template>
 	</div>

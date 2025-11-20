@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-27 10:28:33
- * @LastEditTime: 2025-11-19 12:18:41
+ * @LastEditTime: 2025-11-20 10:34:49
  * @LastEditors: mulingyuer
  * @Description: 目录选择器
  * @FilePath: \frontend\src\components\Form\FolderPicker.vue
@@ -97,7 +97,10 @@ function onShowSelector() {
 	model
 		.open({
 			component: PathPickerDialog,
-			props: modelProps
+			props: modelProps,
+			persistent: {
+				singleton: true
+			}
 		})
 		.then((item: DirectoryResult) => {
 			modelValue.value = item.path;

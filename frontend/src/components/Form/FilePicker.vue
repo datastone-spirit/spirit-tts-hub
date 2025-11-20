@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 10:48:30
- * @LastEditTime: 2025-11-19 12:18:19
+ * @LastEditTime: 2025-11-20 10:34:34
  * @LastEditors: mulingyuer
  * @Description: 文件选择器
  * @FilePath: \frontend\src\components\Form\FilePicker.vue
@@ -103,7 +103,10 @@ function onShowSelector() {
 	model
 		.open({
 			component: PathPickerDialog,
-			props: modelProps
+			props: modelProps,
+			persistent: {
+				singleton: true
+			}
 		})
 		.then((item: FileResult) => {
 			modelValue.value = item.path;
