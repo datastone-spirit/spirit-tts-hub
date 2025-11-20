@@ -46,3 +46,4 @@ CLAUDE.md
 /backend/outputs/*
 /backend/history/*
 /backend/conf
+/backend/roles/
