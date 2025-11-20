@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-19 17:37:00
- * @LastEditTime: 2025-11-19 18:23:52
+ * @LastEditTime: 2025-11-20 08:25:05
  * @LastEditors: mulingyuer
  * @Description: 音频播放下载按钮
  * @FilePath: \frontend\src\components\Audio\Buttons\AudioPlayerDownloader.vue
@@ -51,13 +51,15 @@ const onPlayer = () => {
 		url: props.url,
 		name: getFileNameFromPath(props.url)
 	};
-	modal.open({
-		component: AudioPlayerDialog,
-		props: modalProps,
-		persistent: {
-			singleton: true
-		}
-	});
+	modal
+		.open({
+			component: AudioPlayerDialog,
+			props: modalProps,
+			persistent: {
+				singleton: true
+			}
+		})
+		.catch(() => {});
 };
 
 onUnmounted(() => {

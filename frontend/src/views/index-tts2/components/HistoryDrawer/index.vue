@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-19 18:24:55
+ * @LastEditTime: 2025-11-20 09:44:33
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
- * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
+ * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -57,7 +57,10 @@
 							</td>
 							<td>
 								{{ getFileNameFromPath(item?.file_path) }}
-								<AudioPlayerDownloader :url="item?.file_path" />
+								<ElSpacePro :size="4">
+									<AudioPlayerDownloader :url="item?.file_path" />
+									<AudioDownload :url="item?.file_path" />
+								</ElSpacePro>
 							</td>
 							<td>{{ formatDate(item.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
 							<td>
@@ -76,123 +79,17 @@
 			<el-button :disabled="loading" @click="onClear">清空</el-button>
 		</template>
 	</el-drawer>
-	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center>
-		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
-			<el-descriptions-item label="ID" :span="2">
-				{{ viewData?.input_config_raw.id }}
-			</el-descriptions-item>
-			<el-descriptions-item label="创建时间" :span="2">
-				{{ formatDate(viewData!.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}
-			</el-descriptions-item>
-			<el-descriptions-item label="参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.input_config_raw.spk_audio_prompt) }}
-				<AudioPlayerDownloader :url="viewData?.input_config_raw.spk_audio_prompt" />
-			</el-descriptions-item>
-			<el-descriptions-item label="参考音频路径" :span="2">
-				{{ viewData?.input_config_raw.spk_audio_prompt }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感控制方式" :span="2">
-				{{ getEmoControlMethodLabel(viewData?.input_config_raw.emo_control_method) }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.input_config_raw.emo_ref_path) }}
-				<AudioPlayerDownloader
-					v-if="!isEmptyString(viewData?.input_config_raw.emo_ref_path)"
-					:url="viewData?.input_config_raw.emo_ref_path"
-				/>
-			</el-descriptions-item>
-			<el-descriptions-item label="情感参考音频路径" :span="2">
-				{{ viewData?.input_config_raw.emo_ref_path }}
-			</el-descriptions-item>
-			<el-descriptions-item label="生成音频" :span="2">
-				{{ getFileNameFromPath(viewData?.file_path) }}
-				<AudioPlayerDownloader :url="viewData?.file_path" />
-			</el-descriptions-item>
-			<el-descriptions-item label="生成音频路径" :span="2">
-				{{ viewData?.file_path }}
-			</el-descriptions-item>
-			<el-descriptions-item label="生成内容" :span="2">
-				<div class="descriptions-text">
-					{{ viewData?.input_config_raw.text }}
-				</div>
-			</el-descriptions-item>
-			<el-descriptions-item label="文本分段最大Token">
-				{{ viewData?.input_config_raw.max_text_tokens_per_segment }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感控制权重">
-				{{ viewData?.input_config_raw.emo_weight }}
-			</el-descriptions-item>
-			<el-descriptions-item label="随机情绪采样">
-				{{ viewData?.input_config_raw.emo_random }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-快乐">
-				{{ viewData?.input_config_raw.vec1 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-生气">
-				{{ viewData?.input_config_raw.vec2 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-难过">
-				{{ viewData?.input_config_raw.vec3 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-害怕">
-				{{ viewData?.input_config_raw.vec4 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-厌恶">
-				{{ viewData?.input_config_raw.vec5 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-忧郁">
-				{{ viewData?.input_config_raw.vec6 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-惊讶">
-				{{ viewData?.input_config_raw.vec7 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-平静">
-				{{ viewData?.input_config_raw.vec8 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感描述">
-				{{ viewData?.input_config_raw.prompt }}
-			</el-descriptions-item>
-			<el-descriptions-item label="启用 GPT-2 样本抽取">
-				{{ viewData?.input_config_raw.do_sample }}
-			</el-descriptions-item>
-			<el-descriptions-item label="GPT-2 采样温度">
-				{{ viewData?.input_config_raw.temperature }}
-			</el-descriptions-item>
-			<el-descriptions-item label="top_p">
-				{{ viewData?.input_config_raw.top_p }}
-			</el-descriptions-item>
-			<el-descriptions-item label="top_k">
-				{{ viewData?.input_config_raw.top_k }}
-			</el-descriptions-item>
-			<el-descriptions-item label="num_beams">
-				{{ viewData?.input_config_raw.num_beams }}
-			</el-descriptions-item>
-			<el-descriptions-item label="重复惩罚">
-				{{ viewData?.input_config_raw.repetition_penalty }}
-			</el-descriptions-item>
-			<el-descriptions-item label="长度惩罚">
-				{{ viewData?.input_config_raw.length_penalty }}
-			</el-descriptions-item>
-			<el-descriptions-item label="最大生成令牌数">
-				{{ viewData?.input_config_raw.max_mel_tokens }}
-			</el-descriptions-item>
-		</el-descriptions>
-	</el-dialog>
 </template>
 
 <script setup lang="ts">
-import type { TTSHistoryResult } from "@/api/index-tts2";
 import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
+import { useModal } from "@/hooks/useModal";
 import { formatDate } from "@/utils/dayjs";
-import { getFileNameFromPath, isEmptyString } from "@/utils/tools";
-import type { Simplify } from "type-fest";
-import { getEmoControlMethodLabel } from "../helper";
-import type { HistoryItem } from "../types";
-
-export type TTSHistoryItem = Simplify<
-	Omit<TTSHistoryResult["records"][number], "input_config_raw"> & { input_config_raw: HistoryItem }
->;
-type HistoryData = Array<TTSHistoryItem>;
+import { getFileNameFromPath } from "@/utils/tools";
+import { getEmoControlMethodLabel } from "../../helper";
+import type { HistoryData, HistoryItem, TTSHistoryItem } from "../../types";
+import type { DetailDialogProps } from "./DetailDialog.vue";
+import DetailDialog from "./DetailDialog.vue";
 
 const emit = defineEmits<{
 	/** 应用历史记录 */
@@ -202,8 +99,7 @@ const emit = defineEmits<{
 const show = defineModel({ type: Boolean, required: true });
 const loading = ref(false);
 const historyData = ref<HistoryData>([]);
-const openDialog = ref(false);
-const viewData = ref<TTSHistoryItem>();
+const modal = useModal();
 
 // api 获取历史记录
 const getHistory = async () => {
@@ -239,8 +135,15 @@ const getHistory = async () => {
 
 /** 查看 */
 function onView(item: TTSHistoryItem) {
-	viewData.value = item;
-	openDialog.value = true;
+	const modelProps: DetailDialogProps = {
+		viewData: item
+	};
+	modal
+		.open({
+			component: DetailDialog,
+			props: modelProps
+		})
+		.catch(() => {});
 }
 /** 应用 */
 function onApply(item: TTSHistoryItem) {
@@ -386,7 +289,7 @@ onMounted(() => {
 	width: 80px;
 }
 .history-drawer-table .col-5 {
-	width: 180px;
+	width: 230px;
 }
 .history-drawer-table .col-6 {
 	width: 180px;

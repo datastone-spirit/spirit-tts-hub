@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-11-06 16:15:06
+ * @LastEditTime: 2025-11-20 09:45:02
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -108,12 +108,12 @@ import Advanced from "./components/Advanced/index.vue";
 import BodyCard from "./components/BodyCard.vue";
 import ExampleDrawer from "./components/ExampleDrawer/index.vue";
 import FooterAudio from "./components/FooterAudio.vue";
-import HistoryDrawer, { type TTSHistoryItem } from "./components/HistoryDrawer.vue";
+import HistoryDrawer from "./components/HistoryDrawer/index.vue";
 import Settings from "./components/Settings/index.vue";
 import TextSegSettings from "./components/TextSegSettings.vue";
 import VoiceReference from "./components/VoiceReference.vue";
 import { usePageForm } from "./composables/usePageForm";
-import type { ExampleItem } from "./types";
+import type { ExampleItem, TTSHistoryItem } from "./types";
 
 export type TabsName = "settings" | "advanced";
 
