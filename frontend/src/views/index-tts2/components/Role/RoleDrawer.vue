@@ -1,14 +1,14 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-20 11:23:19
- * @LastEditTime: 2025-11-20 17:15:51
+ * @LastEditTime: 2025-11-20 17:25:30
  * @LastEditors: mulingyuer
  * @Description: 角色抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\Role\RoleDrawer.vue
  * 怎么可能会有bug！！！
 -->
 <template>
-	<el-drawer class="role-drawer" v-model="show" direction="ltr" size="75%" @open="onDrawerOpen">
+	<el-drawer class="role-drawer" v-model="show" direction="ltr" size="80%" @open="onDrawerOpen">
 		<template #header>
 			<div class="role-drawer-header">
 				<Icon class="role-drawer-header-icon" name="ri-user-star-line" size="20" />
@@ -49,10 +49,10 @@
 						{{ formatDate(row.created_at * 1000, "YYYY-MM-DD HH:mm:ss") }}
 					</template>
 				</el-table-column>
-				<el-table-column label="控制" min-width="250">
+				<el-table-column label="控制" min-width="260">
 					<template #default="{ row }">
 						<ElSpacePro>
-							<el-button @click="onEdit(row)"> 编辑 </el-button>
+							<el-button @click="onEdit(row)"> 重命名 </el-button>
 							<el-button @click="onView(row)"> 查看 </el-button>
 							<el-button @click="onApply(row)"> 应用 </el-button>
 							<el-button type="danger" plain @click="onDelete(row)"> 删除 </el-button>

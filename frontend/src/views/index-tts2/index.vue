@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:20:41
- * @LastEditTime: 2025-11-20 16:58:32
+ * @LastEditTime: 2025-11-20 17:27:40
  * @LastEditors: mulingyuer
  * @Description: index tts2
  * @FilePath: \frontend\src\views\index-tts2\index.vue
@@ -17,7 +17,9 @@
 							<el-space :size="8">
 								<el-button :icon="RiLightbulbLine" @click="onViewExample">示例</el-button>
 								<el-button :icon="RiHistoryLine" @click="onViewHistory">历史</el-button>
-								<el-button type="info" :icon="RiUserStarLine" @click="onViewRole">角色</el-button>
+								<el-button type="info" :icon="RiUserStarLine" plain @click="onViewRole">
+									角色
+								</el-button>
 							</el-space>
 						</div>
 						<div class="tts-main-body">
@@ -99,6 +101,7 @@
 						type="info"
 						:loading="saveRoleLoading"
 						:disabled="generateLoading"
+						plain
 						@click="onSaveRole"
 					>
 						保存角色
