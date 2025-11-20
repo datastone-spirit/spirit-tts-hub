@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-20 09:44:33
+ * @LastEditTime: 2025-11-20 10:41:29
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer\index.vue
@@ -204,7 +204,7 @@ onMounted(() => {
 		padding-top: 0;
 	}
 	.el-drawer__footer {
-		padding-top: 0;
+		padding-bottom: 10px;
 	}
 }
 </style>

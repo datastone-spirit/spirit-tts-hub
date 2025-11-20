@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-11-18 15:39:28
- * @LastEditTime: 2025-11-20 10:39:47
+ * @LastEditTime: 2025-11-20 17:15:18
  * @LastEditors: mulingyuer
  * @Description: 模态框管理
  * @FilePath: \frontend\src\hooks\useModal\index.ts
@@ -43,7 +43,7 @@ class ModalManager {
 
 			const instance: InternalModal<T> = {
 				modalId,
-				visible: true,
+				visible: false,
 				component: markRaw(component),
 				props,
 				resolve,
@@ -53,39 +53,57 @@ class ModalManager {
 			};
 
 			this.modals.value.push(instance);
+
+			// HACK: Element Plus 弹窗的open事件会在 “由关闭 → 打开” 的状态变化中触发，所以这里等下一个 tick 时设置为true
+			nextTick().finally(() => {
+				const modal = this.getByModalId(modalId);
+				if (!modal) return;
+
+				modal.visible = true;
+			});
 		});
 	}
 
 	/** 确认关闭（resolve） */
 	public confirm<T>(modalId: symbol, value?: T) {
-		const model = this.getByModalId(modalId);
-		if (!model) return;
+		const modal = this.getByModalId(modalId);
+		if (!modal) return;
 
-		model.resolve(value as T);
+		modal.resolve?.(value as T);
+		modal.resolve = void 0;
+		modal.reject = void 0;
 
 		// 关闭弹窗，不销毁
-		model.visible = false;
+		modal.visible = false;
 	}
 
 	/** 取消关闭（reject） */
 	public cancel(modalId: symbol, reason?: any) {
-		const model = this.getByModalId(modalId);
-		if (!model) return;
+		const modal = this.getByModalId(modalId);
+		if (!modal) return;
 
-		model.reject(reason);
+		modal.reject?.(reason);
+		modal.resolve = void 0;
+		modal.reject = void 0;
 
 		// 关闭弹窗，不销毁
-		model.visible = false;
+		modal.visible = false;
 	}
 
 	/** 关闭弹窗的回调方法，用于销毁非常驻弹窗 */
 	public closed(modalId: symbol) {
-		const model = this.getByModalId(modalId);
-		if (!model) return;
+		const modal = this.getByModalId(modalId);
+		if (!modal) return;
+
+		if (typeof modal.reject === "function") {
+			modal.reject(new Error("用户取消了"));
+			modal.resolve = void 0;
+			modal.reject = void 0;
+		}
 
 		// 非常驻弹窗，销毁
-		if (!model.persistent) {
-			this.removeByModalId(model.modalId);
+		if (!modal.persistent) {
+			this.removeByModalId(modal.modalId);
 		}
 	}
 

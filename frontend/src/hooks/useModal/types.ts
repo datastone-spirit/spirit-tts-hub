@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-11-19 08:53:02
- * @LastEditTime: 2025-11-19 16:12:55
+ * @LastEditTime: 2025-11-20 15:20:01
  * @LastEditors: mulingyuer
  * @Description: 模态框管理类型
  * @FilePath: \frontend\src\hooks\useModal\types.ts
@@ -35,8 +35,8 @@ export type ModalInstance<T = any> = {
 	visible: boolean;
 	component: Component;
 	props?: Record<string, any>;
-	resolve: (value: T) => void;
-	reject: (reason?: any) => void;
+	resolve: undefined | ((value: T) => void);
+	reject: undefined | ((reason?: any) => void);
 };
 
 /** 受控的弹窗组件基础props */
