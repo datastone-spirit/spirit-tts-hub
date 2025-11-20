@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-20 15:02:16
- * @LastEditTime: 2025-11-20 17:05:20
+ * @LastEditTime: 2025-11-20 17:20:13
  * @LastEditors: mulingyuer
  * @Description: 角色名称弹窗
  * @FilePath: \frontend\src\views\index-tts2\components\Role\RoleNameDialog.vue
@@ -76,7 +76,6 @@ const onConfirm = async () => {
 };
 
 const onOpen = () => {
-	console.log(props.editData);
 	if (props.type === "edit") {
 		ruleForm.name = props.editData?.name || "";
 	} else {
