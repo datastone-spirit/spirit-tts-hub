@@ -29,3 +29,39 @@ pnpm run build -mode aaa
 ```
 
 这就表示build命令需要使用`.env.aaa`环境变量文件。
+
+
+## 环境要求
+
+我们需要安装Node.js环境，并安装pnpm包管理工具。可以通过以下命令安装：
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh |bash
+```
+
+安装 nvm 后，通过以下命令安装 Node.js。推荐安装 v20.0.0 及以上版本：
+
+```bash
+nvm install v22.20.0
+```
+
+Node.js 安装完成后，使用以下命令安装 pnpm。推荐安装 pnpm 10.0.0 及以上版本：
+
+```bash
+npm install -g pnpm
+```
+
+## 构建与运行
+
+在运行前端之前，你必须先将前端项目打包构建。为此，请进入到 `frontend` 目录，并运行以下命令以安装依赖项：
+
+```bash
+pnpm install
+```
+
+安装依赖项后，运行以下命令构建前端。构建完成后，生成的文件将保存到 `frontend/dist` 目录中：
+
+```bash
+pnpm run build
+```
+
