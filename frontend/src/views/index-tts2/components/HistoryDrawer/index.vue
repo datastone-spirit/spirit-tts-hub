@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-22 16:00:10
- * @LastEditTime: 2025-11-07 11:52:01
+ * @LastEditTime: 2025-11-20 10:41:29
  * @LastEditors: mulingyuer
  * @Description: 历史记录抽屉
- * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer.vue
+ * @FilePath: \frontend\src\views\index-tts2\components\HistoryDrawer\index.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -33,25 +33,34 @@
 							<th>参考音频</th>
 							<th>情感控制方式</th>
 							<th>生成内容</th>
-							<th>情感参考音频</th>
 							<th>专家模式</th>
+							<th>生成音频</th>
 							<th>创建时间</th>
 							<th>控制</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr v-for="item in historyData" :key="item.id">
-							<td>{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}</td>
+							<td>
+								{{ getFileNameFromPath(item?.input_config_raw.spk_audio_prompt) }}
+								<AudioPlayerDownloader :url="item?.input_config_raw.spk_audio_prompt" />
+							</td>
 							<td>{{ getEmoControlMethodLabel(item.input_config_raw.emo_control_method) }}</td>
 							<td>
 								<el-text line-clamp="3">
 									{{ item.input_config_raw.text }}
 								</el-text>
 							</td>
-							<td>{{ getFileNameFromPath(item?.input_config_raw.emo_ref_path) }}</td>
 							<td>
 								<el-tag v-if="item.input_config_raw.isExpert" type="success">是</el-tag>
 								<el-tag v-else type="info">否</el-tag>
+							</td>
+							<td>
+								{{ getFileNameFromPath(item?.file_path) }}
+								<ElSpacePro :size="4">
+									<AudioPlayerDownloader :url="item?.file_path" />
+									<AudioDownload :url="item?.file_path" />
+								</ElSpacePro>
 							</td>
 							<td>{{ formatDate(item.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}</td>
 							<td>
@@ -70,139 +79,27 @@
 			<el-button :disabled="loading" @click="onClear">清空</el-button>
 		</template>
 	</el-drawer>
-	<el-dialog v-model="openDialog" title="详细配置" width="900" align-center @close="onDialogClose">
-		<el-descriptions class="el-descriptions-vertical-top" :column="2" border label-width="170">
-			<el-descriptions-item label="ID" :span="2">
-				{{ viewData?.input_config_raw.id }}
-			</el-descriptions-item>
-			<el-descriptions-item label="创建时间" :span="2">
-				{{ formatDate(viewData!.input_config_raw.createTime, "YYYY-MM-DD HH:mm:ss") }}
-			</el-descriptions-item>
-			<el-descriptions-item label="参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.input_config_raw.spk_audio_prompt) }}
-			</el-descriptions-item>
-			<el-descriptions-item label="参考音频路径" :span="2">
-				{{ viewData?.input_config_raw.spk_audio_prompt }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感控制方式" :span="2">
-				{{ getEmoControlMethodLabel(viewData?.input_config_raw.emo_control_method) }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感参考音频" :span="2">
-				{{ getFileNameFromPath(viewData?.input_config_raw.emo_ref_path) }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感参考音频路径" :span="2">
-				{{ viewData?.input_config_raw.emo_ref_path }}
-			</el-descriptions-item>
-			<el-descriptions-item label="生成音频" :span="2">
-				<div class="view-audio-wrapper">
-					<audio ref="audioRef" class="view-audio" controls :src="audioPath"></audio>
-					<el-button type="primary" @click="onDownloadAudio(viewData?.file_path)">下载</el-button>
-				</div>
-			</el-descriptions-item>
-			<el-descriptions-item label="生成音频路径" :span="2">
-				{{ viewData?.file_path }}
-			</el-descriptions-item>
-			<el-descriptions-item label="生成内容" :span="2">
-				<div class="descriptions-text">
-					{{ viewData?.input_config_raw.text }}
-				</div>
-			</el-descriptions-item>
-			<el-descriptions-item label="文本分段最大Token">
-				{{ viewData?.input_config_raw.max_text_tokens_per_segment }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感控制权重">
-				{{ viewData?.input_config_raw.emo_weight }}
-			</el-descriptions-item>
-			<el-descriptions-item label="随机情绪采样">
-				{{ viewData?.input_config_raw.emo_random }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-快乐">
-				{{ viewData?.input_config_raw.vec1 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-生气">
-				{{ viewData?.input_config_raw.vec2 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-难过">
-				{{ viewData?.input_config_raw.vec3 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-害怕">
-				{{ viewData?.input_config_raw.vec4 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-厌恶">
-				{{ viewData?.input_config_raw.vec5 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-忧郁">
-				{{ viewData?.input_config_raw.vec6 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-惊讶">
-				{{ viewData?.input_config_raw.vec7 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情绪权重-平静">
-				{{ viewData?.input_config_raw.vec8 }}
-			</el-descriptions-item>
-			<el-descriptions-item label="情感描述">
-				{{ viewData?.input_config_raw.prompt }}
-			</el-descriptions-item>
-			<el-descriptions-item label="启用 GPT-2 样本抽取">
-				{{ viewData?.input_config_raw.do_sample }}
-			</el-descriptions-item>
-			<el-descriptions-item label="GPT-2 采样温度">
-				{{ viewData?.input_config_raw.temperature }}
-			</el-descriptions-item>
-			<el-descriptions-item label="top_p">
-				{{ viewData?.input_config_raw.top_p }}
-			</el-descriptions-item>
-			<el-descriptions-item label="top_k">
-				{{ viewData?.input_config_raw.top_k }}
-			</el-descriptions-item>
-			<el-descriptions-item label="num_beams">
-				{{ viewData?.input_config_raw.num_beams }}
-			</el-descriptions-item>
-			<el-descriptions-item label="重复惩罚">
-				{{ viewData?.input_config_raw.repetition_penalty }}
-			</el-descriptions-item>
-			<el-descriptions-item label="长度惩罚">
-				{{ viewData?.input_config_raw.length_penalty }}
-			</el-descriptions-item>
-			<el-descriptions-item label="最大生成令牌数">
-				{{ viewData?.input_config_raw.max_mel_tokens }}
-			</el-descriptions-item>
-		</el-descriptions>
-	</el-dialog>
 </template>
 
 <script setup lang="ts">
-import { getEmoControlMethodLabel, getFileNameFromPath } from "../helper";
-import type { HistoryItem } from "../types";
-import { formatDate } from "@/utils/dayjs";
 import { ttsHistory, ttsHistoryDelete } from "@/api/index-tts2";
-import type { TTSHistoryResult } from "@/api/index-tts2";
-import type { Simplify } from "type-fest";
-import { getEnv } from "@/utils/env";
-import { downloadFile } from "@/utils/tools";
-
-export type TTSHistoryItem = Simplify<
-	Omit<TTSHistoryResult["records"][number], "input_config_raw"> & { input_config_raw: HistoryItem }
->;
-type HistoryData = Array<TTSHistoryItem>;
+import { useModal } from "@/hooks/useModal";
+import { formatDate } from "@/utils/dayjs";
+import { getFileNameFromPath } from "@/utils/tools";
+import { getEmoControlMethodLabel } from "../../helper";
+import type { HistoryData, HistoryItem, TTSHistoryItem } from "../../types";
+import type { DetailDialogProps } from "./DetailDialog.vue";
+import DetailDialog from "./DetailDialog.vue";
 
 const emit = defineEmits<{
 	/** 应用历史记录 */
 	"apply-history": [item: TTSHistoryItem];
 }>();
 
-const env = getEnv();
 const show = defineModel({ type: Boolean, required: true });
 const loading = ref(false);
 const historyData = ref<HistoryData>([]);
-const openDialog = ref(false);
-const viewData = ref<TTSHistoryItem>();
-const audioPath = computed(() => {
-	const filePath = viewData.value?.file_path;
-	if (typeof filePath !== "string" || filePath.trim() === "") return "";
-	return `${env.VITE_APP_API_BASE_URL}/audio/preview?filename=${encodeURIComponent(filePath)}`;
-});
-const audioRef = useTemplateRef("audioRef");
+const modal = useModal();
 
 // api 获取历史记录
 const getHistory = async () => {
@@ -238,8 +135,15 @@ const getHistory = async () => {
 
 /** 查看 */
 function onView(item: TTSHistoryItem) {
-	viewData.value = item;
-	openDialog.value = true;
+	const modelProps: DetailDialogProps = {
+		viewData: item
+	};
+	modal
+		.open({
+			component: DetailDialog,
+			props: modelProps
+		})
+		.catch(() => {});
 }
 /** 应用 */
 function onApply(item: TTSHistoryItem) {
@@ -280,22 +184,14 @@ async function onClear() {
 	}
 }
 
-/** 下载音频 */
-function onDownloadAudio(path?: string) {
-	if (typeof path !== "string" || path.trim() === "") return;
-	const url = `${env.VITE_APP_API_BASE_URL}/tts/download?filepath=${encodeURIComponent(path)}`;
-	downloadFile(url);
-}
-
 /** 打开弹窗 */
 const onDrawerOpen = () => {
 	getHistory();
 };
 
-/** 关闭dialog弹窗 */
-function onDialogClose() {
-	audioRef.value?.pause();
-}
+onMounted(() => {
+	if (show.value) onDrawerOpen();
+});
 </script>
 
 <style lang="scss">
@@ -308,7 +204,7 @@ function onDialogClose() {
 		padding-top: 0;
 	}
 	.el-drawer__footer {
-		padding-top: 0;
+		padding-bottom: 10px;
 	}
 }
 </style>
@@ -380,8 +276,7 @@ function onDialogClose() {
 	word-break: break-all;
 	transition: background-color 0.25s ease;
 }
-.history-drawer-table .col-1,
-.history-drawer-table .col-4 {
+.history-drawer-table .col-1 {
 	width: 180px;
 }
 .history-drawer-table .col-2 {
@@ -390,8 +285,11 @@ function onDialogClose() {
 .history-drawer-table .col-3 {
 	width: 300px;
 }
-.history-drawer-table .col-5 {
+.history-drawer-table .col-4 {
 	width: 80px;
+}
+.history-drawer-table .col-5 {
+	width: 230px;
 }
 .history-drawer-table .col-6 {
 	width: 180px;

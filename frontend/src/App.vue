@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-19 16:04:09
- * @LastEditTime: 2025-10-24 11:34:26
+ * @LastEditTime: 2025-11-19 12:17:28
  * @LastEditors: mulingyuer
  * @Description:
  * @FilePath: \frontend\src\App.vue
@@ -10,7 +10,7 @@
 <template>
 	<el-config-provider :locale="locale">
 		<router-view></router-view>
-		<ModalManager />
+		<GlobalModalRenderer />
 	</el-config-provider>
 </template>
 
@@ -19,7 +19,9 @@ import { useAppStore } from "@/stores";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import en from "element-plus/es/locale/lang/en";
 import { breakpointsTailwind } from "@vueuse/core";
-const ModalManager = defineAsyncComponent(() => import("@/components/ModalManager/index.vue"));
+const GlobalModalRenderer = defineAsyncComponent(
+	() => import("@/components/GlobalModalRenderer.vue")
+);
 
 const appStore = useAppStore();
 const locale = computed(() => (appStore.language === "zh-CN" ? zhCn : en));

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-09-25 11:28:14
- * @LastEditTime: 2025-11-04 10:45:45
+ * @LastEditTime: 2025-11-20 14:45:48
  * @LastEditors: mulingyuer
  * @Description: 底部音频播放器组件
  * @FilePath: \frontend\src\views\index-tts2\components\FooterAudio.vue
@@ -51,18 +51,7 @@
 		</div>
 
 		<div class="footer-audio-right">
-			<el-button class="footer-button reset" :disabled="loading" @click="$emit('reset-form')">
-				重置表单
-			</el-button>
-			<el-button
-				class="footer-button submit"
-				type="primary"
-				:loading="loading"
-				:icon="RiMusicAiFill"
-				@click="$emit('submit-form')"
-			>
-				生成语音
-			</el-button>
+			<slot name="footer-right"></slot>
 		</div>
 
 		<div
@@ -83,8 +72,6 @@ import AudioProgress from "./AudioProgress.vue";
 export interface FooterAudioProps {
 	/** 音频路径 */
 	audioPath: string;
-	/** loading */
-	loading: boolean;
 	/** 是否显示进度条 */
 	showProgress?: boolean;
 	/** 进度值 0-100 */
@@ -98,16 +85,9 @@ const props = withDefaults(defineProps<FooterAudioProps>(), {
 	showProgress: false,
 	progress: 30
 });
-const _emit = defineEmits<{
-	/** 重置表单 */
-	"reset-form": [];
-	/** 提交表单 */
-	"submit-form": [];
-}>();
 
 // 图标定义
 const RiDownloadLine = useIcon({ name: "ri-download-line", size: 22 });
-const RiMusicAiFill = useIcon({ name: "ri-music-ai-fill", size: 16 });
 
 const audioRef = useTemplateRef<HTMLDivElement>("audioRef");
 let playerInstance: WaveSurferInstance | undefined;
@@ -265,9 +245,6 @@ onUnmounted(() => {
 }
 .footer-audio-right {
 	flex-shrink: 0;
-	height: 100%;
-}
-.footer-button {
 	height: 100%;
 }
 .footer-audio-progress {

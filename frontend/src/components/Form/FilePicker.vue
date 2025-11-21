@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 10:48:30
- * @LastEditTime: 2025-10-29 14:46:45
+ * @LastEditTime: 2025-11-20 10:34:34
  * @LastEditors: mulingyuer
  * @Description: 文件选择器
  * @FilePath: \frontend\src\components\Form\FilePicker.vue
@@ -36,13 +36,15 @@
 </template>
 
 <script setup lang="ts">
+import { getFileInfo, type FileResult } from "@/api/common";
+import type { PathPickerDialogProps } from "@/components/Dialog/PathPickerDialog.vue";
+import PathPickerDialog from "@/components/Dialog/PathPickerDialog.vue";
 import { useIcon } from "@/hooks/useIcon";
-import { useModalManager, type FileResult } from "@/hooks/useModalManager";
-import { getEnv } from "@/utils/env";
+import { useModal } from "@/hooks/useModal";
 import { useSettingsStore } from "@/stores";
-import type { ComponentSize } from "element-plus";
-import { getFileInfo } from "@/api/common";
+import { getEnv } from "@/utils/env";
 import { validateMimeType } from "@/utils/tools";
+import type { ComponentSize } from "element-plus";
 import { formContextKey } from "element-plus";
 
 export interface FilePickerProps {
@@ -83,21 +85,29 @@ const iconSize = computed(() => {
 const RiFileLine = useIcon({ name: "ri-file-line", size: iconSize.value });
 const RiInformationLine = useIcon({ name: "ri-information-line", size: iconSize.value });
 
+const model = useModal();
 const settingsStore = useSettingsStore();
 const env = getEnv();
 const modelValue = defineModel({ type: String, required: true });
-const { showPathPickerDialog } = useModalManager();
 const showTooltip = computed(() => settingsStore.whiteCheck);
 const tooltipContent = `如果挂载了存储请使用挂载存储所使用的路径，如：${env.VITE_APP_OUTPUT_PARENT_PATH} 开头的路径`;
 const loading = ref(false);
 
 /** 显示选择器 */
 function onShowSelector() {
-	showPathPickerDialog({
-		path: modelValue.value,
+	const modelProps: PathPickerDialogProps = {
 		type: "file",
-		mime_type: props.mimeType
-	})
+		mimeType: props.mimeType,
+		basePath: modelValue.value
+	};
+	model
+		.open({
+			component: PathPickerDialog,
+			props: modelProps,
+			persistent: {
+				singleton: true
+			}
+		})
 		.then((item: FileResult) => {
 			modelValue.value = item.path;
 			emit("confirm", item);

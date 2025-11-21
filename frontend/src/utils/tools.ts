@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2024-12-09 09:31:33
- * @LastEditTime: 2025-11-03 14:20:10
+ * @LastEditTime: 2025-11-19 17:51:04
  * @LastEditors: mulingyuer
  * @Description: 工具函数
  * @FilePath: \frontend\src\utils\tools.ts
@@ -405,4 +405,11 @@ export function getStringLength(str: string): number {
 
 	// 降级方案
 	return [...str].length;
+}
+
+/** 根据文件完整路径获取文件名 */
+export function getFileNameFromPath(path?: string): string {
+	if (typeof path !== "string" || path.trim() === "") return "";
+
+	return path.split(/[\\/]/).pop() ?? "未命名文件";
 }

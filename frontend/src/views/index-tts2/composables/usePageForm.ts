@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-10-20 15:52:11
- * @LastEditTime: 2025-11-07 12:53:34
+ * @LastEditTime: 2025-11-20 15:45:43
  * @LastEditors: mulingyuer
  * @Description: 表单逻辑
  * @FilePath: \frontend\src\views\index-tts2\composables\usePageForm.ts
@@ -112,19 +112,14 @@ export function usePageForm() {
 
 	/** 生成历史数据 */
 	function generateHistoryData(ruleForm: RuleForm): string {
-		try {
-			const item: HistoryItem = {
-				id: generateUUID(),
-				isExpert: settingsStore.isExpert,
-				createTime: Date.now(),
-				...structuredClone(toRaw(ruleForm))
-			};
+		const item: HistoryItem = {
+			id: generateUUID(),
+			isExpert: settingsStore.isExpert,
+			createTime: Date.now(),
+			...structuredClone(toRaw(ruleForm))
+		};
 
-			return JSON.stringify(item);
-		} catch (error) {
-			console.error("生成历史数据失败", error);
-			return "";
-		}
+		return JSON.stringify(item);
 	}
 
 	/** 格式化表单数据 */

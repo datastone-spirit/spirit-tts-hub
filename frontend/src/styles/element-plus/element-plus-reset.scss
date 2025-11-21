@@ -211,3 +211,8 @@
 		vertical-align: top;
 	}
 }
+
+// 定制el-table
+.el-table th.el-table__cell {
+	background-color: var(--el-fill-color-light) !important;
+}

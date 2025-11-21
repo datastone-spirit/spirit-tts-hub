@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-27 10:28:33
- * @LastEditTime: 2025-10-28 10:37:51
+ * @LastEditTime: 2025-11-20 10:34:49
  * @LastEditors: mulingyuer
  * @Description: 目录选择器
  * @FilePath: \frontend\src\components\Form\FolderPicker.vue
@@ -37,11 +37,13 @@
 
 <script setup lang="ts">
 import { useIcon } from "@/hooks/useIcon";
-import { useModalManager, type DirectoryResult } from "@/hooks/useModalManager";
-import { getEnv } from "@/utils/env";
+import { getFileInfo, type DirectoryResult } from "@/api/common";
+import type { PathPickerDialogProps } from "@/components/Dialog/PathPickerDialog.vue";
+import PathPickerDialog from "@/components/Dialog/PathPickerDialog.vue";
+import { useModal } from "@/hooks/useModal";
 import { useSettingsStore } from "@/stores";
+import { getEnv } from "@/utils/env";
 import type { ComponentSize } from "element-plus";
-import { getFileInfo } from "@/api/common";
 
 export interface FilePickerProps {
 	/** 占位符 */
@@ -78,20 +80,28 @@ const iconSize = computed(() => {
 const RiFolderLine = useIcon({ name: "ri-folder-line", size: iconSize.value });
 const RiInformationLine = useIcon({ name: "ri-information-line", size: iconSize.value });
 
+const model = useModal();
 const settingsStore = useSettingsStore();
 const env = getEnv();
 const modelValue = defineModel({ type: String, required: true });
-const { showPathPickerDialog } = useModalManager();
 const showTooltip = computed(() => settingsStore.whiteCheck);
 const tooltipContent = `如果挂载了存储请使用挂载存储所使用的路径，如：${env.VITE_APP_OUTPUT_PARENT_PATH} 开头的路径`;
 const loading = ref(false);
 
 /** 显示选择器 */
 function onShowSelector() {
-	showPathPickerDialog({
-		path: modelValue.value,
+	const modelProps: PathPickerDialogProps = {
+		basePath: modelValue.value,
 		type: "directory"
-	})
+	};
+	model
+		.open({
+			component: PathPickerDialog,
+			props: modelProps,
+			persistent: {
+				singleton: true
+			}
+		})
 		.then((item: DirectoryResult) => {
 			modelValue.value = item.path;
 			emit("confirm", { name: item.basename, path: item.path });
