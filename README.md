@@ -96,20 +96,7 @@ pnpm run build
 ```
 构建产物输出至 `frontend/dist`。
 
-## 角色管理接口（后端）
-- `POST /api/roles/create` 创建角色（请求体：`{ name: string, config: object }`，字段不可为空）
-- `POST /api/roles/update` 更新角色（请求体：`{ id: string, name: string, config: object }`，字段不可为空）
-- `POST /api/roles/delete` 删除角色（请求体：`{ id: string }`）
-- `GET /api/roles/list` 查询角色列表
-- `POST /api/roles/clear` 清空所有角色（无参）
-
-角色数据以单文件（`<id>.json`）形式保存在 `role_path` 目录下，文件包含 `id`、`name`、`config`、`created_at` 等字段。
-
 ## 常见问题
 - 首次运行耗时较长：建议先执行“模型预下载”脚本；或在服务启动后首次调用前耐心等待权重加载。
-- `role_path` 未设置导致角色服务失败：请在环境变量中设置 `role_path`，并确保目录存在或可创建。
 - CUDA/驱动不匹配：请确保 Torch、TorchAudio、TorchVision 与 CUDA 版本一致；参见后端 README 中的安装说明。
 
-## 开发提示
-- 推荐将 HuggingFace 缓存指向共享目录，便于多项目复用与离线部署。
-- 使用 Swagger `/apidocs/#/` 进行接口检视与调试。
