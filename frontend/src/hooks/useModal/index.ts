@@ -1,7 +1,7 @@
 /*
  * @Author: mulingyuer
  * @Date: 2025-11-18 15:39:28
- * @LastEditTime: 2025-11-20 17:15:18
+ * @LastEditTime: 2025-11-21 10:03:12
  * @LastEditors: mulingyuer
  * @Description: 模态框管理
  * @FilePath: \frontend\src\hooks\useModal\index.ts
@@ -12,11 +12,12 @@ export type * from "./types";
 
 interface InternalModal<T = any> extends ModalInstance<T> {
 	persistent?: boolean | PersistentOptions;
-	_key?: string; // 内部计算出的唯一 key
+	_key?: string | symbol; // 内部计算出的唯一 key
 }
 
 class ModalManager {
 	private modals = ref<InternalModal[]>([]);
+	private componentIds = new WeakMap<Component, symbol | string>();
 
 	/** 打开弹窗 */
 	public open<T = any>(options: OpenOptions): Promise<T> {
@@ -40,6 +41,7 @@ class ModalManager {
 		// 创建弹窗
 		return new Promise((resolve, reject) => {
 			const modalId = Symbol("modal");
+			const _key = key ?? modalId;
 
 			const instance: InternalModal<T> = {
 				modalId,
@@ -49,10 +51,13 @@ class ModalManager {
 				resolve,
 				reject,
 				persistent,
-				_key: key
+				_key
 			};
 
 			this.modals.value.push(instance);
+
+			// 记录标识
+			this.componentIds.set(component, _key);
 
 			// HACK: Element Plus 弹窗的open事件会在 “由关闭 → 打开” 的状态变化中触发，所以这里等下一个 tick 时设置为true
 			nextTick().finally(() => {
@@ -120,6 +125,7 @@ class ModalManager {
 		if (!key) return;
 
 		this.modals.value = this.modals.value.filter((m) => m._key !== key);
+		this.componentIds.delete(options.component);
 	}
 
 	/** 销毁全部弹窗 */
@@ -128,36 +134,21 @@ class ModalManager {
 	}
 
 	/** 计算唯一 key */
-	private computeKey(options: OpenOptions): string | undefined {
+	private computeKey(options: OpenOptions): symbol | string | undefined {
 		const { component, props = {}, persistent } = options;
 		if (!persistent) return void 0;
 
 		const config = typeof persistent === "boolean" ? {} : persistent;
 
-		// 情况1：全局单例模式
-		if (config.singleton) {
-			return `__singleton__${this.getComponentIdentifier(component)}`;
-		}
-
-		// 情况2：手动指定 key
+		// 情况1：手动指定 key
 		if (config.key) return config.key;
 
-		// 情况3：动态生成 key
+		// 情况2：动态生成 key
 		if (config.keyGenerator) return config.keyGenerator(props);
 
-		// 兜底：如果用户写了 persistent: true 但没配任何 key，降级为 singleton
-		return `__singleton__${this.getComponentIdentifier(component)}`;
-	}
-
-	// 辅助方法：安全获取组件标识（避免 (component as any).name 的类型污染）
-	private getComponentIdentifier(component: Component): string {
-		// Vue 组件有 name > displayName > 文件名 > 随机
-		return (
-			(component as any).name ||
-			(component as any).displayName ||
-			(component as any).__file?.split("/").pop()?.replace(".vue", "") ||
-			"anonymous"
-		);
+		// 情况3：单例模式
+		const key = this.componentIds.get(component);
+		return key;
 	}
 
 	/** 通过modalId获取弹窗实例 */

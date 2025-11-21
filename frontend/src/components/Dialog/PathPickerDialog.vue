@@ -1,10 +1,10 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-10-24 11:28:50
- * @LastEditTime: 2025-11-19 11:17:38
+ * @LastEditTime: 2025-11-21 10:17:18
  * @LastEditors: mulingyuer
  * @Description: 文件/目录选择弹窗
- * @FilePath: \frontend\src\components\ModalManager\Dialog\PathPickerDialog2.vue
+ * @FilePath: \frontend\src\components\Dialog\PathPickerDialog.vue
  * 怎么可能会有bug！！！
 -->
 <template>
@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-// import { useModalManager } from "@/hooks/useModalManager";
 import { getEnv } from "@/utils/env";
 import { validateMimeType } from "@/utils/tools";
 import type { BaseModalProps, BaseModalEmit } from "@/hooks/useModal";
@@ -57,7 +56,6 @@ const props = withDefaults(defineProps<PathPickerDialogProps & BaseModalProps>()
 const emit = defineEmits<BaseModalEmit>();
 
 const env = getEnv();
-// const { pathPickerDialogData, resolvePathPickerDialog, rejectPathPickerDialog } = useModalManager();
 const isInit = ref(false);
 
 const features = ["select", "preview", "newfolder"];
