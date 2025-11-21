@@ -13,7 +13,7 @@
 ### 1. 安装依赖
 
 ```bash
-cd /path/to/spirit-tts-hub/backend
+cd /spirit-tts-hub/backend
 pip install -r requirements.txt
 ```
 
@@ -43,21 +43,9 @@ modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 python backend/scripts/prefetch_index_tts.py --hf-cache ./checkpoints/hf_cache --full-init 
 # 启动backend 
 python app.py
-# 测试环境，固定显卡
-CUDA_VISIBLE_DEVICES=7 INDEX_TTS_DEVICE=cuda:0 FLASK_ENV=development python backend/app.py
+# 指定环境，启动服务
+FLASK_ENV=development python backend/app.py
 # 接口文档地址 /apidocs/#/
-```
-
-或者
-
-```bash
-flask run --host=0.0.0.0
-```
-
-### 生产环境
-
-```bash
-gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app('production')"
 ```
 
 ## 模型预下载（启动前）
@@ -92,14 +80,6 @@ gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app('production')"
       --model-dir ./index-tts/checkpoints \
       --hf-cache ./checkpoints/hf_cache
   ```
-  说明：
-  - 使用 `IndexTTS2` 在 CPU 上进行一次完整初始化，触发全部远端下载并尝试加载本地文件：
-    - `gpt_checkpoint`、`s2mel_checkpoint`、`w2v_stat`、`dataset.bpe_model`、`emo_matrix`、`spk_matrix` 等需已存在于 `--model-dir`。
-  - 如需在 GPU 上初始化以编译/加载 CUDA 相关模块，可使用：
-    ```bash
-    python scripts/prefetch_index_tts.py --full-init --device cuda:0 --use-fp16 --use-cuda-kernel
-    ```
-    注意：需在正确的 CUDA 环境中执行，且大概率会编译 BigVGAN 自定义 CUDA 内核。
 
 - 自定义参数
   - `--cfg`：配置文件路径（默认：`./index-tts/checkpoints/config.yaml`）
