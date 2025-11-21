@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-20 11:23:19
- * @LastEditTime: 2025-11-20 17:25:30
+ * @LastEditTime: 2025-11-21 10:35:06
  * @LastEditors: mulingyuer
  * @Description: 角色抽屉
  * @FilePath: \frontend\src\views\index-tts2\components\Role\RoleDrawer.vue
@@ -55,7 +55,11 @@
 							<el-button @click="onEdit(row)"> 重命名 </el-button>
 							<el-button @click="onView(row)"> 查看 </el-button>
 							<el-button @click="onApply(row)"> 应用 </el-button>
-							<el-button type="danger" plain @click="onDelete(row)"> 删除 </el-button>
+							<el-popconfirm title="确定要删除该角色吗？" width="200" @confirm="onDelete(row)">
+								<template #reference>
+									<el-button type="danger" plain> 删除 </el-button>
+								</template>
+							</el-popconfirm>
 						</ElSpacePro>
 					</template>
 				</el-table-column>

@@ -1,7 +1,7 @@
 <!--
  * @Author: mulingyuer
  * @Date: 2025-11-20 15:02:16
- * @LastEditTime: 2025-11-20 17:20:13
+ * @LastEditTime: 2025-11-21 10:36:56
  * @LastEditors: mulingyuer
  * @Description: 角色名称弹窗
  * @FilePath: \frontend\src\views\index-tts2\components\Role\RoleNameDialog.vue
@@ -18,7 +18,11 @@
 	>
 		<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
 			<el-form-item label="角色名称" prop="name">
-				<el-input v-model="ruleForm.name" />
+				<el-input
+					v-model="ruleForm.name"
+					placeholder="请输入角色名，回车保存"
+					@keydown.enter.prevent="onConfirm"
+				/>
 			</el-form-item>
 		</el-form>
 		<template #footer>
